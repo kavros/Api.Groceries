@@ -4,9 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
 
+import application.domain.invoice.parser.IInvoiceParser;
+import application.domain.ui.table.creator.ITableCreator;
+import application.domain.ui.table.creator.Table;
+import application.model.invoice.Invoice;
+import application.domain.invoice.parser.InvoiceParser;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,20 +20,29 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins="*")
 public class StepperController {
 
     Gson gson = new Gson();
 
-    class test{
-        int a;
-        int b;
-    }
+    @Autowired
+	ITableCreator tableCreator;
+
+    /*public StepperController(InvoiceParser parser)
+	{
+		invoiceParser = parser;
+	}*/
+
+    @GetMapping("/test")
+	public void test(){
+    	System.out.println("EEEEEE");
+	}
 
 	@PostMapping("/upload")
-	public ResponseEntity<?> getMainTableData(@RequestParam("pdfFile") MultipartFile file) throws IOException {
+	public ResponseEntity<?> getTableData(@RequestParam("pdfFile") MultipartFile file) throws IOException {
 
-		File convFile = new File(file.getOriginalFilename());
+		//TODO: If file format is not valid -> Bad request
+		File convFile = new File("./uploaded_files/"+file.getOriginalFilename());
 		convFile.createNewFile();
 		FileOutputStream fos = new FileOutputStream(convFile);
 		fos.write(file.getBytes());
@@ -35,14 +50,14 @@ public class StepperController {
 
 		PDDocument document = PDDocument.load(convFile);
 		PDFTextStripper pdfStripper = new PDFTextStripper();
-		String text = pdfStripper.getText(document);
-		test t = new test();
-		t.a = 1;
-		t.b =2;
-		System.out.println(file.getOriginalFilename());
-		System.out.println(text);
+		pdfStripper.setSortByPosition(true);
 
-		return  new ResponseEntity<>(gson.toJson(t), HttpStatus.OK);
+
+		Table data =  tableCreator.createTable(pdfStripper.getText(document));
+		String json = gson.toJson(data);
+
+		document.close();
+		return  new ResponseEntity<>(json, HttpStatus.OK);
 
 	}
 }
