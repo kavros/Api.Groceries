@@ -1,6 +1,6 @@
 package application.model.invoice;
 
-public class Product {
+public class InvoiceRow {
     public String name;
     public String origin;
     public String measurement_unit;
@@ -11,15 +11,15 @@ public class Product {
     public int tax;
 
     public String kefalaioCode;
-    public ProductPrices prices;
+    public double invoicePrice;
 
-    public Product()
+    public InvoiceRow()
     {
-        prices = new ProductPrices();
+
     }
     @Override
     public String toString() {
-        return "Product{" +
+        return "InvoiceRow{" +
                 "name='" + name + '\'' +
                 ", origin='" + origin + '\'' +
                 ", measurement_unit='" + measurement_unit + '\'' +
@@ -27,8 +27,7 @@ public class Product {
                 ", quantity=" + quantity +
                 ", discount=" + discount +
                 ", tax=" + tax +
-                ", kefalaioCode='" + kefalaioCode + '\'' +
-                ", prices=" + prices.toString() +
+                ", kefalaioCode='" + kefalaioCode +
                 '}';
     }
 }

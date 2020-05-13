@@ -1,7 +1,55 @@
 package application.model.settings;
 
-import java.util.List;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "Api_Groceries.dbo.Settings")
 public class Settings {
-    List<Rules> rules;
+
+    @Column(name = "sName", unique = false, nullable = true, length = 255)
+    private String sName;
+
+    @Id
+    @Column(name = "sCode", unique = true, nullable = false, length = 255)
+    private String sCode;
+
+    @Column(name = "profit", unique = false, nullable = true)
+    private Float profit;
+
+    @Column(name = "minProfit", unique = false, nullable = true)
+    private Float minProfit;
+
+    public String getsCode() {
+        return sCode;
+    }
+
+    public String getsName() {
+        return sName;
+    }
+
+    public void setsName(String sName) {
+        this.sName = sName;
+    }
+
+    public Float getProfit() {
+        return profit;
+    }
+
+    public void setProfit(Float profit) {
+        this.profit = profit;
+    }
+
+    public Float getMinProfit() {
+        return minProfit;
+    }
+
+    public void setMinProfit(Float minProfit) {
+        this.minProfit = minProfit;
+    }
+
+    public void setsCode(String sCode) {
+
+        this.sCode = sCode;
+    }
+
 }

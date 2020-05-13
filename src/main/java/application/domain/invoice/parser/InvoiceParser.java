@@ -1,7 +1,7 @@
 package application.domain.invoice.parser;
 
 import application.model.invoice.Invoice;
-import application.model.invoice.Product;
+import application.model.invoice.InvoiceRow;
 import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component("invoiceParser")
 public class InvoiceParser implements IInvoiceParser {
-    List<Product> products = new ArrayList<>();
+    List<InvoiceRow> invoiceRows = new ArrayList<>();
 
     public Invoice getInvoice(String invoiceContent){
         Invoice invoice = new Invoice();
@@ -45,7 +45,7 @@ public class InvoiceParser implements IInvoiceParser {
                 }
             }
         }
-        invoice.products = products;
+        invoice.invoiceRows = invoiceRows;
         return invoice;
     }
 
@@ -95,21 +95,21 @@ public class InvoiceParser implements IInvoiceParser {
             return;
         }
 
-        Product product = new Product();
+        InvoiceRow invoiceRow = new InvoiceRow();
 
         String[] line;
         if(productLine.contains("ΚΙΛ ")){
             line = productLine.split("ΚΙΛ ");
-            product.measurement_unit = "ΚΙΛ ";
+            invoiceRow.measurement_unit = "ΚΙΛ ";
         } else if(productLine.contains("ΤΕΜ ")){
             line =  productLine.split("ΤΕΜ ");
-            product.measurement_unit = "TEM ";
+            invoiceRow.measurement_unit = "TEM ";
         } else if(productLine.contains("ΜΑΤ ")) {
             line =  productLine.split("ΜΑΤ ");
-            product.measurement_unit =  "ΜΑΤ ";
+            invoiceRow.measurement_unit =  "ΜΑΤ ";
         } else if(productLine.contains("ΖΕΥ ")) {
             line =  productLine.split("ΖΕΥ ");
-            product.measurement_unit =  "ΖΕΥ ";
+            invoiceRow.measurement_unit =  "ΖΕΥ ";
         } else {
             System.err.println(productLine);
             throw new Exception("Error: failed to retrieve measurement unit");
@@ -118,20 +118,20 @@ public class InvoiceParser implements IInvoiceParser {
         String[] subLine2 = line[0].split(" ");
         String[] subLine3 = line[1].trim().split(" ");
 
-        product.number = subLine2[subLine2.length-1]; //hack in order to extract number.
-        product.name    = line[0].split("-")[0];
-        product.origin  = (line[0].split("-")[1]).split(" ")[0];
+        invoiceRow.number = subLine2[subLine2.length-1]; //hack in order to extract number.
+        invoiceRow.name    = line[0].split("-")[0];
+        invoiceRow.origin  = (line[0].split("-")[1]).split(" ")[0];
 
         //special case which is necessary to fix invoice name
         if(productLine.contains("ΠΛΑΚΕ")){
-            product.name = product.name +" "+"ΠΛΑΚΕ";
+            invoiceRow.name = invoiceRow.name +" "+"ΠΛΑΚΕ";
         }
 
-        product.quantity = Double.parseDouble(subLine3[1].replace(",","."));
-        product.prices.invoicePrice   = Double.parseDouble(subLine3[2].replace(",","."));
-        product.discount= Double.parseDouble(subLine3[4].replace(",","."));
-        product.tax      =Integer.parseInt(subLine3[6].replace(",","."));
-        products.add(product);
+        invoiceRow.quantity = Double.parseDouble(subLine3[1].replace(",","."));
+        invoiceRow.invoicePrice   = Double.parseDouble(subLine3[2].replace(",","."));
+        invoiceRow.discount= Double.parseDouble(subLine3[4].replace(",","."));
+        invoiceRow.tax      =Integer.parseInt(subLine3[6].replace(",","."));
+        invoiceRows.add(invoiceRow);
     }
 
 

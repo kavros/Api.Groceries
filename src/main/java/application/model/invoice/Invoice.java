@@ -4,6 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 public class Invoice {
-    public List<Product> products;
+    public List<InvoiceRow> invoiceRows;
     public Date date;
 }

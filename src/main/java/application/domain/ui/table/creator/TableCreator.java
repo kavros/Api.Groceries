@@ -3,11 +3,13 @@ package application.domain.ui.table.creator;
 import application.domain.invoice.parser.IInvoiceParser;
 import application.domain.settings.parser.ISettingsParser;
 import application.model.invoice.Invoice;
-import application.model.invoice.Product;
-import application.model.kefalaio.data.reader.ICurrentPricesSetter;
+import application.model.kefalaio.data.reader.CurrentProductPrices;
+import application.model.kefalaio.data.reader.ICurrentPricesRepository;
 import application.model.settings.Settings;
+import application.model.table.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component("tableCreator")
@@ -18,28 +20,43 @@ public class TableCreator implements ITableCreator {
     @Autowired
     IInvoiceParser invoiceParser;
     @Autowired
-    ICurrentPricesSetter currentPricesSetter;
+    ICurrentPricesRepository currentPricesLoader;
 
     @Override
     public Table createTable(String invoiceContent) {
-        Table table =  new Table();
+
         Settings settings = settingsParser.getSettings();
         Invoice invoice = invoiceParser.getInvoice(invoiceContent);
-        currentPricesSetter.setCurrentPrices(invoice.products);
+        List<String> sCodes = getSCodesToRequest(settings, invoice);
+        CurrentProductPrices currentPrices = currentPricesLoader.getCurrentPrices(sCodes);
 
-        setNewPrices(invoice.products, settings);
-        setChangeIcons(invoice.products);
+        Table table =  new Table(invoice, settings, currentPrices);
 
-        table.products = invoice.products;
+        calculateAndSetNewPrices(table);
+        setCheckboxAndIcons(table);
+
+
         return table;
     }
 
+    private List<String> getSCodesToRequest(Settings settings, Invoice invoice ) {
+        List<String> sCodes = new ArrayList<>();
 
-    private void setNewPrices(List<Product> products, Settings settings){
+
+        /*invoice.invoiceRows.forEach(i -> settings.settingsRows.forEach(r -> {
+            if(r.name.equals(i.name)){
+                sCodes.add(r.sCode);
+            }
+        }));*/
+
+        return sCodes;
+    }
+
+    private void calculateAndSetNewPrices(Table table){
 
     }
 
-    private void setChangeIcons(List<Product> products){
+    private void setCheckboxAndIcons(Table table){
 
     }
 

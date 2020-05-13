@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
 
-import application.domain.invoice.parser.IInvoiceParser;
 import application.domain.ui.table.creator.ITableCreator;
-import application.domain.ui.table.creator.Table;
-import application.model.invoice.Invoice;
-import application.domain.invoice.parser.InvoiceParser;
+import application.model.table.Table;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
