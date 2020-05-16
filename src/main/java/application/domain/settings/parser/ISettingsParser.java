@@ -1,7 +1,8 @@
 package application.domain.settings.parser;
 
-import application.model.settings.Settings;
 
 public interface ISettingsParser {
-    public Settings getSettings();
+    public Float getProfit(String sCode);
+    public Float getMinProfit(String sCode);
+    public String getsCode(String sName) ;
 }

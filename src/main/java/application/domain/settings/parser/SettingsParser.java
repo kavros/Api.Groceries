@@ -6,30 +6,46 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Component("settingsParser")
 public class SettingsParser implements ISettingsParser {
 
+    private HashMap<String, Settings> settings2;
 
+    public SettingsParser() {
+        loadSettings();
+    }
 
-    @Override
-    public Settings getSettings() {
+    private void loadSettings() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         Query query = session.createQuery("from Settings");
-        List<Settings> list = query.list();
+        List<Settings> settings = query.list();
 
-        list.forEach(x -> {
-            System.out.println(x.getsName());
-        });
-
-
+        settings2 = new HashMap<>();
+        settings.forEach(item ->
+            settings2.put(item.getsName(), item)
+        );
 
         session.getTransaction().commit();
         HibernateUtil.shutdown();
+    }
 
-        return null;
+    @Override
+    public Float getProfit(String sName) {
+        return settings2.get(sName).getProfit();
+    }
+
+    @Override
+    public Float getMinProfit(String sName) {
+        return settings2.get(sName).getMinProfit();
+    }
+
+    @Override
+    public String getsCode(String sName) {
+        return settings2.get(sName).getsCode();
     }
 
 

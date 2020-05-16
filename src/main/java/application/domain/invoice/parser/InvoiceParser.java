@@ -12,9 +12,20 @@ import java.util.List;
 
 @Component("invoiceParser")
 public class InvoiceParser implements IInvoiceParser {
-    List<InvoiceRow> invoiceRows = new ArrayList<>();
+    ArrayList<InvoiceRow> invoiceRows = new ArrayList<>();
 
-    public Invoice getInvoice(String invoiceContent){
+
+    @Override
+    public String[] getSnames() {
+
+        return new String[0];
+    }
+
+    public ArrayList<InvoiceRow> getProducts() {
+        return invoiceRows;
+    }
+
+    public void parseInvoice(String invoiceContent){
         Invoice invoice = new Invoice();
         String[] lines = invoiceContent.split("\n");
         boolean isReading = false;
@@ -46,9 +57,7 @@ public class InvoiceParser implements IInvoiceParser {
             }
         }
         invoice.invoiceRows = invoiceRows;
-        return invoice;
     }
-
 
 
     private Date getDateTime(String line)

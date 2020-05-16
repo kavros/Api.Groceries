@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.FileOutputStream;
 
 import application.domain.ui.table.creator.ITableCreator;
-import application.model.table.Table;
+import application.domain.table.Table;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;

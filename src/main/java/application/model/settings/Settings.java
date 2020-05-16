@@ -6,10 +6,10 @@ import javax.persistence.*;
 @Table(name = "Api_Groceries.dbo.Settings")
 public class Settings {
 
-    @Column(name = "sName", unique = false, nullable = true, length = 255)
+    @Id
+    @Column(name = "sName", unique = true, nullable = false, length = 255)
     private String sName;
 
-    @Id
     @Column(name = "sCode", unique = true, nullable = false, length = 255)
     private String sCode;
 
