@@ -1,4 +1,4 @@
-package application.domain.settings.parser;
+package application.domain.settings.repo;
 
 import application.hibernate.HibernateUtil;
 import application.model.settings.Settings;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 
-@Component("settingsParser")
-public class SettingsParser implements ISettingsParser {
+@Component("settingsRepository")
+public class SettingsRepository implements ISettingsRepository {
 
     private HashMap<String, Settings> settings2;
 
-    public SettingsParser() {
+    public SettingsRepository() {
         loadSettings();
     }
 

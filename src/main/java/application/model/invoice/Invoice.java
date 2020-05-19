@@ -1,9 +1,13 @@
 package application.model.invoice;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class Invoice {
-    public List<InvoiceRow> invoiceRows;
+    public ArrayList<InvoiceProduct> invoiceProducts;
     public Date date;
+
+    public Invoice() {
+        invoiceProducts = new ArrayList<>();
+    }
 }

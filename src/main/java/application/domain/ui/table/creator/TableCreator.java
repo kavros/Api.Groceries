@@ -1,12 +1,9 @@
 package application.domain.ui.table.creator;
 
 import application.domain.invoice.parser.IInvoiceParser;
-import application.domain.settings.parser.ISettingsParser;
-import application.model.invoice.Invoice;
-import application.model.invoice.InvoiceRow;
-import application.model.smast.CurrentProductPrices;
+import application.domain.settings.repo.ISettingsRepository;
+import application.model.invoice.InvoiceProduct;
 import application.domain.current.prices.ICurrentPricesRepository;
-import application.model.settings.Settings;
 import application.domain.table.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +14,7 @@ import java.util.List;
 public class TableCreator implements ITableCreator {
 
     @Autowired
-    ISettingsParser settingsParser;
+    ISettingsRepository settingsRepo;
     @Autowired
     IInvoiceParser invoiceParser;
     @Autowired
@@ -33,7 +30,7 @@ public class TableCreator implements ITableCreator {
         //load current prices
         currentPricesRepo.loadCurrentPrices(sCodes);
 
-        Table table =  new Table( invoiceParser, settingsParser, currentPricesRepo);
+        Table table =  new Table( invoiceParser, settingsRepo, currentPricesRepo);
 
 
         calculateAndSetNewPrices(table);
@@ -43,11 +40,11 @@ public class TableCreator implements ITableCreator {
         return table;
     }
 
-    private List<String> getSCodes( ArrayList<InvoiceRow> products) {
+    private List<String> getSCodes( ArrayList<InvoiceProduct> products) {
         List<String> sCodes = new ArrayList<>();
 
-        for (InvoiceRow row : products ){
-            String sCode = settingsParser.getsCode(row.name);
+        for (InvoiceProduct product : products ){
+            String sCode = settingsRepo.getsCode(product.name);
             if( sCode != null)
             {
                 sCodes.add(sCode);

@@ -1,32 +1,24 @@
 package application.domain.invoice.parser;
 
 import application.model.invoice.Invoice;
-import application.model.invoice.InvoiceRow;
+import application.model.invoice.InvoiceProduct;
 import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 
 @Component("invoiceParser")
 public class InvoiceParser implements IInvoiceParser {
-    ArrayList<InvoiceRow> invoiceRows = new ArrayList<>();
+    Invoice invoice;
 
-
-    @Override
-    public String[] getSnames() {
-
-        return new String[0];
-    }
-
-    public ArrayList<InvoiceRow> getProducts() {
-        return invoiceRows;
+    public ArrayList<InvoiceProduct> getProducts() {
+        return invoice.invoiceProducts;
     }
 
     public void parseInvoice(String invoiceContent){
-        Invoice invoice = new Invoice();
+        invoice = new Invoice();
         String[] lines = invoiceContent.split("\n");
         boolean isReading = false;
 
@@ -56,7 +48,7 @@ public class InvoiceParser implements IInvoiceParser {
                 }
             }
         }
-        invoice.invoiceRows = invoiceRows;
+        //invoice.invoiceProducts = invoiceProducts;
     }
 
 
@@ -104,21 +96,21 @@ public class InvoiceParser implements IInvoiceParser {
             return;
         }
 
-        InvoiceRow invoiceRow = new InvoiceRow();
+        InvoiceProduct invoiceProduct = new InvoiceProduct();
 
         String[] line;
         if(productLine.contains("ΚΙΛ ")){
             line = productLine.split("ΚΙΛ ");
-            invoiceRow.measurement_unit = "ΚΙΛ ";
+            invoiceProduct.measurement_unit = "ΚΙΛ ";
         } else if(productLine.contains("ΤΕΜ ")){
             line =  productLine.split("ΤΕΜ ");
-            invoiceRow.measurement_unit = "TEM ";
+            invoiceProduct.measurement_unit = "TEM ";
         } else if(productLine.contains("ΜΑΤ ")) {
             line =  productLine.split("ΜΑΤ ");
-            invoiceRow.measurement_unit =  "ΜΑΤ ";
+            invoiceProduct.measurement_unit =  "ΜΑΤ ";
         } else if(productLine.contains("ΖΕΥ ")) {
             line =  productLine.split("ΖΕΥ ");
-            invoiceRow.measurement_unit =  "ΖΕΥ ";
+            invoiceProduct.measurement_unit =  "ΖΕΥ ";
         } else {
             System.err.println(productLine);
             throw new Exception("Error: failed to retrieve measurement unit");
@@ -127,20 +119,20 @@ public class InvoiceParser implements IInvoiceParser {
         String[] subLine2 = line[0].split(" ");
         String[] subLine3 = line[1].trim().split(" ");
 
-        invoiceRow.number = subLine2[subLine2.length-1]; //hack in order to extract number.
-        invoiceRow.name    = line[0].split("-")[0];
-        invoiceRow.origin  = (line[0].split("-")[1]).split(" ")[0];
+        invoiceProduct.number = subLine2[subLine2.length-1]; //hack in order to extract number.
+        invoiceProduct.name    = line[0].split("-")[0];
+        invoiceProduct.origin  = (line[0].split("-")[1]).split(" ")[0];
 
         //special case which is necessary to fix invoice name
         if(productLine.contains("ΠΛΑΚΕ")){
-            invoiceRow.name = invoiceRow.name +" "+"ΠΛΑΚΕ";
+            invoiceProduct.name = invoiceProduct.name +" "+"ΠΛΑΚΕ";
         }
 
-        invoiceRow.quantity = Double.parseDouble(subLine3[1].replace(",","."));
-        invoiceRow.invoicePrice   = Double.parseDouble(subLine3[2].replace(",","."));
-        invoiceRow.discount= Double.parseDouble(subLine3[4].replace(",","."));
-        invoiceRow.tax      =Integer.parseInt(subLine3[6].replace(",","."));
-        invoiceRows.add(invoiceRow);
+        invoiceProduct.quantity = Double.parseDouble(subLine3[1].replace(",","."));
+        invoiceProduct.invoicePrice   = Double.parseDouble(subLine3[2].replace(",","."));
+        invoiceProduct.discount= Double.parseDouble(subLine3[4].replace(",","."));
+        invoiceProduct.tax      =Integer.parseInt(subLine3[6].replace(",","."));
+        invoice.invoiceProducts.add(invoiceProduct);
     }
 
 

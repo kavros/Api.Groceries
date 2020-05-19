@@ -25,9 +25,9 @@ public class StepperController {
     @Autowired
 	ITableCreator tableCreator;
 
-    /*public StepperController(InvoiceParser parser)
+    /*public StepperController(InvoiceParser repo)
 	{
-		invoiceParser = parser;
+		invoiceParser = repo;
 	}*/
 
     @GetMapping("/test")

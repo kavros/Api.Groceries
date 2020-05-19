@@ -3,12 +3,7 @@ package application.domain.table;
 
 import application.domain.current.prices.ICurrentPricesRepository;
 import application.domain.invoice.parser.IInvoiceParser;
-import application.domain.invoice.parser.InvoiceParser;
-import application.domain.settings.parser.ISettingsParser;
-import application.model.invoice.Invoice;
-import application.model.invoice.InvoiceRow;
-import application.model.smast.CurrentProductPrices;
-import application.model.settings.Settings;
+import application.domain.settings.repo.ISettingsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +34,7 @@ public class Table {
 
     public List<Row> table;
 
-    public Table(IInvoiceParser invoiceParser, ISettingsParser settings, ICurrentPricesRepository currentPricesRepo){
+    public Table(IInvoiceParser invoiceParser, ISettingsRepository settings, ICurrentPricesRepository currentPricesRepo){
 
         table = new ArrayList<>();
         invoiceParser.getProducts().forEach( x ->{
@@ -54,6 +49,7 @@ public class Table {
             table.add(row);
         });
     }
+
 
 
 }

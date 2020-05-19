@@ -3,7 +3,7 @@ package application.model.smast;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Cmp006.dbo.Smast")
+@Table(name = "Cmp005.dbo.Smast")
 public class Smast {
 
     @Id

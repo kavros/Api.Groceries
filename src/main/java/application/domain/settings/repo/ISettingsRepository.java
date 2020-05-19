@@ -1,7 +1,7 @@
-package application.domain.settings.parser;
+package application.domain.settings.repo;
 
 
-public interface ISettingsParser {
+public interface ISettingsRepository {
     public Float getProfit(String sCode);
     public Float getMinProfit(String sCode);
     public String getsCode(String sName) ;
