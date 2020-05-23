@@ -3,7 +3,7 @@ package application.domain.ui.table.creator;
 import application.domain.invoice.parser.IInvoiceParser;
 import application.domain.settings.repo.ISettingsRepository;
 import application.model.invoice.InvoiceProduct;
-import application.domain.current.prices.ICurrentPricesRepository;
+import application.domain.current.prices.IRetailPricesRepository;
 import application.domain.table.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class TableCreator implements ITableCreator {
     @Autowired
     IInvoiceParser invoiceParser;
     @Autowired
-    ICurrentPricesRepository currentPricesRepo;
+    IRetailPricesRepository retailPricesRepo;
 
     @Override
     public Table createTable(String invoiceContent) {
@@ -28,9 +28,9 @@ public class TableCreator implements ITableCreator {
         List<String> sCodes = getSCodes( invoiceParser.getProducts());
 
         //load current prices
-        currentPricesRepo.loadCurrentPrices(sCodes);
+        retailPricesRepo.loadRetailPrices(sCodes);
 
-        Table table =  new Table( invoiceParser, settingsRepo, currentPricesRepo);
+        Table table =  new Table( invoiceParser, settingsRepo, retailPricesRepo);
 
 
         calculateAndSetNewPrices(table);

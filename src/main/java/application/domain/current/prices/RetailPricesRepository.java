@@ -1,7 +1,7 @@
 package application.domain.current.prices;
 
 import application.hibernate.HibernateUtil;
-import application.model.smast.CurrentProductPrices;
+import application.model.smast.RetailPrices;
 import application.model.smast.Smast;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 
-@Component("currentPricesRepository")
-public class CurrentPricesRepository implements ICurrentPricesRepository {
+@Component("retailPricesRepository")
+public class RetailPricesRepository implements IRetailPricesRepository {
     HashMap<String,Smast> prices;
 
     @Override
-    public CurrentProductPrices loadCurrentPrices(List<String> sCodes) {
+    public RetailPrices loadRetailPrices(List<String> sCodes) {
         System.out.println(sCodes);
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -25,7 +25,7 @@ public class CurrentPricesRepository implements ICurrentPricesRepository {
         criteria.add(Restrictions.in("sCode", sCodes.toArray()));
         List<Smast> data = (List<Smast>) criteria.list();
 
-        CurrentProductPrices currentPrices = new CurrentProductPrices(data);
+        RetailPrices currentPrices = new RetailPrices(data);
         prices = new HashMap<>();
         data.forEach( x -> {
             prices.put(x.getsCode(), x);
@@ -38,7 +38,8 @@ public class CurrentPricesRepository implements ICurrentPricesRepository {
     }
 
     @Override
-    public Float getCurrentPrice(String sCode) {
+    public Float getRetailPrice(String sCode) {
+        assert ( prices != null );
         return prices.get(sCode).getsRetailPr();
     }
 }
