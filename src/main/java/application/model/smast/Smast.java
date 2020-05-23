@@ -10,13 +10,13 @@ public class Smast {
     @Column(name = "sFileId", unique = true, nullable = false)
     private Integer sFileId;
 
-    @Column(name = "sName", unique = false, nullable = true, length = 39)
+    @Column(name = "sName", length = 39)
     private String sName;
 
-    @Column(name = "sCode", unique = false, nullable = false, length = 15)
+    @Column(name = "sCode", nullable = false, length = 15)
     private String sCode;
 
-    @Column(name = "sRetailPr", unique = false, nullable = true)
+    @Column(name = "sRetailPr")
     private Float sRetailPr;
 
     public Float getsRetailPr() {

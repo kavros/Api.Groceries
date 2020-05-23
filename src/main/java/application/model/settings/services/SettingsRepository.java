@@ -1,4 +1,4 @@
-package application.domain.settings.repo;
+package application.model.settings.services;
 
 import application.hibernate.HibernateUtil;
 import application.model.settings.Settings;

@@ -1,4 +1,4 @@
-package application.domain.invoice.parser;
+package application.model.invoice.services;
 
 import application.model.invoice.Invoice;
 import application.model.invoice.InvoiceProduct;

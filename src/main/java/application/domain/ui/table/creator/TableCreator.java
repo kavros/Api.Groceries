@@ -1,9 +1,9 @@
 package application.domain.ui.table.creator;
 
-import application.domain.invoice.parser.IInvoiceParser;
-import application.domain.settings.repo.ISettingsRepository;
+import application.model.invoice.services.IInvoiceParser;
+import application.model.settings.services.ISettingsRepository;
 import application.model.invoice.InvoiceProduct;
-import application.domain.current.prices.IRetailPricesRepository;
+import application.model.smast.services.IRetailPricesRepository;
 import application.domain.table.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

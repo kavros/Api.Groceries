@@ -1,9 +1,9 @@
 package application.domain.table;
 
 
-import application.domain.current.prices.IRetailPricesRepository;
-import application.domain.invoice.parser.IInvoiceParser;
-import application.domain.settings.repo.ISettingsRepository;
+import application.model.smast.services.IRetailPricesRepository;
+import application.model.invoice.services.IInvoiceParser;
+import application.model.settings.services.ISettingsRepository;
 
 import java.util.ArrayList;
 import java.util.List;

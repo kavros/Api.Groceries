@@ -1,4 +1,4 @@
-package application.domain.current.prices;
+package application.model.smast.services;
 
 import application.hibernate.HibernateUtil;
 import application.model.smast.RetailPrices;
