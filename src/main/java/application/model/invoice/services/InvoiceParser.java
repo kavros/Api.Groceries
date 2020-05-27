@@ -17,6 +17,8 @@ public class InvoiceParser implements IInvoiceParser {
         return invoice.invoiceProducts;
     }
 
+    public Date getDate() { return invoice.date; }
+
     public void parseInvoice(String invoiceContent){
         invoice = new Invoice();
         String[] lines = invoiceContent.split("\n");

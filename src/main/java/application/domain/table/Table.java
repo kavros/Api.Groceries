@@ -45,7 +45,7 @@ public class Table {
             row.profitInEuro = settings.getMinProfit(x.name);
             row.retailPrice = retailPricesRepo.getRetailPrice(settings.getsCode(x.name));
             row.newPrice = (row.invoicePrice *1.13)*(row.profitPercentage +1);
-            System.out.println(row);
+            //System.out.println(row);
             table.add(row);
         });
     }

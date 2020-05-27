@@ -25,16 +25,6 @@ public class StepperController {
     @Autowired
 	ITableCreator tableCreator;
 
-    /*public StepperController(InvoiceParser repo)
-	{
-		invoiceParser = repo;
-	}*/
-
-    @GetMapping("/test")
-	public void test(){
-    	System.out.println("EEEEEE");
-	}
-
 	@PostMapping("/upload")
 	public ResponseEntity<?> getTableData(@RequestParam("pdfFile") MultipartFile file) throws IOException {
 

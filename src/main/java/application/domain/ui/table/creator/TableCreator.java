@@ -1,5 +1,6 @@
 package application.domain.ui.table.creator;
 
+import application.model.records.services.IRecordRepository;
 import application.model.invoice.services.IInvoiceParser;
 import application.model.settings.services.ISettingsRepository;
 import application.model.invoice.InvoiceProduct;
@@ -19,6 +20,9 @@ public class TableCreator implements ITableCreator {
     IInvoiceParser invoiceParser;
     @Autowired
     IRetailPricesRepository retailPricesRepo;
+    @Autowired
+    IRecordRepository recordRepo;
+
 
     @Override
     public Table createTable(String invoiceContent) {
@@ -30,6 +34,20 @@ public class TableCreator implements ITableCreator {
         //load current prices
         retailPricesRepo.loadRetailPrices(sCodes);
 
+        java.sql.Timestamp dateTime = new java.sql.Timestamp(invoiceParser.getDate().getTime());
+        //System.out.println(a);
+
+         ArrayList<InvoiceProduct> aa = invoiceParser.getProducts();
+         ArrayList<String> names = new ArrayList<>();
+        ArrayList<Float> prices  = new ArrayList<>();
+        for ( InvoiceProduct p : aa) {
+            names.add(p.name);
+            prices.add((float)p.invoicePrice);
+        }
+
+
+
+        recordRepo.Store(prices, names, dateTime);
         Table table =  new Table( invoiceParser, settingsRepo, retailPricesRepo);
 
 

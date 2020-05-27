@@ -1,49 +1,41 @@
 package application.model.records;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.sql.Date;
+import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "Api_Groceries.dbo.Record")
 public class Record {
 
 
-    @Column(name = "invoicePrice", nullable = false)
-    private Float invoicePrice;
+    @EmbeddedId
+    private RecordId id = new RecordId();
 
-    @Id
-    @Column(name = "productName", nullable = false, unique = true, length = 150)
-    private String productName;
-
-    @Id
-    @Column(name = "invoiceDate", nullable = false, unique = true )
-    private Date invoiceDate;
+    @Column(name = "invoiceDate", nullable = false )
+    private Timestamp invoiceDate;
 
     public Float getInvoicePrice() {
-        return invoicePrice;
+        return this.id.getInvoicePrice();
     }
 
     public String getProductName() {
-        return productName;
+        return this.id.getProductName();
     }
 
-    public Date getInvoiceDate() {
+    public Timestamp getInvoiceDate() {
         return invoiceDate;
     }
 
-    public void setInvoiceDate(Date invoiceDate) {
+    public void setInvoiceDate(Timestamp invoiceDate) {
         this.invoiceDate = invoiceDate;
     }
 
     public void setInvoicePrice(Float invoicePrice) {
-        this.invoicePrice = invoicePrice;
+        this.id.setInvoicePrice( invoicePrice);
     }
 
     public void setProductName(String productName) {
-        this.productName = productName;
+        this.id.setProductName( productName);
     }
 
 }
