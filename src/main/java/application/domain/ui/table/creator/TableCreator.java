@@ -27,27 +27,13 @@ public class TableCreator implements ITableCreator {
     @Override
     public Table createTable(String invoiceContent) {
 
-        //load invoice data
         invoiceParser.parseInvoice(invoiceContent);
         List<String> sCodes = getSCodes( invoiceParser.getProducts());
 
-        //load current prices
         retailPricesRepo.loadRetailPrices(sCodes);
 
-        java.sql.Timestamp dateTime = new java.sql.Timestamp(invoiceParser.getDate().getTime());
-        //System.out.println(a);
-
-         ArrayList<InvoiceProduct> aa = invoiceParser.getProducts();
-         ArrayList<String> names = new ArrayList<>();
-        ArrayList<Float> prices  = new ArrayList<>();
-        for ( InvoiceProduct p : aa) {
-            names.add(p.name);
-            prices.add((float)p.invoicePrice);
-        }
-
-
-
-        recordRepo.Store(prices, names, dateTime);
+        StoreInvoicePrices();
+        recordRepo.getLastThreeInvoicePricesFor("ΚΟΛΟΚΥΘΙΑ");
         Table table =  new Table( invoiceParser, settingsRepo, retailPricesRepo);
 
 
@@ -56,6 +42,19 @@ public class TableCreator implements ITableCreator {
 
 
         return table;
+    }
+
+    private void StoreInvoicePrices() {
+        java.sql.Timestamp dateTime = new java.sql.Timestamp(invoiceParser.getDate().getTime());
+
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<Float> prices  = new ArrayList<>();
+        for ( InvoiceProduct p : invoiceParser.getProducts()) {
+            names.add(p.name);
+            prices.add((float)p.invoicePrice);
+        }
+
+        recordRepo.Store(prices, names, dateTime);
     }
 
     private List<String> getSCodes( ArrayList<InvoiceProduct> products) {
