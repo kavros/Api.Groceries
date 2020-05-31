@@ -19,7 +19,7 @@ public class InvoiceParser implements IInvoiceParser {
 
     public Date getDate() { return invoice.date; }
 
-    public void parseInvoice(String invoiceContent){
+    public void parseInvoice(String invoiceContent) throws IllegalArgumentException,ParseException {
         invoice = new Invoice();
         String[] lines = invoiceContent.split("\n");
         boolean isReading = false;
@@ -42,19 +42,18 @@ public class InvoiceParser implements IInvoiceParser {
             if(isReading){
                 try {
                     addProductToList(line);
-                }catch (Exception e){
-                    //TODO: log exception
-                    e.printStackTrace();
-                    //JOptionPane.showMessageDialog(null,"Tο φόρτωμα του αρχείου παρουσίασε πρόβλημα\n" +
-                     //       "παρακαλώ επαληθεύσετε οτι τα δεδομένα είναι σωστά.","Διαφορετική μορφή κειμένου στο αρχείου",JOptionPane.ERROR_MESSAGE);
+                } catch (IllegalArgumentException ex) {
+                    ex.printStackTrace();
                 }
+                //e.printStackTrace();
+                //       "παρακαλώ επαληθεύσετε οτι τα δεδομένα είναι σωστά.","Διαφορετική μορφή κειμένου στο αρχείου",JOptionPane.ERROR_MESSAGE);
             }
         }
         //invoice.invoiceProducts = invoiceProducts;
     }
 
 
-    private Date getDateTime(String line)
+    private Date getDateTime(String line) throws ParseException
     {
         Date date = null;
         if(line.contains("/") && !line.contains("ΗΜ/ΝΙΑ")) {
@@ -67,16 +66,13 @@ public class InvoiceParser implements IInvoiceParser {
         return date;
     }
 
-    private Date getDateTimeFrom(String dateTime)
+    private Date getDateTimeFrom(String dateTime) throws ParseException
     {
         Date date = null;
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
-        try {
-            date = formatter.parse(dateTime);
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        date = formatter.parse(dateTime);
+
         return date;
     }
 
@@ -88,7 +84,7 @@ public class InvoiceParser implements IInvoiceParser {
         return line.contains("ΥΠΟΛΟΙΠΑ") || line.contains("Σε µεταφορά");
     }
 
-    private void addProductToList(String productLine) throws  Exception{
+    private void addProductToList(String productLine) throws  IllegalArgumentException{
 
         productLine=productLine.replace('∆','Δ');
         productLine=productLine.replace('Ω','Ω');
@@ -114,8 +110,7 @@ public class InvoiceParser implements IInvoiceParser {
             line =  productLine.split("ΖΕΥ ");
             invoiceProduct.measurement_unit =  "ΖΕΥ ";
         } else {
-            System.err.println(productLine);
-            throw new Exception("Error: failed to retrieve measurement unit");
+            throw new IllegalArgumentException("Error: failed to retrieve measurement unit for "+ productLine);
         }
 
         String[] subLine2 = line[0].split(" ");

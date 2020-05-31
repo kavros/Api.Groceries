@@ -2,10 +2,7 @@ package application.model.records.services;
 
 import application.hibernate.HibernateUtil;
 import application.model.records.Record;
-import application.model.settings.Settings;
-import com.microsoft.sqlserver.jdbc.SQLServerException;
 import org.hibernate.HibernateException;
-import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
@@ -40,18 +37,15 @@ public class RecordRepository implements IRecordRepository {
     }
 
     @Override
-    public void Store(ArrayList<Float> prices, ArrayList<String> productNames, Timestamp invoiceDate) {
+    public void Store(ArrayList<Float> prices, ArrayList<String> productNames, Timestamp invoiceDate) throws HibernateException {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
         StoreRecords(session, prices, productNames, invoiceDate);
 
-        try {
-            session.getTransaction().commit();
-            HibernateUtil.shutdown();
-        } catch (HibernateException ex){
-            ex.printStackTrace();
-        }
+        session.getTransaction().commit();
+        HibernateUtil.shutdown();
+
     }
 
     private void StoreRecords(Session session, ArrayList<Float> prices, ArrayList<String> productNames, Timestamp invoiceDate){

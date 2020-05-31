@@ -8,45 +8,44 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component("settingsRepository")
 public class SettingsRepository implements ISettingsRepository {
 
-    private HashMap<String, Settings> settings2;
 
-    public SettingsRepository() {
-        loadSettings();
+
+    @Override
+    public Float getProfit(String sName) {
+        return  getSettingsFor(sName).getProfit();
     }
 
-    private void loadSettings() {
+    @Override
+    public Float getMinProfit(String sName) {
+        return getSettingsFor(sName).getMinProfit();
+    }
+
+    @Override
+    public String getsCode(String sName) {
+        return getSettingsFor(sName).getsCode();
+    }
+
+    private Settings getSettingsFor(String name) {
+
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         Query query = session.createQuery("from Settings");
         List<Settings> settings = query.list();
 
-        settings2 = new HashMap<>();
-        settings.forEach(item ->
-            settings2.put(item.getsName(), item)
-        );
+        settings = settings.stream()
+                .filter(x -> x.getsName().equals(name) )
+                .limit(1)
+                .collect(Collectors.toList());
+
 
         session.getTransaction().commit();
         HibernateUtil.shutdown();
+        return  settings.get(0);
     }
-
-    @Override
-    public Float getProfit(String sName) {
-        return settings2.get(sName).getProfit();
-    }
-
-    @Override
-    public Float getMinProfit(String sName) {
-        return settings2.get(sName).getMinProfit();
-    }
-
-    @Override
-    public String getsCode(String sName) {
-        return settings2.get(sName).getsCode();
-    }
-
 
 }

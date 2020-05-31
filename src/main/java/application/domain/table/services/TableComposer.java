@@ -7,8 +7,11 @@ import application.model.invoice.services.IInvoiceParser;
 import application.model.settings.services.ISettingsRepository;
 import application.model.invoice.InvoiceProduct;
 import application.model.smast.services.IRetailPricesRepository;
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +32,25 @@ public class TableComposer implements ITableComposer {
     @Override
     public TableComposerDTO createTable(String invoiceContent) {
 
-        invoiceParser.parseInvoice(invoiceContent);
+        TableComposerDTO response = new TableComposerDTO();
+
+        try {
+            invoiceParser.parseInvoice(invoiceContent);
+        } catch(IllegalArgumentException ex) {
+            ex.printStackTrace();
+            response.warnings.add(ex.getMessage());
+        }catch (ParseException ex){
+            ex.printStackTrace();
+            response.errors.add(ex.getMessage());
+        }
+
         List<String> sCodes = getSCodes( invoiceParser.getProducts());
 
         retailPricesRepo.loadRetailPrices(sCodes);
 
-        StoreInvoicePrices();
+        StoreInvoicePrices(response);
 
-        TableComposerDTO response = new TableComposerDTO();
+
 
         invoiceParser.getProducts().forEach( x -> {
                     Row row = new Row();
@@ -50,15 +64,12 @@ public class TableComposer implements ITableComposer {
                     //System.out.println(row);
                     response.data.add(row);
 
-                });
-
-
-
+        });
 
         return response;
     }
 
-    private void StoreInvoicePrices() {
+    private void StoreInvoicePrices(TableComposerDTO response) {
         java.sql.Timestamp dateTime = new java.sql.Timestamp(invoiceParser.getDate().getTime());
 
         ArrayList<String> names = new ArrayList<>();
@@ -68,7 +79,11 @@ public class TableComposer implements ITableComposer {
             prices.add((float)p.invoicePrice);
         }
 
-        recordRepo.Store(prices, names, dateTime);
+        try {
+            recordRepo.Store(prices, names, dateTime);
+        } catch (HibernateException ex ){
+            response.warnings.add(ex.getMessage());
+        }
     }
 
     private List<String> getSCodes( ArrayList<InvoiceProduct> products) {
