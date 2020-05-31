@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
 
-import application.domain.ui.table.creator.ITableCreator;
-import application.domain.table.Table;
+import application.domain.table.TableComposerDTO;
+import application.domain.table.services.ITableComposer;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -23,7 +23,7 @@ public class StepperController {
     Gson gson = new Gson();
 
     @Autowired
-	ITableCreator tableCreator;
+	ITableComposer tableCreator;
 
 	@PostMapping("/upload")
 	public ResponseEntity<?> getTableData(@RequestParam("pdfFile") MultipartFile file) throws IOException {
@@ -40,7 +40,7 @@ public class StepperController {
 		pdfStripper.setSortByPosition(true);
 
 
-		Table data =  tableCreator.createTable(pdfStripper.getText(document));
+		TableComposerDTO data =  tableCreator.createTable(pdfStripper.getText(document));
 		String json = gson.toJson(data);
 
 		document.close();

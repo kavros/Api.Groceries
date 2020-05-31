@@ -1,18 +1,19 @@
-package application.domain.ui.table.creator;
+package application.domain.table.services;
 
+import application.domain.table.Row;
+import application.domain.table.TableComposerDTO;
 import application.model.records.services.IRecordRepository;
 import application.model.invoice.services.IInvoiceParser;
 import application.model.settings.services.ISettingsRepository;
 import application.model.invoice.InvoiceProduct;
 import application.model.smast.services.IRetailPricesRepository;
-import application.domain.table.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component("tableCreator")
-public class TableCreator implements ITableCreator {
+public class TableComposer implements ITableComposer {
 
     @Autowired
     ISettingsRepository settingsRepo;
@@ -24,8 +25,9 @@ public class TableCreator implements ITableCreator {
     IRecordRepository recordRepo;
 
 
+
     @Override
-    public Table createTable(String invoiceContent) {
+    public TableComposerDTO createTable(String invoiceContent) {
 
         invoiceParser.parseInvoice(invoiceContent);
         List<String> sCodes = getSCodes( invoiceParser.getProducts());
@@ -33,15 +35,27 @@ public class TableCreator implements ITableCreator {
         retailPricesRepo.loadRetailPrices(sCodes);
 
         StoreInvoicePrices();
-        recordRepo.getLastThreeInvoicePricesFor("ΚΟΛΟΚΥΘΙΑ");
-        Table table =  new Table( invoiceParser, settingsRepo, retailPricesRepo);
+
+        TableComposerDTO response = new TableComposerDTO();
+
+        invoiceParser.getProducts().forEach( x -> {
+                    Row row = new Row();
+                    row.name = x.name;
+                    row.invoicePrice = x.invoicePrice;
+                    row.profitPercentage = settingsRepo.getProfit(x.name);
+                    row.profitInEuro = settingsRepo.getMinProfit(x.name);
+                    row.retailPrice = retailPricesRepo.getRetailPrice(settingsRepo.getsCode(x.name));
+                    row.newPrice = (row.invoicePrice * 1.13) * (row.profitPercentage + 1);
+                    row.records = recordRepo.getLatestPriceRecordFor(x.name);
+                    //System.out.println(row);
+                    response.data.add(row);
+
+                });
 
 
-        calculateAndSetNewPrices(table);
-        setCheckboxAndIcons(table);
 
 
-        return table;
+        return response;
     }
 
     private void StoreInvoicePrices() {
@@ -72,13 +86,6 @@ public class TableCreator implements ITableCreator {
         return sCodes;
     }
 
-    private void calculateAndSetNewPrices(Table table){
-
-    }
-
-    private void setCheckboxAndIcons(Table table){
-
-    }
 
 
 }

@@ -19,24 +19,24 @@ import java.util.stream.Collectors;
 public class RecordRepository implements IRecordRepository {
 
     @Override
-    public LinkedList<Float> getLastThreeInvoicePricesFor(String targetName) {
+    public List<Float> getLatestPriceRecordFor(String targetName) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
         Query query = session.createQuery("from Record order by invoiceDate desc" );
         List<Record> records = query.list();
 
-
-         List<Record> aaa=   records
+         List<Float> latestInvoicePrices = records
                  .stream()
-                 .filter(x -> x.getProductName()
-                    .equals(targetName)
+                 .filter(
+                         x -> x.getProductName().equals(targetName)
                  )
+                 .map(x -> x.getInvoicePrice())
                  .limit(3)
                  .collect(Collectors.toList());
-         
 
-        return null;
+        System.out.println(latestInvoicePrices);
+        return latestInvoicePrices;
     }
 
     @Override
