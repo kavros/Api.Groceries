@@ -32,7 +32,6 @@ public class RecordRepository implements IRecordRepository {
                  .limit(3)
                  .collect(Collectors.toList());
 
-        System.out.println(latestInvoicePrices);
         return latestInvoicePrices;
     }
 
@@ -55,7 +54,6 @@ public class RecordRepository implements IRecordRepository {
             record.setInvoiceDate(invoiceDate);
             record.setInvoicePrice(prices.get(i));
             record.setProductName(productNames.get(i));
-            System.out.println(record.getProductName()+", "+record.getInvoicePrice()+", " + record.getInvoiceDate());
             session.save(record);
         }
     }

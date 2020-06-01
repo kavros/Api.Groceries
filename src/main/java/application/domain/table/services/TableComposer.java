@@ -37,16 +37,13 @@ public class TableComposer implements ITableComposer {
         try {
             invoiceParser.parseInvoice(invoiceContent);
         } catch(IllegalArgumentException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             response.warnings.add(ex.getMessage());
-        }catch (ParseException ex){
-            ex.printStackTrace();
+        }catch (ParseException ex) {
+            //ex.printStackTrace();
             response.errors.add(ex.getMessage());
         }
 
-        List<String> sCodes = getSCodes( invoiceParser.getProducts());
-
-        retailPricesRepo.loadRetailPrices(sCodes);
 
         StoreInvoicePrices(response);
 
@@ -85,22 +82,5 @@ public class TableComposer implements ITableComposer {
             response.warnings.add(ex.getMessage());
         }
     }
-
-    private List<String> getSCodes( ArrayList<InvoiceProduct> products) {
-        List<String> sCodes = new ArrayList<>();
-
-        for (InvoiceProduct product : products ){
-            String sCode = settingsRepo.getsCode(product.name);
-            if( sCode != null)
-            {
-                sCodes.add(sCode);
-            }else {
-                //TODO: handle case where name is not in settings
-            }
-        }
-        return sCodes;
-    }
-
-
 
 }

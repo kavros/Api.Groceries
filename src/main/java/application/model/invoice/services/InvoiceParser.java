@@ -23,7 +23,7 @@ public class InvoiceParser implements IInvoiceParser {
         invoice = new Invoice();
         String[] lines = invoiceContent.split("\n");
         boolean isReading = false;
-
+        ArrayList<String> exceptions = new ArrayList<>();
         for( int i=0; i < lines.length;++i){
             String line = lines[i];
             if(i==2 || i == 1 ){ //date is some times at the second line and some times on third based on input file.
@@ -43,13 +43,15 @@ public class InvoiceParser implements IInvoiceParser {
                 try {
                     addProductToList(line);
                 } catch (IllegalArgumentException ex) {
-                    ex.printStackTrace();
+                    exceptions.add(ex.getMessage());
                 }
-                //e.printStackTrace();
-                //       "παρακαλώ επαληθεύσετε οτι τα δεδομένα είναι σωστά.","Διαφορετική μορφή κειμένου στο αρχείου",JOptionPane.ERROR_MESSAGE);
             }
         }
-        //invoice.invoiceProducts = invoiceProducts;
+
+        if(! exceptions.isEmpty()){
+            throw new IllegalArgumentException(exceptions.toString());
+        }
+
     }
 
 
