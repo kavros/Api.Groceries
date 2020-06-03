@@ -20,7 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 @CrossOrigin(origins="*")
 public class StepperController {
 
-    Gson gson = new Gson();
+	Gson gson = new Gson();
+
 
     @Autowired
 	ITableComposer tableCreator;
@@ -39,12 +40,21 @@ public class StepperController {
 		PDFTextStripper pdfStripper = new PDFTextStripper();
 		pdfStripper.setSortByPosition(true);
 
+		HttpStatus statusCode;
 
 		TableComposerDTO data =  tableCreator.createTable(pdfStripper.getText(document));
+		if(!data.errors.isEmpty())
+		{
+			statusCode = HttpStatus.BAD_REQUEST;
+
+		} else {
+			statusCode = HttpStatus.OK;
+		}
+
 		String json = gson.toJson(data);
 
 		document.close();
-		return  new ResponseEntity<>(json, HttpStatus.OK);
+		return  new ResponseEntity<>(json, statusCode);
 
 	}
 }

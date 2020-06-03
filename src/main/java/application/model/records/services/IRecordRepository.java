@@ -7,10 +7,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public interface IRecordRepository {
 
-    List<Float> getLatestPriceRecordFor(String name);
+    Map<String,List<Float>> getLatestPrices(List<String> productNames);
 
     void Store(ArrayList<Float> prices,
                ArrayList<String> productNames,

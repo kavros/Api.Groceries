@@ -11,32 +11,28 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component("retailPricesRepository")
 public class RetailPricesRepository implements IRetailPricesRepository {
 
-    @Override
-    public Float getRetailPrice(String sCode) {
-        return getEntryFor(sCode).getsRetailPr();
-    }
 
-    private Smast getEntryFor(String sCode) {
+    public Map<String,Smast> getRetailPrices() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
         Query query = session.createQuery("from Smast");
-        Smast entry =
+        Map<String,Smast> retailPrices =
                 ((List<Smast>) query.list() )
                         .stream()
-                        .filter(x -> x.getsCode().equals(sCode))
-                        .collect(Collectors.toList()).get(0);
+                        .collect(Collectors.toMap(x -> x.getsCode(),x ->x));
 
 
 
         session.getTransaction().commit();
         HibernateUtil.shutdown();
 
-        return entry;
+        return retailPrices;
     }
 }

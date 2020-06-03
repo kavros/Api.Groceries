@@ -7,33 +7,35 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component("recordRepository")
 public class RecordRepository implements IRecordRepository {
 
-    @Override
-    public List<Float> getLatestPriceRecordFor(String targetName) {
+
+    public Map<String,List<Float>> getLatestPrices(List<String> productNames) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
         Query query = session.createQuery("from Record order by invoiceDate desc" );
         List<Record> records = query.list();
 
-         List<Float> latestInvoicePrices = records
-                 .stream()
-                 .filter(
-                         x -> x.getProductName().equals(targetName)
-                 )
-                 .map(x -> x.getInvoicePrice())
-                 .limit(3)
-                 .collect(Collectors.toList());
-
-        return latestInvoicePrices;
+        Map<String,List<Float>>  map  = new HashMap<>();
+        for(String targetName : productNames) {
+            List<Float> latestInvoicePrices = records
+                    .stream()
+                    .filter(
+                            x -> x.getProductName().equals(targetName)
+                    )
+                    .map(x -> x.getInvoicePrice())
+                    .limit(3)
+                    .collect(Collectors.toList());
+            map.put(targetName,latestInvoicePrices);
+        }
+        return map;
     }
+
 
     @Override
     public void Store(ArrayList<Float> prices, ArrayList<String> productNames, Timestamp invoiceDate) throws HibernateException {
