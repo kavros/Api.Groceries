@@ -28,8 +28,6 @@ public class TableComposer implements ITableComposer {
     @Autowired
     IRetailPricesRepository retailPricesRepo;
 
-
-
     @Override
     public TableComposerDTO createTable(String invoiceContent) {
 
@@ -55,17 +53,21 @@ public class TableComposer implements ITableComposer {
         try {
 
             parserResult.invoiceProducts.forEach(x -> {
-                Row row = new Row();
-                String sCode = settingsMap.get(x.id.name).getsCode();
-                row.name = x.id.name;
-                row.invoicePrice = x.price;
-                row.profitPercentage = settingsMap.get(x.id.name).getProfit();
-                row.profitInEuro = settingsMap.get(x.id.name).getMinProfit();
-                row.retailPrice = sCodeToRetailPrice.get(sCode).getsRetailPr();
-                row.newPrice = (row.invoicePrice * 1.13) * (row.profitPercentage + 1);
-                row.records = latestPrices.get(x.id.name);
-                //System.out.println(row);
-                response.data.add(row);
+
+                Settings setting = getSettings(x.id.name, settingsMap);
+                String sCode = setting.getsCode();
+                Smast smast = getKefalaioData(sCode, sCodeToRetailPrice);
+
+                Row r = new Row();
+                r.name = x.id.name;
+                r.invoicePrice = x.price;
+                r.profitPercentage = setting.getProfit();
+                r.profitInEuro = setting.getMinProfit();
+                r.retailPrice = smast.getsRetailPr();
+                r.newPrice = (r.invoicePrice * 1.13) * (r.profitPercentage + 1);
+                r.records = latestPrices.get(x.id.name);
+
+                response.data.add(r);
 
             });
 
@@ -75,4 +77,19 @@ public class TableComposer implements ITableComposer {
         return response;
     }
 
+    private Settings getSettings(String sName,  Map<String,Settings> settingsMap){
+        Settings setting = settingsMap.get(sName);
+        if(setting == null){
+            throw new NoSuchElementException("Failed to retrieve sCode for "+sName);
+        }
+        return setting;
+    }
+
+    private Smast getKefalaioData(String sCode, Map<String, Smast> sCodeToRetailPrice ) {
+        Smast smast = sCodeToRetailPrice.get(sCode);
+        if(smast ==  null){
+            throw new NoSuchElementException("Failed to retrieve retail price for "+sCode);
+        }
+        return smast;
+    }
 }
