@@ -8,6 +8,6 @@ import java.util.Map;
 
 public interface IRetailPricesRepository {
 
-    public Map<String,Smast> getRetailPrices();
+    public Map<String,Smast> getRetailPrices(List<String> sCodes);
 
 }

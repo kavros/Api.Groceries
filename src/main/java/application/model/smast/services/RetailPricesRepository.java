@@ -18,13 +18,17 @@ import java.util.stream.Collectors;
 public class RetailPricesRepository implements IRetailPricesRepository {
 
 
-    public Map<String,Smast> getRetailPrices() {
+    public Map<String,Smast> getRetailPrices(List<String> sCodes) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
-        Query query = session.createQuery("from Smast");
+        //Query query = session.createQuery("from Smast");
+        Criteria criteria  = session.createCriteria(Smast.class);
+        criteria.add(Restrictions.in("sCode", sCodes.toArray()));
+        List<Smast> data = (List<Smast>) criteria.list();
+
         Map<String,Smast> retailPrices =
-                ((List<Smast>) query.list() )
+                        data
                         .stream()
                         .collect(Collectors.toMap(x -> x.getsCode(),x ->x));
 

@@ -11,7 +11,7 @@ public class Row {
     public double retailPrice;
     public double newPrice;
     public double profitInEuro;
-    public List<Float> records;
+    public List<Double> records;
 
     @Override
     public String toString() {
