@@ -174,7 +174,7 @@ public class InvoiceRepository implements IInvoiceRepository {
         }
 
         product.quantity = Double.parseDouble(subLine3[1].replace(",","."));
-        product.price   = Double.parseDouble(subLine3[2].replace(",","."));
+        product.price   = Float.parseFloat(subLine3[2].replace(",","."));
         product.discount= Double.parseDouble(subLine3[4].replace(",","."));
         product.tax      =Integer.parseInt(subLine3[6].replace(",","."));
 
@@ -182,16 +182,16 @@ public class InvoiceRepository implements IInvoiceRepository {
     }
 
 
-    public Map<String,List<Double>> getLatestPrices(List<String> productNames) {
+    public Map<String,List<Float>> getLatestPrices(List<String> productNames) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
         Query query = session.createQuery("from InvoiceProduct order by pDate desc" );
         List<InvoiceProduct> records = query.list();
 
-        Map<String,List<Double>>  map  = new HashMap<>();
+        Map<String,List<Float>>  map  = new HashMap<>();
         for(String targetName : productNames) {
-            List<Double> latestInvoicePrices = records
+            List<Float> latestInvoicePrices = records
                     .stream()
                     .filter(
                             x -> x.id.name.equals(targetName)

@@ -28,7 +28,7 @@ public class InvoiceProduct {
     public int tax;
 
     @Column(name = "price", nullable = false )
-    public double price;
+    public float price;
 
 
     @Override

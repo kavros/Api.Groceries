@@ -48,7 +48,7 @@ public class TableComposer implements ITableComposer {
                 .collect(Collectors.toList());
 
         Map<String, Smast> sCodeToRetailPrice = retailPricesRepo.getRetailPrices(sCodes);
-        Map<String, List<Double>> latestPrices = invoiceRepo.getLatestPrices(parserResult.invoiceProducts.stream().map(x->x.id.name).collect(Collectors.toList()));
+        Map<String, List<Float>> latestPrices = invoiceRepo.getLatestPrices(parserResult.invoiceProducts.stream().map(x->x.id.name).collect(Collectors.toList()));
 
         try {
 
@@ -64,7 +64,8 @@ public class TableComposer implements ITableComposer {
                 r.profitPercentage = setting.getProfit();
                 r.profitInEuro = setting.getMinProfit();
                 r.retailPrice = smast.getsRetailPr();
-                r.newPrice = (r.invoicePrice * 1.13) * (r.profitPercentage + 1);
+
+                r.newPrice = getNewPrice(r.profitPercentage, r.invoicePrice);
                 r.records = latestPrices.get(x.id.name);
 
                 response.data.add(r);
@@ -91,5 +92,11 @@ public class TableComposer implements ITableComposer {
             throw new NoSuchElementException("Failed to retrieve retail price for "+sCode);
         }
         return smast;
+    }
+
+    private float getNewPrice(float profitPercentage, float invoicePrice){
+        float priceWithTax = (float) (invoicePrice * 1.13);
+
+        return  priceWithTax * (profitPercentage + 1);
     }
 }

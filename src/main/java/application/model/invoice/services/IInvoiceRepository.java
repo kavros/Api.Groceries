@@ -13,5 +13,5 @@ public interface IInvoiceRepository {
 
     List<InvoiceProduct> getProducts(Timestamp timestamp);
     ParserResult parseInvoice(String invoiceContent) throws ParseException ;
-    public Map<String,List<Double>> getLatestPrices(List<String> productNames);
+    public Map<String,List<Float>> getLatestPrices(List<String> productNames);
 }

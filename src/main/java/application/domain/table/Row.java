@@ -6,12 +6,12 @@ import java.util.List;
 
 public class Row {
     public String name;
-    public double profitPercentage;
-    public double invoicePrice;
-    public double retailPrice;
-    public double newPrice;
-    public double profitInEuro;
-    public List<Double> records;
+    public float profitPercentage;
+    public float invoicePrice;
+    public float retailPrice;
+    public float newPrice;
+    public float profitInEuro;
+    public List<Float> records;
 
     @Override
     public String toString() {
