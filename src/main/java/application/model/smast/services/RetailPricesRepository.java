@@ -1,7 +1,6 @@
 package application.model.smast.services;
 
 import application.hibernate.HibernateUtil;
-import application.model.smast.RetailPrices;
 import application.model.smast.Smast;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
