@@ -12,6 +12,8 @@ import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -62,10 +64,13 @@ public class TableComposer implements ITableComposer {
                 r.name = x.id.name;
                 r.invoicePrice = x.price;
                 r.profitPercentage = setting.getProfit();
-                r.profitInEuro = setting.getMinProfit();
+
                 r.retailPrice = smast.getsRetailPr();
 
-                r.newPrice = getNewPrice(r.profitPercentage, r.invoicePrice);
+                r.newPrice = getNewPrice(r.profitPercentage,
+                        r.invoicePrice, setting.getMinProfit());
+
+                r.profitInEuro = getActualProfit(r.newPrice,r.invoicePrice);
                 r.records = latestPrices.get(x.id.name);
 
                 response.data.add(r);
@@ -94,9 +99,27 @@ public class TableComposer implements ITableComposer {
         return smast;
     }
 
-    private float getNewPrice(float profitPercentage, float invoicePrice){
+    private float getNewPrice(float profitPercentage, float invoicePrice, float minimumProfit){
         float priceWithTax = (float) (invoicePrice * 1.13);
+        float newPrice = priceWithTax * (profitPercentage + 1);
 
-        return  priceWithTax * (profitPercentage + 1);
+        if(newPrice-priceWithTax < minimumProfit )
+            newPrice = priceWithTax + minimumProfit;
+
+        return  round2Decimals(newPrice);
+    }
+
+    private float getActualProfit(float newPrice,float invoicePrice){
+        float actualProfit = newPrice- (float)(invoicePrice*1.13);
+
+        return round2Decimals(actualProfit);
+    }
+
+    private float round2Decimals(float number){
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+        String roundedNumber = df.format(number).replace(',','.');
+
+        return Float.parseFloat(roundedNumber);
     }
 }
