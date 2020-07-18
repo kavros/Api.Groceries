@@ -2,9 +2,9 @@ package application.domain.table.services;
 
 import application.domain.table.Row;
 import application.domain.table.TableComposerDTO;
-import application.model.invoice.services.ParserResult;
+import application.model.records.services.ParserResult;
 
-import application.model.invoice.services.IInvoiceRepository;
+import application.model.records.services.IRecordsRepository;
 import application.model.settings.Settings;
 import application.model.settings.services.ISettingsRepository;
 import application.model.smast.Smast;
@@ -26,7 +26,7 @@ public class TableComposer implements ITableComposer {
     @Autowired
     ISettingsRepository settingsRepo;
     @Autowired
-    IInvoiceRepository invoiceRepo;
+    IRecordsRepository recordsRepo;
     @Autowired
     IRetailPricesRepository retailPricesRepo;
 
@@ -36,24 +36,24 @@ public class TableComposer implements ITableComposer {
         TableComposerDTO response = new TableComposerDTO();
         ParserResult parserResult = null;
         try {
-            parserResult = invoiceRepo.parseInvoice(invoiceContent);
+            parserResult = recordsRepo.parseInvoice(invoiceContent);
         } catch (ParseException ex) { // failed to retrieve date and time from invoice
             response.errors.add(ex.getMessage());
         }
 
         response.warnings.addAll(parserResult.warnings);
         response.invoiceDate = parserResult.invoiceDate;
-        Map<String,Settings> settingsMap = settingsRepo.getSettings();
+        Map<String,Settings> settingsMap = settingsRepo.getAllSettings();
         List<String> sCodes = settingsMap
                 .entrySet().stream()
                 .map(x -> x.getValue().getsCode())
                 .collect(Collectors.toList());
 
         Map<String, Smast> sCodeToRetailPrice = retailPricesRepo.getRetailPrices(sCodes);
-        Map<String, List<Float>> latestPrices = invoiceRepo
+        Map<String, List<Float>> latestPrices = recordsRepo
                 .getLatestPrices(
                     parserResult
-                        .invoiceProducts
+                        .products
                         .stream()
                         .map(x->x.getName())
                         .collect(Collectors.toList())
@@ -61,7 +61,7 @@ public class TableComposer implements ITableComposer {
 
         try {
 
-            parserResult.invoiceProducts.forEach(x -> {
+            parserResult.products.forEach(x -> {
 
                 Settings setting = getSettings(x.getName(), settingsMap);
                 String sCode = setting.getsCode();
@@ -74,9 +74,7 @@ public class TableComposer implements ITableComposer {
 
                 r.retailPrice = smast.getsRetailPr();
 
-                r.newPrice = getNewPrice(r.profitPercentage,
-                        r.invoicePrice, setting.getMinProfit());
-
+                r.newPrice = x.newPrice;
                 r.profitInEuro = getActualProfit(r.newPrice,r.invoicePrice);
                 r.records = latestPrices.get(x.getName());
 
@@ -104,16 +102,6 @@ public class TableComposer implements ITableComposer {
             throw new NoSuchElementException("Failed to retrieve retail price for "+sCode);
         }
         return smast;
-    }
-
-    private float getNewPrice(float profitPercentage, float invoicePrice, float minimumProfit){
-        float priceWithTax = (float) (invoicePrice * 1.13);
-        float newPrice = priceWithTax * (profitPercentage + 1);
-
-        if(newPrice-priceWithTax < minimumProfit )
-            newPrice = priceWithTax + minimumProfit;
-
-        return  round2Decimals(newPrice);
     }
 
     private float getActualProfit(float newPrice,float invoicePrice){

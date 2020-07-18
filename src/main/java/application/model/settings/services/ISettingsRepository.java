@@ -7,5 +7,5 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 public interface ISettingsRepository {
-    public Map<String,Settings> getSettings();
+    public Map<String,Settings> getAllSettings();
 }

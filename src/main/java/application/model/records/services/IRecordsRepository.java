@@ -1,17 +1,15 @@
-package application.model.invoice.services;
+package application.model.records.services;
 
-import application.model.invoice.InvoiceProduct;
+import application.model.records.Product;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public interface IInvoiceRepository {
+public interface IRecordsRepository {
 
-    List<InvoiceProduct> getProducts(Timestamp timestamp);
+    List<Product> getProducts(Timestamp timestamp);
     ParserResult parseInvoice(String invoiceContent) throws ParseException ;
     public Map<String,List<Float>> getLatestPrices(List<String> productNames);
 }

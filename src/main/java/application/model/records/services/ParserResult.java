@@ -1,6 +1,6 @@
-package application.model.invoice.services;
+package application.model.records.services;
 
-import application.model.invoice.InvoiceProduct;
+import application.model.records.Product;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -9,10 +9,10 @@ import java.util.List;
 public class ParserResult {
     public Timestamp invoiceDate;
     public List<String> warnings;
-    public List<InvoiceProduct> invoiceProducts;
+    public List<Product> products;
 
     public ParserResult(){
         warnings = new ArrayList<>();
-        invoiceProducts = new ArrayList<>();
+        products = new ArrayList<>();
     }
 }

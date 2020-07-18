@@ -14,7 +14,7 @@ public class SettingsRepository implements ISettingsRepository {
 
 
     @Override
-    public Map<String,Settings> getSettings() {
+    public Map<String,Settings> getAllSettings() {
 
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();

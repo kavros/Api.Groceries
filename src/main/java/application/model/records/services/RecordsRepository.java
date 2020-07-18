@@ -1,9 +1,11 @@
-package application.model.invoice.services;
+package application.model.records.services;
 
+import application.domain.table.services.NewPriceCalculator;
 import application.hibernate.HibernateUtil;
-import application.model.invoice.InvoiceProduct;
+import application.model.records.Product;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -12,14 +14,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Component("invoiceParser")
-public class InvoiceRepository implements IInvoiceRepository {
+@Component("recordsRepository")
+public class RecordsRepository implements IRecordsRepository {
 
-    public List<InvoiceProduct> getProducts(Timestamp timestamp) {
+    @Autowired
+    NewPriceCalculator newPriceCalculator;
+
+    public List<Product> getProducts(Timestamp timestamp) {
 
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Query query = session.createQuery("from InvoiceProduct" );
-        List<InvoiceProduct> records = query.list();
+        Query query = session.createQuery("from Product" );
+        List<Product> records = query.list();
 
         return records
                 .stream()
@@ -51,7 +56,7 @@ public class InvoiceRepository implements IInvoiceRepository {
 
             if(isReading){
                 try {
-                    addProductToList(line,res.invoiceProducts);
+                    addProductToList(line,res.products);
                 } catch (IllegalArgumentException ex) {
                     res.warnings.add(ex.getMessage());
                 }
@@ -61,27 +66,36 @@ public class InvoiceRepository implements IInvoiceRepository {
         res.invoiceDate = new java.sql.Timestamp(date.getTime());
 
         setDate(res);
-        storeInvoice(res.invoiceProducts,res.warnings);
+        setNewPrices(res);
+        storeInvoice(res.products,res.warnings);
 
         return  res;
     }
 
-    private void setDate(ParserResult res){
-        for (int i = 0; i < res.invoiceProducts.size(); i++) {
-            res.invoiceProducts.get(i).setpDate(res.invoiceDate);
+    private void setNewPrices(ParserResult res){
+        for (int i = 0; i < res.products.size(); i++) {
+            Product product = res.products.get(i);
+            float newPrice = newPriceCalculator.getNewPrice(product.getName(),product.getPrice());
+            res.products.get(i).setNewPrice(newPrice);
         }
     }
 
-    private void storeInvoice(List<InvoiceProduct> invoiceProducts, List<String> warnings){
+    private void setDate(ParserResult res){
+        for (int i = 0; i < res.products.size(); i++) {
+            res.products.get(i).setpDate(res.invoiceDate);
+        }
+    }
+
+    private void storeInvoice(List<Product> products, List<String> warnings){
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
 
-        Timestamp invoiceDate = invoiceProducts.get(0).getpDate();
+        Timestamp invoiceDate = products.get(0).getpDate();
         if( !hasBeenImported(invoiceDate, session)){
-            for (int i = 0; i < invoiceProducts.size(); i++) {
+            for (int i = 0; i < products.size(); i++) {
 
-                session.save(invoiceProducts.get(i));
+                session.save(products.get(i));
             }
         }else {
             warnings.add(new String("Invoice "+invoiceDate+" has imported already"));
@@ -93,8 +107,8 @@ public class InvoiceRepository implements IInvoiceRepository {
 
     private boolean hasBeenImported(Timestamp invoiceDate, Session session){
 
-        Query query = session.createQuery("from InvoiceProduct" );
-        List<InvoiceProduct> records = query.list();
+        Query query = session.createQuery("from Product" );
+        List<Product> records = query.list();
         long entries =records.stream().filter(x -> x.getpDate().equals(invoiceDate)).count();
 
         return entries > 0;
@@ -131,7 +145,7 @@ public class InvoiceRepository implements IInvoiceRepository {
         return line.contains("ΥΠΟΛΟΙΠΑ") || line.contains("Σε µεταφορά");
     }
 
-    private void addProductToList(String productLine, List<InvoiceProduct> products) throws  IllegalArgumentException{
+    private void addProductToList(String productLine, List<Product> products) throws  IllegalArgumentException{
 
         productLine=productLine.replace('∆','Δ');
         productLine=productLine.replace('Ω','Ω');
@@ -141,7 +155,7 @@ public class InvoiceRepository implements IInvoiceRepository {
             return;
         }
 
-        InvoiceProduct product = new InvoiceProduct();
+        Product product = new Product();
 
         String[] line;
         if(productLine.contains("ΚΙΛ ")){
@@ -185,8 +199,8 @@ public class InvoiceRepository implements IInvoiceRepository {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
-        Query query = session.createQuery("from InvoiceProduct order by pDate desc" );
-        List<InvoiceProduct> records = query.list();
+        Query query = session.createQuery("from Product order by pDate desc" );
+        List<Product> records = query.list();
 
         Map<String,List<Float>>  map  = new HashMap<>();
         for(String targetName : productNames) {
@@ -195,7 +209,7 @@ public class InvoiceRepository implements IInvoiceRepository {
                     .filter(
                             x -> x.getName().equals(targetName)
                     )
-                    .map(x -> x.price)
+                    .map(x -> x.newPrice)
                     .limit(3)
                     .collect(Collectors.toList());
             map.put(targetName,latestInvoicePrices);

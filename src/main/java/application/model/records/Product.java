@@ -1,14 +1,14 @@
-package application.model.invoice;
+package application.model.records;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name="Api_Groceries.dbo.Invoices")
-public class InvoiceProduct {
+public class Product {
 
     @EmbeddedId
-    private InvoiceProductId id = new InvoiceProductId();
+    private ProductId id = new ProductId();
 
     @Column(name = "origin", nullable = false )
     public String origin;
@@ -31,6 +31,16 @@ public class InvoiceProduct {
     @Column(name = "price", nullable = false )
     public float price;
 
+    @Column(name = "newPrice", nullable = false )
+    public float newPrice;
+
+    public float getNewPrice() {
+        return newPrice;
+    }
+
+    public void setNewPrice(float newPrice) {
+        this.newPrice = newPrice;
+    }
 
     public Timestamp getpDate() {
         return id.getpDate();

@@ -1,4 +1,4 @@
-package application.model.invoice;
+package application.model.records;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Embeddable
-public class InvoiceProductId  implements Serializable {
+public class ProductId implements Serializable {
 
 
     @Column(name = "name", nullable = false )
@@ -34,8 +34,8 @@ public class InvoiceProductId  implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof InvoiceProductId)) return false;
-        InvoiceProductId that = (InvoiceProductId) o;
+        if (!(o instanceof ProductId)) return false;
+        ProductId that = (ProductId) o;
         return name.equals(that.name) &&
                 pDate.equals(that.pDate);
     }
