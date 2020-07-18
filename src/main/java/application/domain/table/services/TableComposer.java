@@ -50,18 +50,25 @@ public class TableComposer implements ITableComposer {
                 .collect(Collectors.toList());
 
         Map<String, Smast> sCodeToRetailPrice = retailPricesRepo.getRetailPrices(sCodes);
-        Map<String, List<Float>> latestPrices = invoiceRepo.getLatestPrices(parserResult.invoiceProducts.stream().map(x->x.id.name).collect(Collectors.toList()));
+        Map<String, List<Float>> latestPrices = invoiceRepo
+                .getLatestPrices(
+                    parserResult
+                        .invoiceProducts
+                        .stream()
+                        .map(x->x.getName())
+                        .collect(Collectors.toList())
+                );
 
         try {
 
             parserResult.invoiceProducts.forEach(x -> {
 
-                Settings setting = getSettings(x.id.name, settingsMap);
+                Settings setting = getSettings(x.getName(), settingsMap);
                 String sCode = setting.getsCode();
                 Smast smast = getKefalaioData(sCode, sCodeToRetailPrice);
 
                 Row r = new Row();
-                r.name = x.id.name;
+                r.name = x.getName();
                 r.invoicePrice = x.price;
                 r.profitPercentage = setting.getProfit();
 
@@ -71,7 +78,7 @@ public class TableComposer implements ITableComposer {
                         r.invoicePrice, setting.getMinProfit());
 
                 r.profitInEuro = getActualProfit(r.newPrice,r.invoicePrice);
-                r.records = latestPrices.get(x.id.name);
+                r.records = latestPrices.get(x.getName());
 
                 response.data.add(r);
 

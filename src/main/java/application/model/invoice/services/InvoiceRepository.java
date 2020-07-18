@@ -4,7 +4,6 @@ import application.hibernate.HibernateUtil;
 import application.model.invoice.InvoiceProduct;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -24,7 +23,7 @@ public class InvoiceRepository implements IInvoiceRepository {
 
         return records
                 .stream()
-                .filter(x->x.id.pDate.equals(timestamp))
+                .filter(x->x.getpDate().equals(timestamp))
                 .collect(Collectors.toList());
     }
 
@@ -69,7 +68,7 @@ public class InvoiceRepository implements IInvoiceRepository {
 
     private void setDate(ParserResult res){
         for (int i = 0; i < res.invoiceProducts.size(); i++) {
-            res.invoiceProducts.get(i).id.setpDate(res.invoiceDate);
+            res.invoiceProducts.get(i).setpDate(res.invoiceDate);
         }
     }
 
@@ -78,7 +77,7 @@ public class InvoiceRepository implements IInvoiceRepository {
         session.beginTransaction();
 
 
-        Timestamp invoiceDate = invoiceProducts.get(0).id.pDate;
+        Timestamp invoiceDate = invoiceProducts.get(0).getpDate();
         if( !hasBeenImported(invoiceDate, session)){
             for (int i = 0; i < invoiceProducts.size(); i++) {
 
@@ -96,7 +95,7 @@ public class InvoiceRepository implements IInvoiceRepository {
 
         Query query = session.createQuery("from InvoiceProduct" );
         List<InvoiceProduct> records = query.list();
-        long entries =records.stream().filter(x -> x.id.pDate.equals(invoiceDate)).count();
+        long entries =records.stream().filter(x -> x.getpDate().equals(invoiceDate)).count();
 
         return entries > 0;
     }
@@ -165,12 +164,12 @@ public class InvoiceRepository implements IInvoiceRepository {
         String[] subLine3 = line[1].trim().split(" ");
 
         product.number = subLine2[subLine2.length-1]; //hack in order to extract number.
-        product.id.name    = line[0].split("-")[0];
+        product.setName( line[0].split("-")[0]);
         product.origin  = (line[0].split("-")[1]).split(" ")[0];
 
         //special case which is necessary to fix invoice name
         if(productLine.contains("ΠΛΑΚΕ")){
-            product.id.name = product.id.name +" "+"ΠΛΑΚΕ";
+            product.setName(product.getName() +" "+"ΠΛΑΚΕ");
         }
 
         product.quantity = Double.parseDouble(subLine3[1].replace(",","."));
@@ -194,7 +193,7 @@ public class InvoiceRepository implements IInvoiceRepository {
             List<Float> latestInvoicePrices = records
                     .stream()
                     .filter(
-                            x -> x.id.name.equals(targetName)
+                            x -> x.getName().equals(targetName)
                     )
                     .map(x -> x.price)
                     .limit(3)

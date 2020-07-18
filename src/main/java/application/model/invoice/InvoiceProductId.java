@@ -9,8 +9,11 @@ import java.sql.Timestamp;
 public class InvoiceProductId  implements Serializable {
 
 
+    @Column(name = "name", nullable = false )
+    private String name;
+
     @Column(name = "pDate", nullable = false )
-    public Timestamp pDate;
+    private Timestamp pDate;
 
     public Timestamp getpDate() {
         return pDate;
@@ -27,10 +30,6 @@ public class InvoiceProductId  implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
-    @Column(name = "name", nullable = false )
-    public String name;
-
 
     @Override
     public boolean equals(Object o) {

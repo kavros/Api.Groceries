@@ -1,8 +1,6 @@
 package application.model.smast;
 
 import javax.persistence.*;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 
 @Entity
 @Table(name = "Cmp005.dbo.Smast")
