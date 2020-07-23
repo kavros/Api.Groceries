@@ -1,21 +1,35 @@
 package application.hibernate;
 
 import java.io.File;
+
+
+import com.fasterxml.classmate.AnnotationConfiguration;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
 
 public class HibernateUtil {
-    private static final SessionFactory sessionFactory = buildSessionFactory();
+    private static SessionFactory sessionFactory = buildSessionFactory();
 
     private static SessionFactory buildSessionFactory() {
-        try {
-            return new AnnotationConfiguration().configure(
-                    new File("hibernate.cgf.xml")).buildSessionFactory();
+        try
+        {
+            if (sessionFactory == null)
+            {
+                StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
+                        .configure("hibernate.cgf.xml").build();
 
-        }
-        catch (Throwable ex) {
+                Metadata metaData = new MetadataSources(standardRegistry)
+                        .getMetadataBuilder()
+                        .build();
 
-            System.err.println("Initial SessionFactory creation failed." + ex);
+                sessionFactory = metaData.getSessionFactoryBuilder().build();
+            }
+            return sessionFactory;
+        } catch (Throwable ex) {
             throw new ExceptionInInitializerError(ex);
         }
     }

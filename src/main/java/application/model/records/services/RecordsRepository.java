@@ -3,17 +3,12 @@ package application.model.records.services;
 import application.domain.upload.services.NewPriceCalculator;
 import application.hibernate.HibernateUtil;
 import application.model.records.Product;
-import application.model.records.ProductId;
-import application.model.smast.Smast;
-import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
-import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -38,50 +33,23 @@ public class RecordsRepository implements IRecordsRepository {
                 .collect(Collectors.toList());
     }
 
+
     public void updatePrices(List<Map.Entry<String, Float>> data, String invoiceDate)
     {
         Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
 
-       /*try{
-           ProductId id =  new ProductId();
-           id.setName("ΑΓΓΟΥΡΙΑ");
-           //"2020-04-07 06:39:00";
+        Query query = session
+                .createQuery("update Product set newPrice= :new_price " +
+                        "where name= :product_name and pDate= :invoice_date");
+        for(Map.Entry<String, Float> entry:data) {
 
-
-           DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-DD hh:mm:ss");
-           Date date = null;
-
-           date = dateFormat.parse("2020-04-07 06:39:00");
-           long time = date.getTime();
-           id.setpDate(new Timestamp(time));
-           Product p =  (Product) session.get(Product.class, id);
-           Hibernate.initialize(p);
-
-           System.out.println(p);
-       }catch(ParseException ex){
-
-       }*/
-
-
-
-
-//        Criteria criteria  = session.createCriteria(Product.class);
-//        List<String> productNames = new ArrayList<>();
-//        for(Map.Entry<String, Float> entry: data){
-//            productNames.add(entry.getKey());
-//        }
-//        criteria.add(Restrictions.in("name", productNames));
-//        criteria.add(Restrictions.eq("pDate", invoiceDate));
-//        List<Product> products = criteria.list();
-
-//            Date date = getDateTime(invoiceDate);
-//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-//            Date parsedDate = dateFormat.parse(invoiceDate);
-//            Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
-            //System.out.println(records);
-
-        //session.getTransaction().commit();
-        HibernateUtil.shutdown();
+            query.setParameter("new_price", entry.getValue());
+            query.setParameter("product_name", entry.getKey());
+            query.setParameter("invoice_date", invoiceDate);
+            query.executeUpdate();
+        }
+        tx.commit();
     }
 
     public ParserResult parseInvoice(String invoiceContent) throws ParseException {
@@ -93,7 +61,7 @@ public class RecordsRepository implements IRecordsRepository {
         for( int i=0; i < lines.length;++i){
             String line = lines[i];
             if(i==2 || i == 1 ){ //date is some times at the second line and some times on third based on input file.
-                date = getDateTime(line);
+                date = getDateAndTime1(line);
             }
 
             if(ShouldStartReadContent(line)) {
@@ -153,7 +121,7 @@ public class RecordsRepository implements IRecordsRepository {
         }
 
         session.getTransaction().commit();
-        HibernateUtil.shutdown();
+
     }
 
     private boolean hasBeenImported(Timestamp invoiceDate, Session session){
@@ -165,26 +133,15 @@ public class RecordsRepository implements IRecordsRepository {
         return entries > 0;
     }
 
-    private Date getDateTime(String line) throws ParseException
-    {
+    private Date getDateAndTime1(String line) throws ParseException {
         Date date = null;
         if(line.contains("/") && !line.contains("ΗΜ/ΝΙΑ")) {
             line = line.replace("  ", " ");//trim in between double spaces.
             String[] array = line.split(" ");
             String dateTimeString =  array[2] + " " +array[3];
-
-            date = getDateTimeFrom(dateTimeString);
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
+            date = formatter.parse(dateTimeString);
         }
-        return date;
-    }
-
-    private Date getDateTimeFrom(String dateTime) throws ParseException
-    {
-        Date date = null;
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
-
-        date = formatter.parse(dateTime);
-
         return date;
     }
 

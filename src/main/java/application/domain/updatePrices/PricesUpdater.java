@@ -18,9 +18,7 @@ public class PricesUpdater implements IPricesUpdater {
 
     public void updatePrices(List<Map.Entry<String, Float>> data, String invoiceDate){
         recordsRepository.updatePrices(data,invoiceDate);
-        /*for(Map.Entry<String,Float> entry: data ){
-            System.out.println(entry);
-        }*/
+
     }
 
 }

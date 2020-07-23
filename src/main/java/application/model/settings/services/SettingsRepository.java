@@ -25,7 +25,7 @@ public class SettingsRepository implements ISettingsRepository {
                 .collect(Collectors.toMap(x -> x.getsName(), x-> x));
 
         session.getTransaction().commit();
-        HibernateUtil.shutdown();
+
 
         return  settings;
     }

@@ -30,7 +30,7 @@ public class RetailPricesRepository implements IRetailPricesRepository {
 
 
         session.getTransaction().commit();
-        HibernateUtil.shutdown();
+
 
         return retailPrices;
     }
