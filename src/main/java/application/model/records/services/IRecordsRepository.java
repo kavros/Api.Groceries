@@ -11,5 +11,6 @@ public interface IRecordsRepository {
 
     List<Product> getProducts(Timestamp timestamp);
     ParserResult parseInvoice(String invoiceContent) throws ParseException ;
-    public Map<String,List<Float>> getLatestPrices(List<String> productNames);
+    Map<String,List<Float>> getLatestPrices(List<String> productNames);
+    void updatePrices(List<Map.Entry<String, Float>> data, String invoiceDate);
 }

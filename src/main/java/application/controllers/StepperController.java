@@ -3,9 +3,16 @@ package application.controllers;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import application.domain.table.TableComposerDTO;
-import application.domain.table.services.ITableComposer;
+import application.controllers.dtos.UpdatePricesEntry;
+import application.controllers.dtos.UpdatePricesDTO;
+import application.controllers.dtos.UploadDTO;
+import application.domain.updatePrices.IPricesUpdater;
+import application.domain.upload.services.ITableComposer;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -21,13 +28,29 @@ import org.springframework.web.multipart.MultipartFile;
 public class StepperController {
 
 	Gson gson = new Gson();
-
-
     @Autowired
 	ITableComposer tableCreator;
+	@Autowired
+	IPricesUpdater pricesUpdater;
+
+
+
+	@PutMapping("/updatePrices")
+	public ResponseEntity<?> updatePrices(@RequestBody UpdatePricesDTO dto) {
+		List<Map.Entry<String,Float>> data = new ArrayList<>();
+		for(UpdatePricesEntry entry: dto.getProducts()){
+			data.add(
+					new AbstractMap.SimpleEntry<>(
+						entry.getName(),entry.getNewPrice())
+					);
+		}
+		pricesUpdater.updatePrices(data,dto.getInvoiceDate());
+
+    	return null;
+	}
 
 	@PostMapping("/upload")
-	public ResponseEntity<?> getTableData(@RequestParam("pdfFile") MultipartFile file) throws IOException {
+	public ResponseEntity<?> importAndReturnStepperData(@RequestParam("pdfFile") MultipartFile file) throws IOException {
 
 		//TODO: If file format is not valid -> Bad request
 		File convFile = new File("./uploaded_files/"+file.getOriginalFilename());
@@ -42,7 +65,7 @@ public class StepperController {
 
 		HttpStatus statusCode;
 
-		TableComposerDTO data =  tableCreator.createTable(pdfStripper.getText(document));
+		UploadDTO data =  tableCreator.createTable(pdfStripper.getText(document));
 		if(!data.errors.isEmpty())
 		{
 			statusCode = HttpStatus.BAD_REQUEST;

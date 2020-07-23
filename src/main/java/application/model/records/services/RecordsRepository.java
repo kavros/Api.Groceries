@@ -1,13 +1,19 @@
 package application.model.records.services;
 
-import application.domain.table.services.NewPriceCalculator;
+import application.domain.upload.services.NewPriceCalculator;
 import application.hibernate.HibernateUtil;
 import application.model.records.Product;
+import application.model.records.ProductId;
+import application.model.smast.Smast;
+import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,6 +38,51 @@ public class RecordsRepository implements IRecordsRepository {
                 .collect(Collectors.toList());
     }
 
+    public void updatePrices(List<Map.Entry<String, Float>> data, String invoiceDate)
+    {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+
+       /*try{
+           ProductId id =  new ProductId();
+           id.setName("ΑΓΓΟΥΡΙΑ");
+           //"2020-04-07 06:39:00";
+
+
+           DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-DD hh:mm:ss");
+           Date date = null;
+
+           date = dateFormat.parse("2020-04-07 06:39:00");
+           long time = date.getTime();
+           id.setpDate(new Timestamp(time));
+           Product p =  (Product) session.get(Product.class, id);
+           Hibernate.initialize(p);
+
+           System.out.println(p);
+       }catch(ParseException ex){
+
+       }*/
+
+
+
+
+//        Criteria criteria  = session.createCriteria(Product.class);
+//        List<String> productNames = new ArrayList<>();
+//        for(Map.Entry<String, Float> entry: data){
+//            productNames.add(entry.getKey());
+//        }
+//        criteria.add(Restrictions.in("name", productNames));
+//        criteria.add(Restrictions.eq("pDate", invoiceDate));
+//        List<Product> products = criteria.list();
+
+//            Date date = getDateTime(invoiceDate);
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//            Date parsedDate = dateFormat.parse(invoiceDate);
+//            Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+            //System.out.println(records);
+
+        //session.getTransaction().commit();
+        HibernateUtil.shutdown();
+    }
 
     public ParserResult parseInvoice(String invoiceContent) throws ParseException {
         ParserResult res = new ParserResult();

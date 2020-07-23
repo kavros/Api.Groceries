@@ -1,10 +1,10 @@
-package application.domain.table;
+package application.controllers.dtos;
 
 
 import java.util.List;
 
 
-public class Row {
+public class UploadEntry {
     public String name;
     public float profitPercentage;
     public float invoicePrice;

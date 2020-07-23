@@ -1,7 +1,7 @@
-package application.domain.table.services;
+package application.domain.upload.services;
 
-import application.domain.table.Row;
-import application.domain.table.TableComposerDTO;
+import application.controllers.dtos.UploadEntry;
+import application.controllers.dtos.UploadDTO;
 import application.model.records.services.ParserResult;
 
 import application.model.records.services.IRecordsRepository;
@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.RoundingMode;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,9 +33,9 @@ public class TableComposer implements ITableComposer {
     IRetailPricesRepository retailPricesRepo;
 
     @Override
-    public TableComposerDTO createTable(String invoiceContent) {
+    public UploadDTO createTable(String invoiceContent) {
 
-        TableComposerDTO response = new TableComposerDTO();
+        UploadDTO response = new UploadDTO();
         ParserResult parserResult = null;
         try {
             parserResult = recordsRepo.parseInvoice(invoiceContent);
@@ -42,7 +44,7 @@ public class TableComposer implements ITableComposer {
         }
 
         response.warnings.addAll(parserResult.warnings);
-        response.invoiceDate = parserResult.invoiceDate;
+        response.invoiceDate =  parserResult.invoiceDate.toString();
         Map<String,Settings> settingsMap = settingsRepo.getAllSettings();
         List<String> sCodes = settingsMap
                 .entrySet().stream()
@@ -67,7 +69,7 @@ public class TableComposer implements ITableComposer {
                 String sCode = setting.getsCode();
                 Smast smast = getKefalaioData(sCode, sCodeToRetailPrice);
 
-                Row r = new Row();
+                UploadEntry r = new UploadEntry();
                 r.name = x.getName();
                 r.invoicePrice = x.price;
                 r.profitPercentage = setting.getProfit();
