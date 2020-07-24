@@ -7,6 +7,6 @@ import java.util.Map;
 public interface IRetailPricesRepository {
 
     Map<String,Smast> getRetailPrices(List<String> sCodes);
-    void updatePrices(List<Map.Entry<String, Float>> data);
+    void updatePrices(List<Map.Entry<String, Float>> sCodesAndPrices);
 
 }

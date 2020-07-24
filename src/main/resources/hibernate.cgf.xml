@@ -12,7 +12,7 @@
 
 
         <property name="hbm2ddl.auto">none</property>
-         <property name="show_sql">true</property>
+         <property name="show_sql">false</property>
         <property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
 
         <mapping class="application.model.records.Product"></mapping>
