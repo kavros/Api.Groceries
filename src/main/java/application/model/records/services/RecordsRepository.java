@@ -1,6 +1,6 @@
 package application.model.records.services;
 
-import application.domain.upload.services.NewPriceCalculator;
+import application.domain.upload.price_calculator.NewPriceCalculator;
 import application.hibernate.HibernateUtil;
 import application.model.records.Product;
 import org.hibernate.Session;

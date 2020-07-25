@@ -1,4 +1,4 @@
-package application.domain.upload.services;
+package application.domain.upload.price_calculator;
 
 import application.model.settings.Settings;
 import application.model.settings.services.ISettingsRepository;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Component("newPriceCalculator")
-public class NewPriceCalculator implements INewPriceCalculator{
+public class NewPriceCalculator implements INewPriceCalculator {
 
     @Autowired
     ISettingsRepository settingsRepo;

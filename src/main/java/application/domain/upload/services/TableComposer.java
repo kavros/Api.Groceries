@@ -1,6 +1,5 @@
 package application.domain.upload.services;
 
-import application.controllers.dtos.UploadEntry;
 import application.controllers.dtos.UploadDTO;
 import application.model.records.services.ParserResult;
 
@@ -13,10 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -69,7 +66,7 @@ public class TableComposer implements ITableComposer {
                 String sCode = setting.getsCode();
                 Smast smast = getKefalaioData(sCode, sCodeToRetailPrice);
 
-                UploadEntry r = new UploadEntry();
+                UploadDTO.Entry r = response.new Entry();
                 r.name = x.getName();
                 r.invoicePrice = x.price;
                 r.profitPercentage = setting.getProfit();

@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import application.controllers.dtos.UpdatePricesEntry;
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.UploadDTO;
-import application.domain.updatePrices.IPricesUpdater;
+import application.domain.update_prices.IPricesUpdater;
 import application.domain.upload.services.ITableComposer;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -38,7 +37,7 @@ public class StepperController {
 	@PutMapping("/updatePrices")
 	public ResponseEntity<?> updatePrices(@RequestBody UpdatePricesDTO dto) {
 		List<Map.Entry<String,Float>> data = new ArrayList<>();
-		for(UpdatePricesEntry entry: dto.getProducts()){
+		for(UpdatePricesDTO.Entry entry: dto.getProducts()){
 			data.add(
 					new AbstractMap.SimpleEntry<>(
 						entry.getName(),entry.getNewPrice())
