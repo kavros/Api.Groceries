@@ -1,4 +1,4 @@
-package application.domain.upload.price_calculator;
+package application.domain.importer.price_calculator;
 
 import application.model.settings.Settings;
 import application.model.settings.services.ISettingsRepository;

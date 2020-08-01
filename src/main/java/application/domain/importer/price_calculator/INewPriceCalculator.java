@@ -1,4 +1,4 @@
-package application.domain.upload.price_calculator;
+package application.domain.importer.price_calculator;
 
 public interface INewPriceCalculator {
 

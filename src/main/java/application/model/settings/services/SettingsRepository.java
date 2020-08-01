@@ -4,6 +4,7 @@ import application.hibernate.HibernateUtil;
 import application.model.settings.Settings;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -26,10 +27,13 @@ public class SettingsRepository implements ISettingsRepository {
 
         session.getTransaction().commit();
 
-
         return  settings;
     }
 
-
-
+    public void add(Settings setting) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        session.save(setting);
+        tx.commit();
+    }
 }

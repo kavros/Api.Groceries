@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import application.controllers.dtos.UpdatePricesDTO;
-import application.controllers.dtos.UploadDTO;
+import application.controllers.dtos.ImportDTO;
 import application.domain.prices_updater.IPricesUpdater;
-import application.domain.upload.services.ITableComposer;
+import application.domain.importer.services.ITableComposer;
+import application.model.settings.Settings;
+import application.model.settings.services.ISettingsRepository;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -31,8 +33,14 @@ public class StepperController {
 	ITableComposer tableCreator;
 	@Autowired
 	IPricesUpdater pricesUpdater;
+	@Autowired
+	ISettingsRepository settingsRepository;
 
-
+	@PutMapping("/addSetting")
+	public ResponseEntity<?> updatePrices(@RequestBody Settings setting) {
+		settingsRepository.add(setting);
+		return  new ResponseEntity<>(HttpStatus.OK);
+	}
 
 	@PutMapping("/updatePrices")
 	public ResponseEntity<?> updatePrices(@RequestBody UpdatePricesDTO dto) {
@@ -48,7 +56,7 @@ public class StepperController {
     	return null;
 	}
 
-	@PostMapping("/upload")
+	@PostMapping("/import")
 	public ResponseEntity<?> importAndReturnStepperData(@RequestParam("pdfFile") MultipartFile file) throws IOException {
 
 		//TODO: If file format is not valid -> Bad request
@@ -64,7 +72,7 @@ public class StepperController {
 
 		HttpStatus statusCode;
 
-		UploadDTO data =  tableCreator.createTable(pdfStripper.getText(document));
+		ImportDTO data =  tableCreator.createTable(pdfStripper.getText(document));
 		if(!data.errors.isEmpty())
 		{
 			statusCode = HttpStatus.BAD_REQUEST;

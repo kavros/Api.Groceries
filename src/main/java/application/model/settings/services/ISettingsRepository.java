@@ -8,4 +8,5 @@ import java.util.NoSuchElementException;
 
 public interface ISettingsRepository {
     public Map<String,Settings> getAllSettings();
+    public void add(Settings setting);
 }

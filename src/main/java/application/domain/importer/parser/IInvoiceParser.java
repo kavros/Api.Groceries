@@ -1,4 +1,4 @@
-package application.domain.parser;
+package application.domain.importer.parser;
 
 import java.text.ParseException;
 

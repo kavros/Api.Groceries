@@ -1,6 +1,6 @@
-package application.domain.parser;
+package application.domain.importer.parser;
 
-import application.domain.upload.price_calculator.NewPriceCalculator;
+import application.domain.importer.price_calculator.NewPriceCalculator;
 import application.hibernate.HibernateUtil;
 import application.model.records.Product;
 import org.hibernate.Session;

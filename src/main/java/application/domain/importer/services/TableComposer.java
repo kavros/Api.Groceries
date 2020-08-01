@@ -1,8 +1,8 @@
-package application.domain.upload.services;
+package application.domain.importer.services;
 
-import application.controllers.dtos.UploadDTO;
-import application.domain.parser.InvoiceParser;
-import application.domain.parser.ParserResult;
+import application.controllers.dtos.ImportDTO;
+import application.domain.importer.parser.InvoiceParser;
+import application.domain.importer.parser.ParserResult;
 
 import application.model.records.services.IRecordsRepository;
 import application.model.settings.Settings;
@@ -29,14 +29,13 @@ public class TableComposer implements ITableComposer {
     IRecordsRepository recordsRepo;
     @Autowired
     IRetailPricesRepository retailPricesRepo;
-
     @Autowired
     InvoiceParser parser;
 
     @Override
-    public UploadDTO createTable(String invoiceContent) {
+    public ImportDTO createTable(String invoiceContent) {
 
-        UploadDTO response = new UploadDTO();
+        ImportDTO response = new ImportDTO();
         ParserResult parserResult = null;
         try {
             parserResult = parser.parseAndLoad(invoiceContent);
@@ -70,7 +69,7 @@ public class TableComposer implements ITableComposer {
                 String sCode = setting.getsCode();
                 Smast smast = getKefalaioData(sCode, sCodeToRetailPrice);
 
-                UploadDTO.Entry r = response.new Entry();
+                ImportDTO.Entry r = response.new Entry();
                 r.name = x.getName();
                 r.invoicePrice = x.price;
                 r.profitPercentage = setting.getProfit();

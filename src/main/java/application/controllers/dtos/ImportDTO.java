@@ -3,7 +3,7 @@ package application.controllers.dtos;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadDTO {
+public class ImportDTO {
     public class Entry {
         public String name;
         public float profitPercentage;
