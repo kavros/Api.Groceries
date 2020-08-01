@@ -1,4 +1,4 @@
-package application.domain.update_prices;
+package application.domain.prices_updater;
 
 import application.model.records.services.IRecordsRepository;
 import application.model.settings.Settings;

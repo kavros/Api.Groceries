@@ -1,4 +1,4 @@
-package application.model.records.services;
+package application.domain.parser;
 
 import application.model.records.Product;
 

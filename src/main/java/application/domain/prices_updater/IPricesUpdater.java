@@ -1,4 +1,4 @@
-package application.domain.update_prices;
+package application.domain.prices_updater;
 
 import java.util.List;
 import java.util.Map;

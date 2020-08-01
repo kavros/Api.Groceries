@@ -1,7 +1,8 @@
 package application.domain.upload.services;
 
 import application.controllers.dtos.UploadDTO;
-import application.model.records.services.ParserResult;
+import application.domain.parser.InvoiceParser;
+import application.domain.parser.ParserResult;
 
 import application.model.records.services.IRecordsRepository;
 import application.model.settings.Settings;
@@ -29,13 +30,16 @@ public class TableComposer implements ITableComposer {
     @Autowired
     IRetailPricesRepository retailPricesRepo;
 
+    @Autowired
+    InvoiceParser parser;
+
     @Override
     public UploadDTO createTable(String invoiceContent) {
 
         UploadDTO response = new UploadDTO();
         ParserResult parserResult = null;
         try {
-            parserResult = recordsRepo.parseInvoice(invoiceContent);
+            parserResult = parser.parseAndLoad(invoiceContent);
         } catch (ParseException ex) { // failed to retrieve date and time from invoice
             response.errors.add(ex.getMessage());
         }

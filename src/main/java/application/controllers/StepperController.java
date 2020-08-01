@@ -10,7 +10,7 @@ import java.util.Map;
 
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.UploadDTO;
-import application.domain.update_prices.IPricesUpdater;
+import application.domain.prices_updater.IPricesUpdater;
 import application.domain.upload.services.ITableComposer;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
