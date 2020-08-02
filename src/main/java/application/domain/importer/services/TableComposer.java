@@ -10,6 +10,7 @@ import application.model.settings.services.ISettingsRepository;
 import application.model.smast.Smast;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
 import java.math.RoundingMode;
@@ -39,8 +40,21 @@ public class TableComposer implements ITableComposer {
         ParserResult parserResult = null;
         try {
             parserResult = parser.parseAndLoad(invoiceContent);
-        } catch (ParseException ex) { // failed to retrieve date and time from invoice
-            response.errors.add(ex.getMessage());
+        } catch (ParseException ex) {
+            ImportDTO.Error err  = getError (
+                        ImportDTO.ErrorCode.FAILED_TO_PARSE_DATE,
+                        ex.getMessage()
+                    );
+            response.errors.add(err);
+            return response;
+        }catch (NoSuchElementException ex ) {
+            // NoSuchElementException: failed to get Setting for a product name
+            ImportDTO.Error err  = getError (
+                    ImportDTO.ErrorCode.FAILED_TO_RETRIEVE_SETTING,
+                    ex.getMessage()
+            );
+            response.errors.add(err);
+            return response;
         }
 
         response.warnings.addAll(parserResult.warnings);
@@ -61,33 +75,37 @@ public class TableComposer implements ITableComposer {
                         .collect(Collectors.toList())
                 );
 
-        try {
 
-            parserResult.products.forEach(x -> {
+        parserResult.products.forEach(x -> {
 
-                Settings setting = getSettings(x.getName(), settingsMap);
-                String sCode = setting.getsCode();
-                Smast smast = getKefalaioData(sCode, sCodeToRetailPrice);
+            Settings setting = getSettings(x.getName(), settingsMap);
+            String sCode = setting.getsCode();
+            Smast smast = getKefalaioData(sCode, sCodeToRetailPrice);
 
-                ImportDTO.Entry r = response.new Entry();
-                r.name = x.getName();
-                r.invoicePrice = x.price;
-                r.profitPercentage = setting.getProfit();
+            ImportDTO.Entry r = response.new Entry();
+            r.name = x.getName();
+            r.invoicePrice = x.price;
+            r.profitPercentage = setting.getProfit();
 
-                r.retailPrice = smast.getsRetailPr();
+            r.retailPrice = smast.getsRetailPr();
 
-                r.newPrice = x.newPrice;
-                r.profitInEuro = getActualProfit(r.newPrice,r.invoicePrice);
-                r.records = latestPrices.get(x.getName());
+            r.newPrice = x.newPrice;
+            r.profitInEuro = getActualProfit(r.newPrice,r.invoicePrice);
+            r.records = latestPrices.get(x.getName());
 
-                response.data.add(r);
+            response.data.add(r);
 
-            });
+        });
 
-        } catch (NoSuchElementException ex) { // failed to retrieve setting for a product
-            response.errors.add(ex.getMessage());
-        }
+
         return response;
+    }
+
+    private ImportDTO.Error getError(ImportDTO.ErrorCode code, String msg){
+        ImportDTO.Error err  = new ImportDTO.Error();
+        err.code = code;
+        err.msg = msg;
+        return err;
     }
 
     private Settings getSettings(String sName,  Map<String,Settings> settingsMap){

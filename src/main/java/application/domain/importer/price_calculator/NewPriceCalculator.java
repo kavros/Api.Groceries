@@ -17,9 +17,10 @@ public class NewPriceCalculator implements INewPriceCalculator {
     ISettingsRepository settingsRepo;
 
     public float getNewPrice(String sName, float invoicePrice){
-        Settings settings = getSettings(sName);
-        float profitPercentage = settings.getProfit();
-        float minimumProfit = settings.getProfit();
+
+        Settings setting = getSettingFor(sName);
+        float profitPercentage = setting.getProfit();
+        float minimumProfit = setting.getProfit();
 
         float priceWithTax = (float) (invoicePrice * 1.13);
         float newPrice = priceWithTax * (profitPercentage + 1);
@@ -39,11 +40,11 @@ public class NewPriceCalculator implements INewPriceCalculator {
     }
 
 
-    private Settings getSettings(String sName){
+    private Settings getSettingFor(String sName){
         Map<String,Settings> settingsMap = settingsRepo.getAllSettings();
         Settings setting = settingsMap.get(sName);
         if(setting == null){
-            throw new NoSuchElementException("Failed to retrieve sCode for "+sName);
+            throw new NoSuchElementException("Failed to retrieve sCode for: "+sName);
         }
         return setting;
     }

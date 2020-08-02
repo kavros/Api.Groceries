@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component("invoiceParser")
 public class InvoiceParser implements IInvoiceParser {
@@ -62,8 +63,13 @@ public class InvoiceParser implements IInvoiceParser {
     private void setNewPrices(ParserResult res){
         for (int i = 0; i < res.products.size(); i++) {
             Product product = res.products.get(i);
-            float newPrice = newPriceCalculator.getNewPrice(product.getName(),product.getPrice());
-            res.products.get(i).setNewPrice(newPrice);
+            float newPrice =
+                    newPriceCalculator.getNewPrice
+                    (
+                        product.getName(),
+                        product.getPrice()
+                    );
+                res.products.get(i).setNewPrice(newPrice);
         }
     }
 

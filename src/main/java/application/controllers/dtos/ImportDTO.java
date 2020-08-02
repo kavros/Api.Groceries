@@ -30,9 +30,18 @@ public class ImportDTO {
         }
     }
 
+    public enum ErrorCode {
+        FAILED_TO_PARSE_DATE,
+        FAILED_TO_RETRIEVE_SETTING
+    }
+
+    public static class Error {
+        public String msg;
+        public ErrorCode code;
+    }
 
     public ArrayList<String> warnings  = new ArrayList<>();
-    public ArrayList<String> errors    = new ArrayList<>();
+    public ArrayList<Error> errors    = new ArrayList<>();
     public List<Entry> data = new ArrayList<>();
     public String invoiceDate;
 }
