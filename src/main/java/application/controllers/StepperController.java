@@ -38,8 +38,24 @@ public class StepperController {
 
 	@PutMapping("/addSetting")
 	public ResponseEntity<?> updatePrices(@RequestBody Settings setting) {
+		if(!isSettingValid(setting)){
+			return new ResponseEntity(HttpStatus.BAD_REQUEST);
+		}
 		settingsRepository.add(setting);
-		return  new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity(HttpStatus.OK);
+	}
+
+	private boolean isSettingValid (Settings setting) {
+		boolean isPercentageValid =
+				setting.getProfitPercentage() < 1 &&
+				setting.getProfitPercentage() > 0;
+
+		boolean isMinProfitValid 	=  setting.getProfitPercentage() > 0;
+		boolean issCodeNotEmpty		= !setting.getsCode().isEmpty();
+		boolean isNameNotEmpty		= !setting.getsName().isEmpty();
+
+		return isPercentageValid && isMinProfitValid &&
+				issCodeNotEmpty  && isNameNotEmpty;
 	}
 
 	@PutMapping("/updatePrices")

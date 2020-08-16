@@ -19,8 +19,8 @@ public class NewPriceCalculator implements INewPriceCalculator {
     public float getNewPrice(String sName, float invoicePrice){
 
         Settings setting = getSettingFor(sName);
-        float profitPercentage = setting.getProfit();
-        float minimumProfit = setting.getProfit();
+        float profitPercentage = setting.getProfitPercentage();
+        float minimumProfit = setting.getProfitPercentage();
 
         float priceWithTax = (float) (invoicePrice * 1.13);
         float newPrice = priceWithTax * (profitPercentage + 1);

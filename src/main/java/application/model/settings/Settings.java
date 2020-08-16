@@ -14,7 +14,7 @@ public class Settings {
     private String sCode;
 
     @Column(name = "profit", unique = false, nullable = true)
-    private Float profit;
+    private Float profitPercentage;
 
     @Column(name = "minProfit", unique = false, nullable = true)
     private Float minProfit;
@@ -31,12 +31,12 @@ public class Settings {
         this.sName = sName;
     }
 
-    public Float getProfit() {
-        return profit;
+    public Float getProfitPercentage() {
+        return profitPercentage;
     }
 
-    public void setProfit(Float profit) {
-        this.profit = profit;
+    public void setProfitPercentage(Float profitPercentage) {
+        this.profitPercentage = profitPercentage;
     }
 
     public Float getMinProfit() {

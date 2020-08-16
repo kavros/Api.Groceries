@@ -10,7 +10,6 @@ import application.model.settings.services.ISettingsRepository;
 import application.model.smast.Smast;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
 import java.math.RoundingMode;
@@ -85,7 +84,7 @@ public class TableComposer implements ITableComposer {
             ImportDTO.Entry r = response.new Entry();
             r.name = x.getName();
             r.invoicePrice = x.price;
-            r.profitPercentage = setting.getProfit();
+            r.profitPercentage = setting.getProfitPercentage();
 
             r.retailPrice = smast.getsRetailPr();
 
