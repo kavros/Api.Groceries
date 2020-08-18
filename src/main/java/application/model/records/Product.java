@@ -42,6 +42,10 @@ public class Product {
         this.newPrice = newPrice;
     }
 
+    public void setNewPrice(String newPrice) {
+        this.newPrice = Float.parseFloat(newPrice);
+    }
+
     public Timestamp getpDate() {
         return id.getpDate();
     }
@@ -89,6 +93,9 @@ public class Product {
     public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
+    public void setQuantity(String quantity) {
+        this.quantity = Float.parseFloat(quantity);
+    }
 
     public double getDiscount() {
         return discount;
@@ -98,12 +105,19 @@ public class Product {
         this.discount = discount;
     }
 
+    public void setDiscount(String discount) {
+        this.discount = Double.parseDouble(discount);
+    }
+
     public int getTax() {
         return tax;
     }
 
     public void setTax(int tax) {
         this.tax = tax;
+    }
+    public void setTax(String tax) {
+        this.tax = Integer.parseInt((tax));
     }
 
     public float getPrice() {
@@ -114,18 +128,22 @@ public class Product {
         this.price = price;
     }
 
+    public void setPrice(String price) {
+        this.price = Float.parseFloat(price);
+    }
     @Override
     public String toString() {
-        return "InvoiceProduct{" +
+        return "{" +
                 "name='" + id.getName() + '\'' +
                 ", origin='" + origin + '\'' +
                 ", measurement_unit='" + measurement_unit + '\'' +
                 ", number='" + number + '\'' +
                 ", quantity=" + quantity +
+                ", price=" + price +
                 ", discount=" + discount +
                 ", tax=" + tax +
                 ", pdate=" + id.getpDate() +
-                '}';
+                "}\n";
     }
 
 

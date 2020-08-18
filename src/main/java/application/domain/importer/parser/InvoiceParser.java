@@ -7,13 +7,13 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
+
 
 @Component("invoiceParser")
 public class InvoiceParser implements IInvoiceParser {
@@ -22,8 +22,78 @@ public class InvoiceParser implements IInvoiceParser {
     NewPriceCalculator newPriceCalculator;
 
     public ParserResult parseAndLoad(String invoiceContent) throws ParseException {
-        ParserResult res = new ParserResult();
+        if(invoiceContent.contains("ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ")) {
+            return parseInvoice1(invoiceContent);
+        } else {
+            return parseInvoice2(invoiceContent);
+        }
 
+
+    }
+    private ParserResult parseInvoice1(String invoiceContent) throws ParseException{
+        ParserResult res = new ParserResult();
+        String[] lines = invoiceContent.split("\n");
+        Timestamp dateTime = null;
+        String date=null,time =null;
+
+        boolean shouldRead = false;
+        for( int i=0; i < lines.length;++i) {
+            if( date == null && lines[i].contains("Ημερομηνία") ) {
+                date = lines[i].split(":")[1].trim();
+            } else if (time == null && lines[i].contains("ΠΑΝΤΟΠΩΛΕΙΟΥΛΙΑ")){
+                time = lines[i].split(" ")[1].trim();
+            } else if (lines[i].contains("ΑΞΙΑ %")) {
+                shouldRead = true;
+                continue;
+            } else if(lines[i].contains("ΣΥΝΟΛΑ") || lines[i].contains("ΑΝΑΛΥΣΗ")) {
+                shouldRead = false;
+            }
+            if(date != null && time != null && dateTime == null){
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
+                dateTime = new java.sql.Timestamp(
+                                                formatter.parse(date +" "+ time).getTime()
+                                                );
+            }
+            if(shouldRead) {
+                String[] cols = lines[i].split(" ");
+                int offset = 0;
+                if(cols.length < 9) {
+                    continue;
+                }
+                Product product = new Product();
+
+                if( cols.length == 12 ) {
+                    product.setOrigin(cols[3].trim());
+                    product.setName(cols[1] + " " + cols[2].trim());
+                    offset = 1;
+                } else if (cols.length == 11) {
+                    product.setName(cols[1].trim());
+                    product.setOrigin(cols[2].trim());
+                } else if(cols.length == 13) {
+                    product.setName(cols[1] + " " + cols[2].trim());
+                    product.setOrigin(cols[4].trim());
+                    offset = 2;
+                }
+
+                product.setNumber(cols[offset+3].trim());
+                product.setQuantity(cols[offset+6].trim());
+                product.setPrice(cols[offset+7].trim());
+                product.setTax(cols[offset+8].trim());
+                product.setDiscount(cols[offset+10].trim());
+                product.setMeasurement_unit("-");
+                product.setpDate(dateTime);
+                res.products.add(product);
+            }
+        }
+        res.invoiceDate = dateTime;
+        setNewPrices(res);
+        storeInvoice(res.products,res.warnings);
+        System.out.println(res.products);
+        return res;
+    }
+
+    private ParserResult parseInvoice2(String invoiceContent) throws ParseException{
+        ParserResult res = new ParserResult();
         String[] lines = invoiceContent.split("\n");
         boolean isReading = false;
         Date date = new Date();

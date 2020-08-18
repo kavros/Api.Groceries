@@ -87,7 +87,6 @@ public class StepperController {
 		pdfStripper.setSortByPosition(true);
 
 		HttpStatus statusCode;
-
 		ImportDTO data =  tableCreator.createTable(pdfStripper.getText(document));
 		if(!data.errors.isEmpty())
 		{
