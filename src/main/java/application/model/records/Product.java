@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name="Api_Groceries.dbo.Invoices")
+@Table(name="Api_Groceries.dbo.Records")
 public class Product {
 
     @EmbeddedId
