@@ -68,14 +68,14 @@ public class TableComposer implements ITableComposer {
         Map<String, List<Float>> latestPrices = recordsRepo
                 .getLatestPrices(
                     parserResult
-                        .products
+                        .records
                         .stream()
                         .map(x->x.getName())
                         .collect(Collectors.toList())
                 );
 
 
-        parserResult.products.forEach(x -> {
+        parserResult.records.forEach(x -> {
 
             Settings setting = getSettings(x.getName(), settingsMap);
             String sCode = setting.getsCode();

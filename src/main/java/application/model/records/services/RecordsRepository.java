@@ -1,7 +1,7 @@
 package application.model.records.services;
 
 import application.hibernate.HibernateUtil;
-import application.model.records.Product;
+import application.model.records.Record;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 @Component("recordsRepository")
 public class RecordsRepository implements IRecordsRepository {
 
-        public List<Product> getProducts(Timestamp timestamp) {
+    public List<Record> getProducts(Timestamp timestamp) {
 
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Query query = session.createQuery("from Product" );
-        List<Product> records = query.list();
+        Query query = session.createQuery("from Record" );
+        List<Record> records = query.list();
 
         return records
                 .stream()
@@ -33,7 +33,7 @@ public class RecordsRepository implements IRecordsRepository {
         Transaction tx = session.beginTransaction();
 
         Query query = session
-                .createQuery("update Product set newPrice= :new_price " +
+                .createQuery("update Record set newPrice= :new_price " +
                         "where name= :product_name and pDate= :invoice_date");
         for(Map.Entry<String, Float> entry:data) {
 
@@ -50,8 +50,8 @@ public class RecordsRepository implements IRecordsRepository {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
-        Query query = session.createQuery("from Product order by pDate desc" );
-        List<Product> records = query.list();
+        Query query = session.createQuery("from Record order by pDate desc" );
+        List<Record> records = query.list();
 
         Map<String,List<Float>>  map  = new HashMap<>();
         for(String targetName : productNames) {

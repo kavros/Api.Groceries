@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name="Api_Groceries.dbo.Records")
-public class Product {
+public class Record {
 
     @EmbeddedId
     private ProductId id = new ProductId();
