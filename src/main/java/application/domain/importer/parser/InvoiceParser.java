@@ -3,6 +3,8 @@ package application.domain.importer.parser;
 import application.domain.importer.price_calculator.NewPriceCalculator;
 import application.hibernate.HibernateUtil;
 import application.model.records.Record;
+import application.model.settings.Settings;
+import application.model.settings.services.ISettingsRepository;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 
 @Component("invoiceParser")
@@ -19,6 +23,8 @@ public class InvoiceParser implements IInvoiceParser {
 
     @Autowired
     NewPriceCalculator newPriceCalculator;
+    @Autowired
+    ISettingsRepository settingsRepo;
 
     public ParserResult parseAndLoad(String invoiceContent) throws ParseException {
         if(invoiceContent.contains("ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ")) {
@@ -80,14 +86,12 @@ public class InvoiceParser implements IInvoiceParser {
                 record.setTax(cols[offset+8].trim());
                 record.setDiscount(cols[offset+10].trim());
                 record.setMeasurement_unit("-");
-                record.setpDate(dateTime);
                 res.records.add(record);
             }
         }
         res.invoiceDate = dateTime;
-        setNewPrices(res);
-        storeInvoice(res.records,res.warnings);
-        System.out.println(res.records);
+
+        setValuesAndStore(res);
         return res;
     }
 
@@ -122,12 +126,48 @@ public class InvoiceParser implements IInvoiceParser {
 
         res.invoiceDate = new java.sql.Timestamp(date.getTime());
 
-        setDate(res);
-        setNewPrices(res);
-        storeInvoice(res.records,res.warnings);
+        setValuesAndStore(res);
 
         return  res;
     }
+
+    private void setValuesAndStore(ParserResult res){
+        setDate(res);
+        setNewPrices(res);
+        setSCodes(res);
+
+        List<Record> records = res.records;
+        List<String> warnings = res.warnings;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        Timestamp invoiceDate = records.get(0).getpDate();
+        if( !hasBeenImported(invoiceDate, session)){
+            for (int i = 0; i < records.size(); i++) {
+
+                session.save(records.get(i));
+            }
+        }else {
+            warnings.add(new String("Invoice "+invoiceDate+" has imported already"));
+        }
+
+        session.getTransaction().commit();
+
+    }
+
+    private void setSCodes(ParserResult res){
+        Map<String, Settings> settingsMap = settingsRepo.getAllSettings();
+
+        for( Record record: res.records){
+            String sCode = record.sCode = settingsMap.get(record.getName()).getsCode();
+            if(sCode == null)
+                throw new NoSuchElementException("Failed to retrieve sCode for "+record.getName());
+            else
+                record.sCode= sCode;
+        }
+    }
+
+
 
     private void setNewPrices(ParserResult res){
         for (int i = 0; i < res.records.size(); i++) {
@@ -148,24 +188,7 @@ public class InvoiceParser implements IInvoiceParser {
         }
     }
 
-    private void storeInvoice(List<Record> records, List<String> warnings){
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
 
-
-        Timestamp invoiceDate = records.get(0).getpDate();
-        if( !hasBeenImported(invoiceDate, session)){
-            for (int i = 0; i < records.size(); i++) {
-
-                session.save(records.get(i));
-            }
-        }else {
-            warnings.add(new String("Invoice "+invoiceDate+" has imported already"));
-        }
-
-        session.getTransaction().commit();
-
-    }
 
     private boolean hasBeenImported(Timestamp invoiceDate, Session session){
 

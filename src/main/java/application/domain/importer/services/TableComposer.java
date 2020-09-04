@@ -3,7 +3,6 @@ package application.domain.importer.services;
 import application.controllers.dtos.ImportDTO;
 import application.domain.importer.parser.InvoiceParser;
 import application.domain.importer.parser.ParserResult;
-
 import application.model.records.services.IRecordsRepository;
 import application.model.settings.Settings;
 import application.model.settings.services.ISettingsRepository;
@@ -11,7 +10,6 @@ import application.model.smast.Smast;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -70,7 +68,7 @@ public class TableComposer implements ITableComposer {
                     parserResult
                         .records
                         .stream()
-                        .map(x->x.getName())
+                        .map(x->x.getsCode())
                         .collect(Collectors.toList())
                 );
 
@@ -90,7 +88,7 @@ public class TableComposer implements ITableComposer {
 
             r.newPrice = x.newPrice;
             r.profitInEuro = getActualProfit(r.newPrice,r.invoicePrice);
-            r.records = latestPrices.get(x.getName());
+            r.records = latestPrices.get(x.getsCode());
 
             response.data.add(r);
 

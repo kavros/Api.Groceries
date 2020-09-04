@@ -34,6 +34,17 @@ public class Record {
     @Column(name = "newPrice", nullable = false )
     public float newPrice;
 
+    @Column(name = "sCode", nullable = false)
+    public String sCode;
+
+    public String getsCode() {
+        return sCode;
+    }
+
+    public void setsCode(String sCode) {
+        this.sCode = sCode;
+    }
+
     public float getNewPrice() {
         return newPrice;
     }

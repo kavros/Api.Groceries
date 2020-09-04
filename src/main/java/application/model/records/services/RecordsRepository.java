@@ -46,7 +46,7 @@ public class RecordsRepository implements IRecordsRepository {
     }
 
 
-    public Map<String,List<Float>> getLatestPrices(List<String> productNames) {
+    public Map<String,List<Float>> getLatestPrices(List<String> sCodes) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
@@ -54,16 +54,16 @@ public class RecordsRepository implements IRecordsRepository {
         List<Record> records = query.list();
 
         Map<String,List<Float>>  map  = new HashMap<>();
-        for(String targetName : productNames) {
+        for(String sCode : sCodes) {
             List<Float> latestInvoicePrices = records
                     .stream()
                     .filter(
-                            x -> x.getName().equals(targetName)
+                            x -> x.getsCode().equals(sCode)
                     )
                     .map(x -> x.newPrice)
                     .limit(3)
                     .collect(Collectors.toList());
-            map.put(targetName,latestInvoicePrices);
+            map.put(sCode,latestInvoicePrices);
         }
         return map;
     }
