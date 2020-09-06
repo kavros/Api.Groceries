@@ -21,16 +21,16 @@ public class Record {
     public String number;
 
     @Column(name = "quantity", nullable = false )
-    public double quantity;
+    private BigDecimal quantity;
 
     @Column(name = "discount", nullable = false )
-    public double discount;
+    private BigDecimal discount;
 
     @Column(name = "tax", nullable = false )
     public int tax;
 
     @Column(name = "price", nullable = false )
-    public float price;
+    private BigDecimal price;
 
     @Column(name = "newPrice", nullable = false )
     private BigDecimal newPrice;
@@ -99,27 +99,20 @@ public class Record {
         this.number = number;
     }
 
-    public double getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
-        this.quantity = quantity;
-    }
     public void setQuantity(String quantity) {
-        this.quantity = Float.parseFloat(quantity);
+        this.quantity = new BigDecimal(quantity);
     }
 
-    public double getDiscount() {
+    public BigDecimal getDiscount() {
         return discount;
     }
 
-    public void setDiscount(double discount) {
-        this.discount = discount;
-    }
-
     public void setDiscount(String discount) {
-        this.discount = Double.parseDouble(discount);
+        this.discount = new BigDecimal(discount);
     }
 
     public int getTax() {
@@ -133,16 +126,12 @@ public class Record {
         this.tax = Integer.parseInt((tax));
     }
 
-    public float getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
     public void setPrice(String price) {
-        this.price = Float.parseFloat(price);
+        this.price = new BigDecimal(price);
     }
     @Override
     public String toString() {

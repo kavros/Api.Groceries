@@ -81,7 +81,7 @@ public class TableComposer implements ITableComposer {
 
             ImportDTO.Entry r = response.new Entry();
             r.name = x.getName();
-            r.invoicePrice = x.price;
+            r.invoicePrice = x.getPrice().floatValue();
             r.profitPercentage = setting.getProfitPercentage();
 
             r.retailPrice = smast.getsRetailPrice();

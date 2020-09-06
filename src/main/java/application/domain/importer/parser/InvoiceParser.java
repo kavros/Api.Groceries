@@ -176,7 +176,7 @@ public class InvoiceParser implements IInvoiceParser {
                     newPriceCalculator.getNewPrice
                     (
                         record.getName(),
-                        record.getPrice()
+                        record.getPrice().floatValue()
                     );
                 res.records.get(i).setNewPrice(newPrice);
         }
@@ -260,9 +260,9 @@ public class InvoiceParser implements IInvoiceParser {
             record.setName(record.getName() +" "+"ΠΛΑΚΕ");
         }
 
-        record.quantity = Double.parseDouble(subLine3[1].replace(",","."));
-        record.price   = Float.parseFloat(subLine3[2].replace(",","."));
-        record.discount= Double.parseDouble(subLine3[4].replace(",","."));
+        record.setQuantity( subLine3[1].replace(",","."));
+        record.setPrice( subLine3[2].replace(",","."));
+        record.setDiscount(subLine3[4].replace(",","."));
         record.tax      =Integer.parseInt(subLine3[6].replace(",","."));
 
         records.add(record);

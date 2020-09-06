@@ -1,6 +1,7 @@
 package application.model.settings;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Api_Groceries.dbo.Settings")
@@ -14,10 +15,10 @@ public class Settings {
     private String sCode;
 
     @Column(name = "profit", unique = false, nullable = true)
-    private Float profitPercentage;
+    private BigDecimal profitPercentage;
 
     @Column(name = "minProfit", unique = false, nullable = true)
-    private Float minProfit;
+    private BigDecimal minProfit;
 
     public String getsCode() {
         return sCode;
@@ -32,19 +33,19 @@ public class Settings {
     }
 
     public Float getProfitPercentage() {
-        return profitPercentage;
+        return profitPercentage.floatValue();
     }
 
     public void setProfitPercentage(Float profitPercentage) {
-        this.profitPercentage = profitPercentage;
+        this.profitPercentage = new BigDecimal(profitPercentage.toString());
     }
 
     public Float getMinProfit() {
-        return minProfit;
+        return minProfit.floatValue();
     }
 
     public void setMinProfit(Float minProfit) {
-        this.minProfit = minProfit;
+        this.minProfit = new BigDecimal(minProfit.toString());
     }
 
     public void setsCode(String sCode) {
