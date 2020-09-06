@@ -84,10 +84,10 @@ public class TableComposer implements ITableComposer {
             r.invoicePrice = x.price;
             r.profitPercentage = setting.getProfitPercentage();
 
-            r.retailPrice = smast.getsRetailPr();
+            r.retailPrice = smast.getsRetailPrice();
 
-            r.newPrice = x.newPrice;
-            r.profitInEuro = getActualProfit(r.newPrice,r.invoicePrice);
+            r.newPrice = x.getNewPrice();
+            r.profitInEuro = getActualProfit(r.newPrice.floatValue(),r.invoicePrice);
             r.records = latestPrices.get(x.getsCode());
 
             response.data.add(r);

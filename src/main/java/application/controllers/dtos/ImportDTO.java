@@ -1,5 +1,6 @@
 package application.controllers.dtos;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class ImportDTO {
         public float profitPercentage;
         public float invoicePrice;
         public float retailPrice;
-        public float newPrice;
+        public BigDecimal newPrice;
         public float profitInEuro;
         public List<Float> records;
 

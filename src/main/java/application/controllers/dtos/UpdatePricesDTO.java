@@ -1,11 +1,12 @@
 package application.controllers.dtos;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class UpdatePricesDTO {
     public static class Entry {
         private String name;
-        private float newPrice;
+        private BigDecimal newPrice;
 
         public String getName() {
             return name;
@@ -15,11 +16,11 @@ public class UpdatePricesDTO {
             this.name = name;
         }
 
-        public float getNewPrice() {
+        public BigDecimal getNewPrice() {
             return newPrice;
         }
 
-        public void setNewPrice(float newPrice) {
+        public void setNewPrice(BigDecimal newPrice) {
             this.newPrice = newPrice;
         }
         

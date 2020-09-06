@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class RecordsRepository implements IRecordsRepository {
     }
 
 
-    public void updatePrices(List<Map.Entry<String, Float>> data, String invoiceDate)
+    public void updatePrices(List<Map.Entry<String, BigDecimal>> data, String invoiceDate)
     {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
@@ -35,8 +36,7 @@ public class RecordsRepository implements IRecordsRepository {
         Query query = session
                 .createQuery("update Record set newPrice= :new_price " +
                         "where name= :product_name and pDate= :invoice_date");
-        for(Map.Entry<String, Float> entry:data) {
-
+        for(Map.Entry<String, BigDecimal> entry:data) {
             query.setParameter("new_price", entry.getValue());
             query.setParameter("product_name", entry.getKey());
             query.setParameter("invoice_date", invoiceDate);
@@ -60,7 +60,7 @@ public class RecordsRepository implements IRecordsRepository {
                     .filter(
                             x -> x.getsCode().equals(sCode)
                     )
-                    .map(x -> x.newPrice)
+                    .map(x -> x.getNewPrice().floatValue())
                     .limit(3)
                     .collect(Collectors.toList());
             map.put(sCode,latestInvoicePrices);

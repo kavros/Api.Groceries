@@ -1,6 +1,7 @@
 package application.model.records;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
@@ -32,7 +33,7 @@ public class Record {
     public float price;
 
     @Column(name = "newPrice", nullable = false )
-    public float newPrice;
+    private BigDecimal newPrice;
 
     @Column(name = "sCode", nullable = false)
     public String sCode;
@@ -45,16 +46,17 @@ public class Record {
         this.sCode = sCode;
     }
 
-    public float getNewPrice() {
+    public BigDecimal getNewPrice() {
         return newPrice;
     }
 
     public void setNewPrice(float newPrice) {
-        this.newPrice = newPrice;
+        String new_price = String.valueOf(newPrice);
+        this.newPrice = new BigDecimal( new_price);
     }
 
     public void setNewPrice(String newPrice) {
-        this.newPrice = Float.parseFloat(newPrice);
+        this.newPrice = new BigDecimal(newPrice);
     }
 
     public Timestamp getpDate() {

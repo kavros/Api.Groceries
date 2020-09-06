@@ -3,11 +3,11 @@ package application.controllers;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.ImportDTO;
 import application.domain.prices_updater.IPricesUpdater;
@@ -60,7 +60,7 @@ public class StepperController {
 
 	@PutMapping("/updatePrices")
 	public ResponseEntity<?> updatePrices(@RequestBody UpdatePricesDTO dto) {
-		List<Map.Entry<String,Float>> data = new ArrayList<>();
+		List<Map.Entry<String, BigDecimal>> data = new ArrayList<>();
 		for(UpdatePricesDTO.Entry entry: dto.getProducts()){
 			data.add(
 					new AbstractMap.SimpleEntry<>(

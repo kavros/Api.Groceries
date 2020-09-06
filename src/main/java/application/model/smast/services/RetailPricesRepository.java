@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,18 +39,17 @@ public class RetailPricesRepository implements IRetailPricesRepository {
     }
 
 
-    public void updatePrices(List<Map.Entry<String, Float>> sCodesAndPrices) {
+    public void updatePrices(List<Map.Entry<String, BigDecimal>> sCodesAndPrices) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         Query query = session
                 .createQuery("update Smast set sRetailPr= :new_price " +
                         "where sCode= :product_sCode");
 
-        for(Map.Entry<String, Float> entry:sCodesAndPrices) {
-            Float newPrice =  entry.getValue();
+        for(Map.Entry<String, BigDecimal> entry:sCodesAndPrices) {
             String sCode =  entry.getKey();
 
-            query.setParameter("new_price", newPrice);
+            query.setParameter("new_price", entry.getValue());
             query.setParameter("product_sCode", sCode);
             query.executeUpdate();
         }

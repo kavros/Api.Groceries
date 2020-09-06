@@ -28,14 +28,14 @@ public class InvoiceParser implements IInvoiceParser {
 
     public ParserResult parseAndLoad(String invoiceContent) throws ParseException {
         if(invoiceContent.contains("ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ")) {
-            return parseInvoice1(invoiceContent);
+            return parseInvoiceSavaki(invoiceContent);
         } else {
-            return parseInvoice2(invoiceContent);
+            return parseInvoiceKapnisi(invoiceContent);
         }
 
 
     }
-    private ParserResult parseInvoice1(String invoiceContent) throws ParseException{
+    private ParserResult parseInvoiceSavaki(String invoiceContent) throws ParseException{
         ParserResult res = new ParserResult();
         String[] lines = invoiceContent.split("\n");
         Timestamp dateTime = null;
@@ -95,7 +95,7 @@ public class InvoiceParser implements IInvoiceParser {
         return res;
     }
 
-    private ParserResult parseInvoice2(String invoiceContent) throws ParseException{
+    private ParserResult parseInvoiceKapnisi(String invoiceContent) throws ParseException{
         ParserResult res = new ParserResult();
         String[] lines = invoiceContent.split("\n");
         boolean isReading = false;
@@ -148,7 +148,7 @@ public class InvoiceParser implements IInvoiceParser {
                 session.save(records.get(i));
             }
         }else {
-            warnings.add(new String("Invoice "+invoiceDate+" has imported already"));
+            warnings.add(new String("Invoice "+invoiceDate+" has been imported multiple times"));
         }
 
         session.getTransaction().commit();

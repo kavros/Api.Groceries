@@ -6,7 +6,7 @@ import application.model.settings.services.ISettingsRepository;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,22 +21,22 @@ public class PricesUpdater implements IPricesUpdater {
     @Autowired
     ISettingsRepository settingsRepository;
 
-    public void updatePrices(List<Map.Entry<String, Float>> pNameToPrice, String invoiceDate){
+    public void updatePrices(List<Map.Entry<String, BigDecimal>> pNameToPrice, String invoiceDate){
         recordsRepository.updatePrices(pNameToPrice, invoiceDate);
-        List<Map.Entry<String, Float>> sCodesToPrices =  getSCodeToPriceMappings(pNameToPrice);
+        List<Map.Entry<String, BigDecimal>> sCodesToPrices =  getSCodeToPriceMappings(pNameToPrice);
 
         retailPricesRepository.updatePrices(sCodesToPrices);
         System.out.println(sCodesToPrices);
     }
 
-    public List<Map.Entry<String, Float>> getSCodeToPriceMappings(List<Map.Entry<String, Float>> data) {
+    public List<Map.Entry<String, BigDecimal>> getSCodeToPriceMappings(List<Map.Entry<String, BigDecimal>> data) {
         Map<String, Settings> settings = settingsRepository.getAllSettings();
-        List<Map.Entry<String, Float>> sCodesToPrices = new ArrayList<>();
-        for (Map.Entry<String, Float> entry : data) {
-            Float newPrice      = entry.getValue();
+        List<Map.Entry<String, BigDecimal>> sCodesToPrices = new ArrayList<>();
+        for (Map.Entry<String, BigDecimal> entry : data) {
+            BigDecimal newPrice      = entry.getValue();
             String productName  =  entry.getKey();
             String sCode = settings.get(productName).getsCode();
-            Map.Entry<String, Float> elem = new AbstractMap.SimpleEntry(sCode, newPrice);
+            Map.Entry<String, BigDecimal> elem = new AbstractMap.SimpleEntry(sCode, newPrice);
             sCodesToPrices.add(elem);
         }
         return sCodesToPrices;

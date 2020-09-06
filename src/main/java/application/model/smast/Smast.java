@@ -1,6 +1,7 @@
 package application.model.smast;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Cmp005.dbo.Smast")
@@ -17,14 +18,14 @@ public class Smast {
     private String sCode;
 
     @Column(name = "sRetailPr")
-    private Float sRetailPr;
+    private BigDecimal sRetailPr;
 
-    public Float getsRetailPr() {
-        return sRetailPr;
+    public float getsRetailPrice() {
+        return sRetailPr.floatValue();
     }
 
     public void setsRetailPr(Float sRetailPr) {
-        this.sRetailPr = sRetailPr;
+        this.sRetailPr = new BigDecimal( sRetailPr.toString());
     }
 
 
