@@ -20,7 +20,7 @@ public class NewPriceCalculator implements INewPriceCalculator {
 
         Settings setting = getSettingFor(sName);
         float profitPercentage = setting.getProfitPercentage();
-        float minimumProfit = setting.getProfitPercentage();
+        float minimumProfit = setting.getMinProfit();
 
         float priceWithTax = (float) (invoicePrice * 1.13);
         float newPrice = priceWithTax * (profitPercentage + 1);
