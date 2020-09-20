@@ -13,9 +13,10 @@ public class ImportDTO {
         public BigDecimal newPrice;
         public float profitInEuro;
         public List<Float> records;
+        public String number;
+        public String sCode;
 
-        public Entry() {
-        }
+        public Entry() { }
 
         @Override
         public String toString() {

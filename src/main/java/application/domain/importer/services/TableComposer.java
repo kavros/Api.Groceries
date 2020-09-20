@@ -85,7 +85,8 @@ public class TableComposer implements ITableComposer {
             r.profitPercentage = setting.getProfitPercentage();
 
             r.retailPrice = smast.getsRetailPrice();
-
+            r.sCode = setting.getsCode();
+            r.number = x.getNumber();
             r.newPrice = x.getNewPrice();
             r.profitInEuro = getActualProfit(r.newPrice.floatValue(),r.invoicePrice);
             r.records = latestPrices.get(x.getsCode());

@@ -1,15 +1,15 @@
 package application.controllers;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import application.controllers.dtos.LabelsDTO;
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.ImportDTO;
+import application.domain.docs_generator.LabelsGenerator;
 import application.domain.prices_updater.IPricesUpdater;
 import application.domain.importer.services.ITableComposer;
 import application.model.settings.Settings;
@@ -17,12 +17,12 @@ import application.model.settings.services.ISettingsRepository;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 
 @RestController
 @CrossOrigin(origins="*")
@@ -35,6 +35,16 @@ public class StepperController {
 	IPricesUpdater pricesUpdater;
 	@Autowired
 	ISettingsRepository settingsRepository;
+
+	@GetMapping("/getPriceLabels")
+	public byte[] getPriceLabels(@RequestBody LabelsDTO dto) throws IOException {
+		XWPFDocument document = LabelsGenerator.GetDoc(dto);
+
+		ByteArrayOutputStream  out = new ByteArrayOutputStream ();
+        document.write(out);
+		out.close();
+        return out.toByteArray();
+	}
 
 	@PutMapping("/addSetting")
 	public ResponseEntity<?> updatePrices(@RequestBody Settings setting) {
@@ -75,7 +85,6 @@ public class StepperController {
 	@PostMapping("/import")
 	public ResponseEntity<?> importAndReturnStepperData(@RequestParam("pdfFile") MultipartFile file) throws IOException {
 
-		//TODO: If file format is not valid -> Bad request
 		File convFile = new File("./uploaded_files/"+file.getOriginalFilename());
 		convFile.createNewFile();
 		FileOutputStream fos = new FileOutputStream(convFile);
