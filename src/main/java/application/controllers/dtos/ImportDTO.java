@@ -7,6 +7,7 @@ import java.util.List;
 public class ImportDTO {
     public class Entry {
         public String name;
+        public String origin;
         public float profitPercentage;
         public float invoicePrice;
         public float retailPrice;

@@ -83,7 +83,7 @@ public class TableComposer implements ITableComposer {
             r.name = x.getName();
             r.invoicePrice = x.getPrice().floatValue();
             r.profitPercentage = setting.getProfitPercentage();
-
+            r.origin = x.getOrigin();
             r.retailPrice = smast.getsRetailPrice();
             r.sCode = setting.getsCode();
             r.number = x.getNumber();

@@ -34,8 +34,18 @@ public class LabelsGenerator {
         XWPFParagraph p0 =  row.getCell(cell).addParagraph();
         p0.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun r0 = p0.createRun();
-        r0.setText(label.getName()+'\n');
-        r0.setText(label.getOrigin());
+        String name = label.getName();
+        if(name.contains(" ")){
+            String[] words = name.split(" ");
+            name = getFirstNCharsFrom(words[0], 3) +" "+
+                    getFirstNCharsFrom(words[1], 4) ;
+        } else {
+            name = getFirstNCharsFrom(label.getName(),8);
+        }
+
+        String origin = getFirstNCharsFrom(label.getOrigin(),8);
+        r0.setText(name+'\n');
+        r0.setText(origin);
         r0.setFontSize(36);
         r0.setBold(true);
 
@@ -55,4 +65,9 @@ public class LabelsGenerator {
         r2.setFontSize(10);
         r2.setText(label.getNumber());
     }
+
+    private static String getFirstNCharsFrom(String str,int n) {
+        return str.substring(0,Math.min(str.length(),n));
+    }
+
 }

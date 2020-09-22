@@ -36,7 +36,7 @@ public class StepperController {
 	@Autowired
 	ISettingsRepository settingsRepository;
 
-	@GetMapping("/getPriceLabels")
+	@PutMapping("/downloadLabels")
 	public byte[] getPriceLabels(@RequestBody LabelsDTO dto) throws IOException {
 		XWPFDocument document = LabelsGenerator.GetDoc(dto);
 

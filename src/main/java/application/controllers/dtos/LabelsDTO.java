@@ -11,6 +11,7 @@ public class LabelsDTO {
         public String name;
         public String origin;
         public String price;
+        public String number;
 
         public String getName() {
             return name;
@@ -44,7 +45,7 @@ public class LabelsDTO {
             this.number = number;
         }
 
-        public String number;
+
 
         @Override
         public String toString() {
