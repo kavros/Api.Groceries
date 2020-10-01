@@ -7,6 +7,15 @@ public class UpdatePricesDTO {
     public static class Entry {
         private String name;
         private BigDecimal newPrice;
+        private String sCode;
+
+        public String getsCode() {
+            return sCode;
+        }
+
+        public void setsCode(String sCode) {
+            this.sCode = sCode;
+        }
 
         public String getName() {
             return name;
@@ -16,6 +25,15 @@ public class UpdatePricesDTO {
             this.name = name;
         }
 
+        @Override
+        public String toString() {
+            return "Entry{" +
+                    "name='" + name + '\'' +
+                    ", newPrice=" + newPrice +
+                    ", sCode='" + sCode + '\'' +
+                    '}';
+        }
+
         public BigDecimal getNewPrice() {
             return newPrice;
         }
@@ -23,14 +41,7 @@ public class UpdatePricesDTO {
         public void setNewPrice(BigDecimal newPrice) {
             this.newPrice = newPrice;
         }
-        
-        @Override
-        public String toString() {
-            return "{" +
-                    "name='" + name + '\'' +
-                    ", newPrice=" + newPrice +
-                    '}';
-        }
+
     }
 
 

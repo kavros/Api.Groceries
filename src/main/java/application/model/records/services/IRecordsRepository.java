@@ -9,5 +9,5 @@ import java.util.Map;
 public interface IRecordsRepository {
     List<Record> getProducts(Timestamp timestamp);
     Map<String,List<Float>> getLatestPrices(List<String> productNames);
-    void updatePrices(List<Map.Entry<String, BigDecimal>> data, String invoiceDate);
+    void updatePrices(List<Map.Entry<String, BigDecimal>> pNameToPrice, String invoiceDate);
 }

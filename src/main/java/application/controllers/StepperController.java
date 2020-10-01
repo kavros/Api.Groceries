@@ -1,11 +1,6 @@
 package application.controllers;
 
 import java.io.*;
-import java.math.BigDecimal;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import application.controllers.dtos.LabelsDTO;
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.ImportDTO;
@@ -70,16 +65,8 @@ public class StepperController {
 
 	@PutMapping("/updatePrices")
 	public ResponseEntity<?> updatePrices(@RequestBody UpdatePricesDTO dto) {
-		List<Map.Entry<String, BigDecimal>> data = new ArrayList<>();
-		for(UpdatePricesDTO.Entry entry: dto.getProducts()){
-			data.add(
-					new AbstractMap.SimpleEntry<>(
-						entry.getName(),entry.getNewPrice())
-					);
-		}
-		pricesUpdater.updatePrices(data,dto.getInvoiceDate());
-
-    	return null;
+		pricesUpdater.updatePrices(dto);
+    	return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@PostMapping("/import")

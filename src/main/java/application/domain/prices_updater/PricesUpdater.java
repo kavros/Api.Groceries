@@ -1,7 +1,7 @@
 package application.domain.prices_updater;
 
+import application.controllers.dtos.UpdatePricesDTO;
 import application.model.records.services.IRecordsRepository;
-import application.model.settings.Settings;
 import application.model.settings.services.ISettingsRepository;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,27 +18,23 @@ public class PricesUpdater implements IPricesUpdater {
     IRetailPricesRepository retailPricesRepository;
     @Autowired
     IRecordsRepository recordsRepository;
-    @Autowired
-    ISettingsRepository settingsRepository;
 
-    public void updatePrices(List<Map.Entry<String, BigDecimal>> pNameToPrice, String invoiceDate){
-        recordsRepository.updatePrices(pNameToPrice, invoiceDate);
-        List<Map.Entry<String, BigDecimal>> sCodesToPrices =  getSCodeToPriceMappings(pNameToPrice);
+    public void updatePrices( UpdatePricesDTO dto){
 
-        retailPricesRepository.updatePrices(sCodesToPrices);
-        System.out.println(sCodesToPrices);
-    }
-
-    public List<Map.Entry<String, BigDecimal>> getSCodeToPriceMappings(List<Map.Entry<String, BigDecimal>> data) {
-        Map<String, Settings> settings = settingsRepository.getAllSettings();
-        List<Map.Entry<String, BigDecimal>> sCodesToPrices = new ArrayList<>();
-        for (Map.Entry<String, BigDecimal> entry : data) {
-            BigDecimal newPrice      = entry.getValue();
-            String productName  =  entry.getKey();
-            String sCode = settings.get(productName).getsCode();
-            Map.Entry<String, BigDecimal> elem = new AbstractMap.SimpleEntry(sCode, newPrice);
-            sCodesToPrices.add(elem);
+        List<Map.Entry<String, BigDecimal>> sCodesToPrices =  new ArrayList<>();
+        List<Map.Entry<String, BigDecimal>> pNameToPrice = new ArrayList<>();
+        for(UpdatePricesDTO.Entry entry: dto.getProducts()){
+            pNameToPrice.add(
+                    new AbstractMap.SimpleEntry<>(
+                            entry.getName(),entry.getNewPrice())
+            );
+            sCodesToPrices.add(
+                    new AbstractMap.SimpleEntry<>(
+                            entry.getsCode(),entry.getNewPrice())
+            );
         }
-        return sCodesToPrices;
+
+        recordsRepository.updatePrices(pNameToPrice, dto.getInvoiceDate());
+        retailPricesRepository.updatePrices(sCodesToPrices);
     }
 }
