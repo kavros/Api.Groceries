@@ -2,7 +2,6 @@ package application.domain.prices_updater;
 
 import application.controllers.dtos.UpdatePricesDTO;
 import application.model.records.services.IRecordsRepository;
-import application.model.settings.services.ISettingsRepository;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

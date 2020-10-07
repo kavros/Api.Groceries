@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.itextpdf.text.Document;
 
 @RestController
 @CrossOrigin(origins="*")
@@ -33,12 +34,9 @@ public class StepperController {
 
 	@PutMapping("/downloadLabels")
 	public byte[] getPriceLabels(@RequestBody LabelsDTO dto) throws IOException {
-		XWPFDocument document = LabelsGenerator.GetDoc(dto);
+		ByteArrayOutputStream outputStream = LabelsGenerator.GetPdf();
 
-		ByteArrayOutputStream  out = new ByteArrayOutputStream ();
-        document.write(out);
-		out.close();
-        return out.toByteArray();
+        return outputStream.toByteArray();
 	}
 
 	@PutMapping("/addSetting")
