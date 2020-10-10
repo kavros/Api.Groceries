@@ -6,35 +6,11 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
-import org.apache.poi.xwpf.usermodel.*;
-
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 
 public class LabelsGenerator {
 
-    public static XWPFDocument GetDoc(LabelsDTO dto){
-        XWPFDocument document = new XWPFDocument();
-        XWPFTable table = document.createTable();
-
-        int currRow=0;
-        int numOfLabels = dto.labels.size();
-        for( int i=0; i < numOfLabels; i+=2){
-            if (i>0){ table.createRow(); }
-            LabelsDTO.Label currLabel = dto.labels.get(i);
-            setCellContent(table.getRow(currRow), 0, currLabel);
-
-            if(numOfLabels > i+1 ) {
-                currLabel = dto.labels.get(i+1);
-                setCellContent(table.getRow(currRow), 1, currLabel);
-            }
-            currRow++;
-        }
-        return document;
-    }
-
-    public static ByteArrayOutputStream GetPdf(){
+    public ByteArrayOutputStream GetPdf(LabelsDTO dto){
         Document document = new Document();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try
@@ -42,10 +18,14 @@ public class LabelsGenerator {
             PdfWriter writer = PdfWriter.getInstance(document, byteArrayOutputStream);
 
             document.open();
-            setPara(writer.getDirectContent(), new Phrase("test"),
-                    document.getPageSize().getWidth()/2, document.getPageSize().getHeight()/2 );
+            Position[] p = getStartPositions(document);
+            for(int i=0; i < 8; i++){
+                Label label = new Label(
+                        p[i],"name", "origin",
+                        "121212123321","1.13");
+                addLabel(label, document, writer);
+            }
 
-            document.add(new Paragraph("A Hello World PDF document."));
             document.close();
             writer.close();
         } catch (DocumentException e) {
@@ -55,10 +35,46 @@ public class LabelsGenerator {
         return byteArrayOutputStream;
     }
 
-    private static void setPara(PdfContentByte canvas, Phrase p, float x, float y) {
+    private Position[] getStartPositions(Document document){
+        float width = document.getPageSize().getWidth();
+        float height = document.getPageSize().getHeight();
+        int oX = 50;
+        int oY = 50;
+        Position sp0 = new Position(oX,oY);
+        Position sp1 = new Position(oX,oY + height/4);
+        Position sp2 = new Position(oX,oY + 2*height/4);
+        Position sp3 = new Position(oX,oY + 3*height/4);
+        Position sp4 = new Position(oX+width/2,oY);
+        Position sp5 = new Position(oX+(width/2),oY+height/4);
+        Position sp6 = new Position(oX+(width/2),oY+(2*height/4));
+        Position sp7 = new Position(oX+(width/2),oY+(3*height/4));
+        Position[] p = {sp0,sp1,sp2,sp3,sp4,sp5,sp6,sp7};
+
+        return p;
+    }
+
+    private void addLabel(Label label, Document document, PdfWriter writer){
+        Font nameOriginFont = new Font(Font.FontFamily.TIMES_ROMAN,40.0f,Font.BOLD,BaseColor.BLACK);
+        Font numFont = new Font(Font.FontFamily.TIMES_ROMAN,12.0f,Font.BOLD,BaseColor.BLACK);
+
+        Phrase name= new Phrase(label.getName(),nameOriginFont);
+        Phrase origin = new Phrase(label.getOrigin(),nameOriginFont);
+        Phrase price = new Phrase(label.getPrice(),nameOriginFont);
+        Phrase number = new Phrase(label.getNumber(), numFont);
+        PdfContentByte contentByte = writer.getDirectContent();
+
+        setPara(contentByte, document, name, label.getStartX(), label.getStartY() );
+        setPara(contentByte, document, origin, label.getStartX(), label.getStartY()+50 );
+        setPara(contentByte, document, price, label.getStartX(), label.getStartY()+ 100 );
+        setPara(contentByte, document, number, label.getStartX(), label.getStartY()+ 115 );
+    }
+
+    private void setPara(PdfContentByte canvas, Document document , Phrase p, float x, float y) {
+        y =  document.getPageSize().getHeight() - y;
+
         ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, p, x, y, 0);
     }
-    private static void setCellContent(XWPFTableRow row, int cell, LabelsDTO.Label label){
+    /*private static void setCellContent(XWPFTableRow row, int cell, LabelsDTO.Label label){
 
         if(row.getCell(cell) == null){
             row.addNewTableCell();
@@ -105,8 +121,29 @@ public class LabelsGenerator {
         r3.setText(label.getNumber());
     }
 
+
+    public static XWPFDocument GetDoc(LabelsDTO dto){
+        XWPFDocument document = new XWPFDocument();
+        XWPFTable table = document.createTable();
+
+        int currRow=0;
+        int numOfLabels = dto.labels.size();
+        for( int i=0; i < numOfLabels; i+=2){
+            if (i>0){ table.createRow(); }
+            LabelsDTO.Label currLabel = dto.labels.get(i);
+            setCellContent(table.getRow(currRow), 0, currLabel);
+
+            if(numOfLabels > i+1 ) {
+                currLabel = dto.labels.get(i+1);
+                setCellContent(table.getRow(currRow), 1, currLabel);
+            }
+            currRow++;
+        }
+        return document;
+    }
+
     private static String getFirstNCharsFrom(String str,int n) {
         return str.substring(0,Math.min(str.length(),n));
-    }
+    }*/
 
 }

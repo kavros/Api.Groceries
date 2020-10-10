@@ -34,7 +34,8 @@ public class StepperController {
 
 	@PutMapping("/downloadLabels")
 	public byte[] getPriceLabels(@RequestBody LabelsDTO dto) throws IOException {
-		ByteArrayOutputStream outputStream = LabelsGenerator.GetPdf();
+	    //TODO: add Labels generator using DI.
+		ByteArrayOutputStream outputStream = (new LabelsGenerator()).GetPdf(dto);
 
         return outputStream.toByteArray();
 	}
