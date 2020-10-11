@@ -3,6 +3,15 @@ package application.domain.docs_generator;
 class Position {
     float x;
     float y;
+
+    public float getStartX() {
+        return x;
+    }
+
+    public float getStartY() {
+        return y;
+    }
+
     Position(float x, float y){
         this.x=x;
         this.y=y;
@@ -12,22 +21,10 @@ class Position {
 
 public class Label {
 
-    private Position p;
     private String name;
     private String origin;
     private String price;
     String number;
-
-    public float getStartX() {
-        return p.x;
-    }
-    public float getStartY() {
-        return p.y;
-    }
-
-    public void setP(Position p) {
-        this.p = p;
-    }
 
     public String getName() {
         return name;
@@ -61,10 +58,9 @@ public class Label {
         this.number = number;
     }
 
-    Label(Position p, String name, String origin,
+    Label(String name, String origin,
           String number, String price)
     {
-        this.p = p;
         this.name = name;
         this.origin = origin;
         this.number = number;
