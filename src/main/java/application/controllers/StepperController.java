@@ -4,7 +4,8 @@ import java.io.*;
 import application.controllers.dtos.LabelsDTO;
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.ImportDTO;
-import application.domain.docs_generator.LabelsGenerator;
+import application.domain.labels_generator.ILabelsGenerator;
+import application.domain.labels_generator.LabelsGenerator;
 import application.domain.prices_updater.IPricesUpdater;
 import application.domain.importer.services.ITableComposer;
 import application.model.settings.Settings;
@@ -12,13 +13,11 @@ import application.model.settings.services.ISettingsRepository;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.itextpdf.text.Document;
 
 @RestController
 @CrossOrigin(origins="*")
@@ -31,12 +30,12 @@ public class StepperController {
 	IPricesUpdater pricesUpdater;
 	@Autowired
 	ISettingsRepository settingsRepository;
+	@Autowired
+	ILabelsGenerator labelsGenerator;
 
 	@PutMapping("/downloadLabels")
 	public byte[] getPriceLabels(@RequestBody LabelsDTO dto) throws IOException {
-	    //TODO: add Labels generator using DI.
-		ByteArrayOutputStream outputStream = (new LabelsGenerator()).GetPdf(dto);
-
+		ByteArrayOutputStream outputStream = labelsGenerator.GetPdf(dto);
         return outputStream.toByteArray();
 	}
 

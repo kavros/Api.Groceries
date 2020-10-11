@@ -1,4 +1,4 @@
-package application.domain.docs_generator;
+package application.domain.labels_generator;
 
 class Position {
     float x;

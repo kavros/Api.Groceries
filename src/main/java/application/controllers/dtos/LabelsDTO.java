@@ -1,6 +1,6 @@
 package application.controllers.dtos;
 
-import application.domain.docs_generator.Label;
+import application.domain.labels_generator.Label;
 import java.util.ArrayList;
 
 public class LabelsDTO {
