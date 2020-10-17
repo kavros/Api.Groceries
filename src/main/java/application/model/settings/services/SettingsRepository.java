@@ -6,13 +6,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component("settingsRepository")
 public class SettingsRepository implements ISettingsRepository {
-
 
     @Override
     public Map<String,Settings> getAllSettings() {

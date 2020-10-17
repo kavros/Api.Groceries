@@ -4,8 +4,8 @@ import java.io.*;
 import application.controllers.dtos.LabelsDTO;
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.ImportDTO;
+import application.domain.history_doc_generator.IHistoryDocGenerator;
 import application.domain.labels_generator.ILabelsGenerator;
-import application.domain.labels_generator.LabelsGenerator;
 import application.domain.prices_updater.IPricesUpdater;
 import application.domain.importer.services.ITableComposer;
 import application.model.settings.Settings;
@@ -32,6 +32,14 @@ public class StepperController {
 	ISettingsRepository settingsRepository;
 	@Autowired
 	ILabelsGenerator labelsGenerator;
+	@Autowired
+	IHistoryDocGenerator historyDocGenerator;
+
+	@PutMapping("/downloadHistoryDoc")
+	public byte[] downloadHistoryDoc(){
+		historyDocGenerator.GetDoc();
+	 	return null;
+	}
 
 	@PutMapping("/downloadLabels")
 	public byte[] getPriceLabels(@RequestBody LabelsDTO dto) throws IOException {
