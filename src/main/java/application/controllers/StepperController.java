@@ -36,9 +36,8 @@ public class StepperController {
 	IHistoryDocGenerator historyDocGenerator;
 
 	@PutMapping("/downloadHistoryDoc")
-	public byte[] downloadHistoryDoc(){
-		historyDocGenerator.GetDoc();
-	 	return null;
+	public byte[] downloadHistoryDoc() throws IOException {
+		return historyDocGenerator.getDoc();
 	}
 
 	@PutMapping("/downloadLabels")

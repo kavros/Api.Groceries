@@ -1,7 +1,7 @@
 package application.domain.history_doc_generator;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public interface IHistoryDocGenerator {
-    public ByteArrayOutputStream GetDoc();
+    byte[] getDoc() throws IOException;
 }
