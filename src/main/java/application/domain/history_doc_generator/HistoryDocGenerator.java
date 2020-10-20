@@ -2,17 +2,14 @@ package application.domain.history_doc_generator;
 
 import application.model.records.services.IRecordsRepository;
 import application.model.settings.services.ISettingsRepository;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import application.model.settings.Settings;
 import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component("historyDocGenerator")
@@ -31,29 +28,54 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
     }
 
     private XWPFDocument getDocument()  {
-        Map<String, List<Float>> sNameToPrices = getContent();
         XWPFDocument document = new XWPFDocument();
-        XWPFTable table = document.createTable();
 
+        XWPFParagraph tmpParagraph = document.createParagraph();
+        XWPFRun dateRun = tmpParagraph.createRun();
+        dateRun.setText(getCurrentDate());
+        dateRun.setBold(true);
+
+        Map<String, List<Float>> sNameToPrices = getContent();
+        XWPFTable table = document.createTable();
         String[] sNames = sNameToPrices
                 .keySet()
                 .toArray(new String[sNameToPrices.size()]);
-
+        Arrays.sort(sNames);
         for (int i=0; i < sNames.length; i+=2) {
 
             XWPFTableRow row = table.createRow();
-            row.addNewTableCell();
-            row.addNewTableCell();
-            row.addNewTableCell();
-            row.getCell(0).setText(sNames[i]);
-            row.getCell(1).setText(getPricesFor(sNames[i],sNameToPrices));
 
+            setFirstCell(row, sNames[i]);
+            addAndSetCell(row,getPricesFor(sNames[i],sNameToPrices));
+            
             if(i+1 < sNames.length ) {
-                row.getCell(2).setText(sNames[i + 1]);
-                row.getCell(3).setText(getPricesFor(sNames[i+1],sNameToPrices));
+                addAndSetCell(row, sNames[i + 1]);
+                addAndSetCell(row, getPricesFor(sNames[i+1],sNameToPrices));
             }
         }
         return  document;
+    }
+
+    private void setFirstCell(XWPFTableRow row, String text) {
+        XWPFRun content = row.getCell(0).getParagraphs().get(0).createRun();
+        setRunContent(content,text);
+    }
+
+    private void addAndSetCell(XWPFTableRow row, String text) {
+        XWPFRun content = row.addNewTableCell().getParagraphs().get(0).createRun();
+        setRunContent(content,text);
+    }
+
+    private void setRunContent(XWPFRun run, String text) {
+        run.setText(text);
+        run.setBold(true);
+        run.setFontSize(12);
+    }
+
+    private String getCurrentDate(){
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        Date date = new Date(System.currentTimeMillis());
+        return formatter.format(date);
     }
 
     private String getPricesFor(String sName, Map<String, List<Float>> sNameToPrices ){
