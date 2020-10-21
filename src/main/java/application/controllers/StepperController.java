@@ -35,7 +35,7 @@ public class StepperController {
 	@Autowired
 	IHistoryDocGenerator historyDocGenerator;
 
-	@PutMapping("/downloadHistoryDoc")
+	@GetMapping("/downloadHistoryDoc")
 	public byte[] downloadHistoryDoc() throws IOException {
 		return historyDocGenerator.getDoc();
 	}
