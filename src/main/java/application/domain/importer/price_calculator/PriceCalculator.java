@@ -4,14 +4,15 @@ import application.model.settings.Settings;
 import application.model.settings.services.ISettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Component("newPriceCalculator")
-public class NewPriceCalculator implements INewPriceCalculator {
+public class PriceCalculator implements IPriceCalculator {
 
     @Autowired
     ISettingsRepository settingsRepo;
@@ -31,6 +32,20 @@ public class NewPriceCalculator implements INewPriceCalculator {
         return  round2Decimals(newPrice);
     }
 
+    public float getHistoryCatalogPrice(
+            String sCode,
+            float invoicePrice,
+            List<Settings> settings )
+    {
+        Optional<Float> percentage = settings
+                .stream()
+                .filter(x ->x.getsCode().equals(sCode))
+                .map(Settings::getProfitPercentage)
+                .findFirst();
+
+        return round2Decimals((float)(invoicePrice*1.13)*(1.0f+percentage.get()));
+    }
+
     private float round2Decimals(float number){
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
@@ -41,7 +56,7 @@ public class NewPriceCalculator implements INewPriceCalculator {
 
 
     private Settings getSettingFor(String sName){
-        Map<String,Settings> settingsMap = settingsRepo.getAllSettings();
+        Map<String,Settings> settingsMap = settingsRepo.getSnameToSettingMap();
         Settings setting = settingsMap.get(sName);
         if(setting == null){
             throw new NoSuchElementException("Failed to retrieve sCode for: "+sName);

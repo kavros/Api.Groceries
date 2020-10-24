@@ -1,6 +1,6 @@
 package application.domain.importer.parser;
 
-import application.domain.importer.price_calculator.NewPriceCalculator;
+import application.domain.importer.price_calculator.PriceCalculator;
 import application.hibernate.HibernateUtil;
 import application.model.records.Record;
 import application.model.settings.Settings;
@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 public class InvoiceParser implements IInvoiceParser {
 
     @Autowired
-    NewPriceCalculator newPriceCalculator;
+    PriceCalculator priceCalculator;
     @Autowired
     ISettingsRepository settingsRepo;
 
@@ -156,7 +156,7 @@ public class InvoiceParser implements IInvoiceParser {
     }
 
     private void setSCodes(ParserResult res){
-        Map<String, Settings> settingsMap = settingsRepo.getAllSettings();
+        Map<String, Settings> settingsMap = settingsRepo.getSnameToSettingMap();
 
         for( Record record: res.records){
             String sCode = record.sCode = settingsMap.get(record.getName()).getsCode();
@@ -173,7 +173,7 @@ public class InvoiceParser implements IInvoiceParser {
         for (int i = 0; i < res.records.size(); i++) {
             Record record = res.records.get(i);
             float newPrice =
-                    newPriceCalculator.getNewPrice
+                    priceCalculator.getNewPrice
                     (
                         record.getName(),
                         record.getPrice().floatValue()

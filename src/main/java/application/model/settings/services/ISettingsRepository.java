@@ -1,12 +1,11 @@
 package application.model.settings.services;
 
-
 import application.model.settings.Settings;
-
+import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 public interface ISettingsRepository {
-    public Map<String,Settings> getAllSettings();
-    public void add(Settings setting);
+    Map<String,Settings> getSnameToSettingMap();
+    List<Settings> getSettings();
+    void add(Settings setting);
 }

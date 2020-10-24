@@ -1,5 +1,6 @@
 package application.domain.history_doc_generator;
 
+import application.domain.importer.price_calculator.IPriceCalculator;
 import application.model.records.services.IRecordsRepository;
 import application.model.settings.services.ISettingsRepository;
 import org.apache.poi.xwpf.usermodel.*;
@@ -18,6 +19,8 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
     ISettingsRepository settingsRepo;
     @Autowired
     IRecordsRepository recordsRepo;
+    @Autowired
+    IPriceCalculator priceCalculator;
 
     public byte[] getDoc() throws IOException {
         XWPFDocument document = getDocument();
@@ -93,7 +96,7 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
     }
 
     private  Map<String, List<Float>> getContent() {
-        Map<String, Settings> allSettings = settingsRepo.getAllSettings();
+        Map<String, Settings> allSettings = settingsRepo.getSnameToSettingMap();
         List<String> allDistinctSCodes =
                 allSettings
                         .values()
@@ -102,8 +105,12 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
                         .distinct()
                         .collect(Collectors.toList());
 
-        Map<String, List<Float>> sCodeToPrices =
-                recordsRepo.getLatestPrices(allDistinctSCodes);
+        Map<String, List<Float>> sCodeToInvoicePrices =
+                recordsRepo.getLatestInvoicePrices(allDistinctSCodes);
+
+         Map<String, List<Float>> sCodeToPercentagePrices
+                 = getPercentagePrices(sCodeToInvoicePrices);
+
         Map<String, List<Float>> sNameToPrices = new HashMap<>();
         for(String sCode : allDistinctSCodes){
             String sName = allSettings
@@ -112,9 +119,29 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
                     .filter(x -> x.getsCode().equals(sCode))
                     .findFirst().get().getsName();
 
-            sNameToPrices.put(sName, sCodeToPrices.get(sCode));
+            sNameToPrices.put(sName, sCodeToPercentagePrices.get(sCode));
         }
         return sNameToPrices;
     }
 
+    private Map<String, List<Float>> getPercentagePrices(
+            Map<String, List<Float>> sCodeToInvoicePrices )
+    {
+        List<Settings> settings = settingsRepo.getSettings();
+        Map<String, List<Float>> scodeToSetting = new HashMap<>();
+
+        for(Map.Entry<String,List<Float>> scodeToInvoicePrice: sCodeToInvoicePrices.entrySet()) {
+            List<Float> prices = scodeToInvoicePrice.getValue();
+            String sCode = scodeToInvoicePrice.getKey();
+
+            for(int i=0; i < prices.size(); i++) {
+                float catalogPrice = priceCalculator
+                        .getHistoryCatalogPrice(sCode,prices.get(i),settings);
+                prices.set (i, catalogPrice);
+            }
+            scodeToSetting.put(sCode, prices);
+        }
+
+        return scodeToSetting;
+    }
 }

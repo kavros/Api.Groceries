@@ -2,7 +2,7 @@ package application.model.settings.services;
 
 import application.hibernate.HibernateUtil;
 import application.model.settings.Settings;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 @Component("settingsRepository")
 public class SettingsRepository implements ISettingsRepository {
 
-    @Override
-    public Map<String,Settings> getAllSettings() {
+    public Map<String,Settings> getSnameToSettingMap() {
 
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -26,6 +25,14 @@ public class SettingsRepository implements ISettingsRepository {
         session.getTransaction().commit();
 
         return  settings;
+    }
+
+    public List<Settings> getSettings() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query query = session.createQuery("from Settings");
+
+        return query.list();
     }
 
     public void add(Settings setting) {

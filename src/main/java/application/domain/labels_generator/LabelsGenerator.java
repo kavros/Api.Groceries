@@ -81,18 +81,8 @@ public class LabelsGenerator implements ILabelsGenerator{
     private String[] getNameAndOrigin(String name, String origin) {
         String[] names = new String[2];
         int cPerRow = 12;
-        if (name.length() > cPerRow) {
-            names[0] = name.substring(0, cPerRow);
-
-            if (origin.length() < cPerRow) {
-                int emptyPos = cPerRow - origin.length() - 1;
-                int endIndex = cPerRow + Math.min(name.length(), emptyPos);
-                names[1] = name.substring(cPerRow, endIndex) + " " + origin;
-            }
-        } else {
-            names[0] = name;
-            names[1] = origin;
-        }
+        names[0] = name.substring(0, Math.min(name.length(), cPerRow));
+        names[1] = origin.substring(0, Math.min(origin.length(), cPerRow));
         return names;
     }
 

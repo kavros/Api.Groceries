@@ -7,26 +7,12 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Component("recordsRepository")
 public class RecordsRepository implements IRecordsRepository {
-
-    public List<Record> getProducts(Timestamp timestamp) {
-
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Query query = session.createQuery("from Record" );
-        List<Record> records = query.list();
-
-        return records
-                .stream()
-                .filter(x->x.getpDate().equals(timestamp))
-                .collect(Collectors.toList());
-    }
-
 
     public void updatePrices(List<Map.Entry<String, BigDecimal>> data, String invoiceDate)
     {
@@ -44,12 +30,32 @@ public class RecordsRepository implements IRecordsRepository {
         }
         tx.commit();
     }
-
-
-    public Map<String,List<Float>> getLatestPrices(List<String> sCodes) {
+    
+    public Map<String,List<Float>> getLatestNewPrices(List<String> sCodes) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
+        Query query = session.createQuery("from Record order by pDate desc" );
+        List<Record> records = query.list();
+
+        Map<String,List<Float>>  map  = new HashMap<>();
+        for(String sCode : sCodes) {
+            List<Float> latestNewPrices = records
+                    .stream()
+                    .filter(
+                            x -> x.getsCode().equals(sCode)
+                    )
+                    .map(x -> x.getNewPrice().floatValue())
+                    .limit(3)
+                    .collect(Collectors.toList());
+            map.put(sCode,latestNewPrices);
+        }
+        return map;
+    }
+
+    public Map<String, List<Float>> getLatestInvoicePrices(List<String> sCodes) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
         Query query = session.createQuery("from Record order by pDate desc" );
         List<Record> records = query.list();
 
@@ -60,13 +66,11 @@ public class RecordsRepository implements IRecordsRepository {
                     .filter(
                             x -> x.getsCode().equals(sCode)
                     )
-                    .map(x -> x.getNewPrice().floatValue())
+                    .map(x -> x.getPrice().floatValue())
                     .limit(3)
                     .collect(Collectors.toList());
             map.put(sCode,latestInvoicePrices);
         }
         return map;
     }
-
-
 }

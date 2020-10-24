@@ -56,7 +56,7 @@ public class TableComposer implements ITableComposer {
 
         response.warnings.addAll(parserResult.warnings);
         response.invoiceDate =  parserResult.invoiceDate.toString();
-        Map<String,Settings> settingsMap = settingsRepo.getAllSettings();
+        Map<String,Settings> settingsMap = settingsRepo.getSnameToSettingMap();
         List<String> sCodes = settingsMap
                 .entrySet().stream()
                 .map(x -> x.getValue().getsCode())
@@ -64,7 +64,7 @@ public class TableComposer implements ITableComposer {
 
         Map<String, Smast> sCodeToRetailPrice = retailPricesRepo.getRetailPrices(sCodes);
         Map<String, List<Float>> latestPrices = recordsRepo
-                .getLatestPrices(
+                .getLatestNewPrices(
                     parserResult
                         .records
                         .stream()
