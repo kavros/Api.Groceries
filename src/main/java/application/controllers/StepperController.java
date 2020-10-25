@@ -77,13 +77,7 @@ public class StepperController {
 	@PostMapping("/import")
 	public ResponseEntity<?> importAndReturnStepperData(@RequestParam("pdfFile") MultipartFile file) throws IOException {
 
-		File convFile = new File("./uploaded_files/"+file.getOriginalFilename());
-		convFile.createNewFile();
-		FileOutputStream fos = new FileOutputStream(convFile);
-		fos.write(file.getBytes());
-		fos.close();
-
-		PDDocument document = PDDocument.load(convFile);
+		PDDocument document = PDDocument.load(file.getInputStream());
 		PDFTextStripper pdfStripper = new PDFTextStripper();
 		pdfStripper.setSortByPosition(true);
 
@@ -101,6 +95,5 @@ public class StepperController {
 
 		document.close();
 		return  new ResponseEntity<>(json, statusCode);
-
 	}
 }
