@@ -25,6 +25,15 @@ public class Label {
     private String origin;
     private String price;
     String number;
+    String sCode;
+
+    public String getsCode() {
+        return sCode;
+    }
+
+    public void setsCode(String sCode) {
+        this.sCode = sCode;
+    }
 
     public String getName() {
         return name;

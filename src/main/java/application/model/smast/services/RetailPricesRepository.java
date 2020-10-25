@@ -30,11 +30,7 @@ public class RetailPricesRepository implements IRetailPricesRepository {
                         .stream()
                         .collect(Collectors.toMap(x -> x.getsCode(),x ->x));
 
-
-
         session.getTransaction().commit();
-
-
         return retailPrices;
     }
 

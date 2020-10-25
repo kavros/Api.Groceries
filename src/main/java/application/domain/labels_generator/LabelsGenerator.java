@@ -1,21 +1,30 @@
 package application.domain.labels_generator;
 
 import application.controllers.dtos.LabelsDTO;
+import application.model.smast.Smast;
+import application.model.smast.services.IRetailPricesRepository;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component("labelsGenerator")
 public class LabelsGenerator implements ILabelsGenerator{
 
+    @Autowired
+    IRetailPricesRepository retailPricesRepository;
+
     public ByteArrayOutputStream GetPdf(LabelsDTO dto) throws IOException {
         Document document = new Document();
+        setPrices(dto);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             PdfWriter writer = PdfWriter.getInstance(document, byteArrayOutputStream);
@@ -38,6 +47,25 @@ public class LabelsGenerator implements ILabelsGenerator{
         }
 
         return byteArrayOutputStream;
+    }
+
+    private void setPrices(LabelsDTO dto) {
+        Map<String, Smast> sCodeToSmast =
+                retailPricesRepository
+                        .getRetailPrices(dto
+                                .labels
+                                .stream()
+                                .map(Label::getsCode)
+                                .collect(Collectors.toList())
+                        ) ;
+        for(Label label: dto.labels){
+            String retailPrice = String.valueOf(
+                    sCodeToSmast
+                            .get(label.getsCode())
+                            .getsRetailPrice()
+            );
+            label.setPrice(retailPrice);
+        }
     }
 
     private Position[] getStartPositions(Document document) {
