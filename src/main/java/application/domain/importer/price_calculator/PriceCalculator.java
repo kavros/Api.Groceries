@@ -48,7 +48,7 @@ public class PriceCalculator implements IPriceCalculator {
 
     private float round2Decimals(float number){
         DecimalFormat df = new DecimalFormat("#.##");
-        df.setRoundingMode(RoundingMode.CEILING);
+        df.setRoundingMode(RoundingMode.HALF_UP);
         String roundedNumber = df.format(number).replace(',','.');
 
         return Float.parseFloat(roundedNumber);
