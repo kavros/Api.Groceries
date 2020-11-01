@@ -48,6 +48,7 @@ public class StepperController {
 
 	@PutMapping("/addSetting")
 	public ResponseEntity<?> updatePrices(@RequestBody Settings setting) {
+	    //TODO: handle case where we add same sCode with different percentage or price.
 		if(!isSettingValid(setting)){
 			return new ResponseEntity(HttpStatus.BAD_REQUEST);
 		}

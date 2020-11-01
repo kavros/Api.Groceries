@@ -12,11 +12,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
+import java.util.*;
 
 @Component("invoiceParser")
 public class InvoiceParser implements IInvoiceParser {
@@ -32,9 +28,8 @@ public class InvoiceParser implements IInvoiceParser {
         } else {
             return parseInvoiceKapnisi(invoiceContent);
         }
-
-
     }
+
     private ParserResult parseInvoiceSavaki(String invoiceContent) throws ParseException{
         ParserResult res = new ParserResult();
         String[] lines = invoiceContent.split("\n");
@@ -133,8 +128,8 @@ public class InvoiceParser implements IInvoiceParser {
 
     private void setValuesAndStore(ParserResult res){
         setDate(res);
-        setNewPrices(res);
         setSCodes(res);
+        setNewPrices(res);
 
         List<Record> records = res.records;
         List<String> warnings = res.warnings;
@@ -148,7 +143,7 @@ public class InvoiceParser implements IInvoiceParser {
                 session.save(records.get(i));
             }
         }else {
-            warnings.add(new String("Invoice "+invoiceDate+" has been imported multiple times"));
+            warnings.add("Invoice "+invoiceDate+" has been imported multiple times");
         }
 
         session.getTransaction().commit();
@@ -157,14 +152,17 @@ public class InvoiceParser implements IInvoiceParser {
 
     private void setSCodes(ParserResult res){
         Map<String, Settings> settingsMap = settingsRepo.getSnameToSettingMap();
-
+        List<String> missingSettings = new ArrayList();
         for( Record record: res.records){
-            String sCode = record.sCode = settingsMap.get(record.getName()).getsCode();
-            if(sCode == null)
-                throw new NoSuchElementException("Failed to retrieve sCode for "+record.getName());
-            else
-                record.sCode= sCode;
+            Settings setting = settingsMap.get(record.getName());
+            if(setting == null){
+                missingSettings.add(record.getName());
+            }else{
+                record.sCode = setting.getsCode();
+            }
         }
+        if(missingSettings.size() > 0)
+            throw new NoSuchElementException("Failed to retrieve sCode for " + missingSettings);
     }
 
 
