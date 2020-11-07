@@ -8,6 +8,8 @@ import application.domain.history_doc_generator.IHistoryDocGenerator;
 import application.domain.labels_generator.ILabelsGenerator;
 import application.domain.prices_updater.IPricesUpdater;
 import application.domain.importer.services.ITableComposer;
+import application.model.mappings.services.IMappingsRepository;
+import application.model.rules.services.IRulesRepository;
 import application.model.settings.Settings;
 import application.model.settings.services.ISettingsRepository;
 import com.google.gson.Gson;
@@ -35,6 +37,23 @@ public class StepperController {
 	@Autowired
 	IHistoryDocGenerator historyDocGenerator;
 
+	@Autowired
+	IRulesRepository rulesRepository;
+
+	@Autowired
+	IMappingsRepository mappingsRepository;
+
+
+	@GetMapping("/getRules")
+	public ResponseEntity<String> getRules(){
+		return new ResponseEntity(rulesRepository.getRules(), HttpStatus.OK);
+	}
+
+	@GetMapping("/getMappings")
+	public ResponseEntity<String> getMappings(){
+		return new ResponseEntity(mappingsRepository.getMappings(), HttpStatus.OK);
+	}
+
 	@GetMapping("/downloadHistoryDoc")
 	public byte[] downloadHistoryDoc() throws IOException {
 		return historyDocGenerator.getDoc();
@@ -48,7 +67,6 @@ public class StepperController {
 
 	@PutMapping("/addSetting")
 	public ResponseEntity<?> updatePrices(@RequestBody Settings setting) {
-	    //TODO: handle case where we add same sCode with different percentage or price.
 		if(!isSettingValid(setting)){
 			return new ResponseEntity(HttpStatus.BAD_REQUEST);
 		}

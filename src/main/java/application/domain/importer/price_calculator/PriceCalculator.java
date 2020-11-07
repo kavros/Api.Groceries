@@ -1,9 +1,12 @@
 package application.domain.importer.price_calculator;
 
+import application.model.rules.Rules;
 import application.model.settings.Settings;
 import application.model.settings.services.ISettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -35,15 +38,15 @@ public class PriceCalculator implements IPriceCalculator {
     public float getHistoryCatalogPrice(
             String sCode,
             float invoicePrice,
-            List<Settings> settings )
+            List<Rules> rules )
     {
-        Optional<Float> percentage = settings
+        Optional<BigDecimal> percentage = rules
                 .stream()
                 .filter(x ->x.getsCode().equals(sCode))
-                .map(Settings::getProfitPercentage)
+                .map(Rules::getProfitPercentage)
                 .findFirst();
 
-        return round2Decimals((float)(invoicePrice*1.13)*(1.0f+percentage.get()));
+        return round2Decimals((float)(invoicePrice*1.13)*(1.0f+percentage.get().floatValue()));
     }
 
     private float round2Decimals(float number){

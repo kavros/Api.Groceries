@@ -1,11 +1,13 @@
 package application.domain.history_doc_generator;
 
 import application.domain.importer.price_calculator.IPriceCalculator;
+import application.model.mappings.Mappings;
+import application.model.mappings.services.IMappingsRepository;
 import application.model.records.services.IRecordsRepository;
-import application.model.settings.services.ISettingsRepository;
+import application.model.rules.Rules;
+import application.model.rules.services.IRulesRepository;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import application.model.settings.Settings;
 import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,8 +17,11 @@ import java.util.stream.Collectors;
 
 @Component("historyDocGenerator")
 public class HistoryDocGenerator implements IHistoryDocGenerator {
+
     @Autowired
-    ISettingsRepository settingsRepo;
+    IMappingsRepository mappingsRepository;
+    @Autowired
+    IRulesRepository rulesRepository;
     @Autowired
     IRecordsRepository recordsRepo;
     @Autowired
@@ -96,25 +101,23 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
     }
 
     private  Map<String, List<Float>> getContent() {
-        Map<String, Settings> allSettings = settingsRepo.getSnameToSettingMap();
-        List<String> allDistinctSCodes =
-                allSettings
-                        .values()
+
+        List<Mappings> mappings = mappingsRepository.getMappings();
+        List<String> allSCodes =
+                rulesRepository.getRules()
                         .stream()
-                        .map(Settings::getsCode)
-                        .distinct()
+                        .map(Rules::getsCode)
                         .collect(Collectors.toList());
 
         Map<String, List<Float>> sCodeToInvoicePrices =
-                recordsRepo.getLatestInvoicePrices(allDistinctSCodes);
+                recordsRepo.getLatestInvoicePrices(allSCodes);
 
          Map<String, List<Float>> sCodeToPercentagePrices
                  = getPercentagePrices(sCodeToInvoicePrices);
 
         Map<String, List<Float>> sNameToPrices = new HashMap<>();
-        for(String sCode : allDistinctSCodes){
-            String sName = allSettings
-                    .values()
+        for(String sCode : allSCodes){
+            String sName = mappings
                     .stream()
                     .filter(x -> x.getsCode().equals(sCode))
                     .findFirst().get().getsName();
@@ -127,16 +130,18 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
     private Map<String, List<Float>> getPercentagePrices(
             Map<String, List<Float>> sCodeToInvoicePrices )
     {
-        List<Settings> settings = settingsRepo.getSettings();
+        List<Rules> rules = rulesRepository.getRules();
         Map<String, List<Float>> scodeToSetting = new HashMap<>();
 
-        for(Map.Entry<String,List<Float>> scodeToInvoicePrice: sCodeToInvoicePrices.entrySet()) {
+        for(Map.Entry<String,List<Float>> scodeToInvoicePrice:
+                sCodeToInvoicePrices.entrySet())
+        {
             List<Float> prices = scodeToInvoicePrice.getValue();
             String sCode = scodeToInvoicePrice.getKey();
 
             for(int i=0; i < prices.size(); i++) {
                 float catalogPrice = priceCalculator
-                        .getHistoryCatalogPrice(sCode,prices.get(i),settings);
+                        .getHistoryCatalogPrice(sCode,prices.get(i),rules);
                 prices.set (i, catalogPrice);
             }
             scodeToSetting.put(sCode, prices);
