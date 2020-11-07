@@ -35,10 +35,26 @@ public class SettingsRepository implements ISettingsRepository {
         return query.list();
     }
 
-    public void add(Settings setting) {
+    public void add(Settings newSetting) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction tx = session.beginTransaction();
-        session.save(setting);
-        tx.commit();
+        Query query = session.createQuery("from Settings where sCode=: s_code");
+        query.setParameter("s_code", newSetting.getsCode());
+        List settings = query.list();
+
+        if(!haveSameProfits(settings, newSetting)){
+            throw new IllegalArgumentException(
+                    "ErrorCode:100, the sCode exists with different profits. "+settings.get(0)
+            );
+        }else{
+            Transaction tx = session.beginTransaction();
+            session.save(newSetting);
+            tx.commit();
+        }
+    }
+
+    boolean haveSameProfits(List<Settings> settings, Settings theNew) {
+        return !settings.isEmpty()
+            &&  settings.get(0).getProfitPercentage().equals(theNew.getProfitPercentage())
+            &&  settings.get(0).getMinProfit().equals(theNew.getMinProfit());
     }
 }

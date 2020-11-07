@@ -53,4 +53,13 @@ public class Settings {
         this.sCode = sCode;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "sName='" + sName + '\'' +
+                ", sCode='" + sCode + '\'' +
+                ", profitPercentage=" + profitPercentage +
+                ", minProfit=" + minProfit +
+                '}';
+    }
 }
