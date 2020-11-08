@@ -31,6 +31,7 @@ public class RetailPricesRepository implements IRetailPricesRepository {
                         .collect(Collectors.toMap(x -> x.getsCode(),x ->x));
 
         session.getTransaction().commit();
+        session.close();
         return retailPrices;
     }
 
@@ -50,5 +51,6 @@ public class RetailPricesRepository implements IRetailPricesRepository {
             query.executeUpdate();
         }
         tx.commit();
+        session.close();
     }
 }

@@ -23,7 +23,7 @@ public class SettingsRepository implements ISettingsRepository {
                 .collect(Collectors.toMap(x -> x.getsName(), x-> x));
 
         session.getTransaction().commit();
-
+        session.close();
         return  settings;
     }
 
@@ -31,7 +31,7 @@ public class SettingsRepository implements ISettingsRepository {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         Query query = session.createQuery("from Settings");
-
+        session.close();
         return query.list();
     }
 
@@ -50,6 +50,7 @@ public class SettingsRepository implements ISettingsRepository {
             session.save(newSetting);
             tx.commit();
         }
+        session.close();
     }
 
     boolean haveSameProfits(List<Settings> settings, Settings theNew) {

@@ -151,7 +151,7 @@ public class InvoiceParser implements IInvoiceParser {
         }
 
         session.getTransaction().commit();
-
+        session.close();
     }
 
     private void setSCodes(ParserResult res) {

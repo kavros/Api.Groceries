@@ -29,14 +29,17 @@ public class RecordsRepository implements IRecordsRepository {
             query.executeUpdate();
         }
         tx.commit();
+        session.close();
     }
     
     public Map<String,List<Float>> getLatestNewPrices(List<String> sCodes) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
-        Query query = session.createQuery("from Record order by pDate desc" );
-        List<Record> records = query.list();
+        List<Record> records = session
+                .createQuery("from Record order by pDate desc" )
+                .list();
+        session.close();
 
         Map<String,List<Float>>  map  = new HashMap<>();
         for(String sCode : sCodes) {
@@ -58,7 +61,7 @@ public class RecordsRepository implements IRecordsRepository {
         session.beginTransaction();
         Query query = session.createQuery("from Record order by pDate desc" );
         List<Record> records = query.list();
-
+        session.close();
         Map<String,List<Float>>  map  = new HashMap<>();
         for(String sCode : sCodes) {
             List<Float> latestInvoicePrices = records
