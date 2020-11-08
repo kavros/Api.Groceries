@@ -1,6 +1,9 @@
 package application.controllers;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import application.controllers.dtos.LabelsDTO;
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.ImportDTO;
@@ -9,9 +12,11 @@ import application.domain.labels_generator.ILabelsGenerator;
 import application.domain.prices_updater.IPricesUpdater;
 import application.domain.importer.services.ITableComposer;
 import application.model.mappings.services.IMappingsRepository;
+import application.model.rules.Rules;
 import application.model.rules.services.IRulesRepository;
 import application.model.settings.Settings;
 import application.model.settings.services.ISettingsRepository;
+import application.model.smast.services.IRetailPricesRepository;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -36,22 +41,30 @@ public class StepperController {
 	ILabelsGenerator labelsGenerator;
 	@Autowired
 	IHistoryDocGenerator historyDocGenerator;
-
+	@Autowired
+	IRetailPricesRepository retailPricesRepository;
 	@Autowired
 	IRulesRepository rulesRepository;
 
 	@Autowired
 	IMappingsRepository mappingsRepository;
 
+	@GetMapping("/getDropdownOptions")
+	public ResponseEntity<String> getRulesForDropDown() {
 
-	@GetMapping("/getRules")
-	public ResponseEntity<String> getRules(){
-		return new ResponseEntity(rulesRepository.getRules(), HttpStatus.OK);
-	}
-
-	@GetMapping("/getMappings")
-	public ResponseEntity<String> getMappings(){
-		return new ResponseEntity(mappingsRepository.getMappings(), HttpStatus.OK);
+		List<String> sCodes= rulesRepository
+				.getRules()
+				.stream()
+				.map(Rules::getsCode)
+				.collect(Collectors.toList());
+		String[] names = retailPricesRepository
+				.getRetailPrices(sCodes)
+				.values()
+				.stream()
+				.map(x -> x.getsName()+","+x.getsCode())
+				.toArray(String[]::new);
+		Arrays.sort(names);
+		return new ResponseEntity(names, HttpStatus.OK);
 	}
 
 	@GetMapping("/downloadHistoryDoc")
