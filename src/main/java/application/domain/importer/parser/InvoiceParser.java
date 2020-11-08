@@ -2,9 +2,11 @@ package application.domain.importer.parser;
 
 import application.domain.importer.price_calculator.PriceCalculator;
 import application.hibernate.HibernateUtil;
+import application.model.mappings.Mappings;
+import application.model.mappings.services.IMappingsRepository;
 import application.model.records.Record;
-import application.model.settings.Settings;
-import application.model.settings.services.ISettingsRepository;
+import application.model.rules.Rules;
+import application.model.rules.services.IRulesRepository;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,9 @@ public class InvoiceParser implements IInvoiceParser {
     @Autowired
     PriceCalculator priceCalculator;
     @Autowired
-    ISettingsRepository settingsRepo;
+    IMappingsRepository mappingsRepository;
+    @Autowired
+    IRulesRepository rulesRepository;
 
     public ParserResult parseAndLoad(String invoiceContent) throws ParseException {
         if(invoiceContent.contains("ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ")) {
@@ -150,31 +154,36 @@ public class InvoiceParser implements IInvoiceParser {
 
     }
 
-    private void setSCodes(ParserResult res){
-        Map<String, Settings> settingsMap = settingsRepo.getSnameToSettingMap();
+    private void setSCodes(ParserResult res) {
+        List<Mappings> mappings = mappingsRepository.getMappings();
         List<String> missingSettings = new ArrayList();
-        for( Record record: res.records){
-            Settings setting = settingsMap.get(record.getName());
-            if(setting == null){
+        for(Record record: res.records){
+            Optional<Mappings> mapping = mappings
+                    .stream()
+                    .filter(s -> record.getName().equals(s.getsName()))
+                    .findFirst();
+            if(!mapping.isPresent()){
                 missingSettings.add(record.getName());
             }else{
-                record.sCode = setting.getsCode();
+                record.sCode = mapping.get().getsCode();
             }
         }
-        if(missingSettings.size() > 0)
+        if(!missingSettings.isEmpty())
             throw new NoSuchElementException("Failed to retrieve sCode for " + missingSettings);
     }
 
-
-
     private void setNewPrices(ParserResult res){
+        List<Mappings> mappings = mappingsRepository.getMappings();
+        List<Rules> rules = rulesRepository.getRules();
         for (int i = 0; i < res.records.size(); i++) {
             Record record = res.records.get(i);
             float newPrice =
                     priceCalculator.getNewPrice
                     (
                         record.getName(),
-                        record.getPrice().floatValue()
+                        record.getPrice().floatValue(),
+                        mappings,
+                        rules
                     );
                 res.records.get(i).setNewPrice(newPrice);
         }

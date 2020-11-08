@@ -1,30 +1,24 @@
 package application.domain.importer.price_calculator;
 
+import application.model.mappings.Mappings;
 import application.model.rules.Rules;
-import application.model.settings.Settings;
-import application.model.settings.services.ISettingsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Component("newPriceCalculator")
 public class PriceCalculator implements IPriceCalculator {
 
-    @Autowired
-    ISettingsRepository settingsRepo;
-
-    public float getNewPrice(String sName, float invoicePrice){
-
-        Settings setting = getSettingFor(sName);
-        float profitPercentage = setting.getProfitPercentage();
-        float minimumProfit = setting.getMinProfit();
+    public float getNewPrice(
+            String sName, float invoicePrice,
+            List<Mappings> mappings, List<Rules> rules)
+    {
+        Rules rule = getRuleFor(sName,mappings,rules);
+        float profitPercentage = rule.getProfitPercentage();
+        float minimumProfit = rule.getMinProfit();
 
         float priceWithTax = (float) (invoicePrice * 1.13);
         float newPrice = priceWithTax * (profitPercentage + 1);
@@ -40,13 +34,13 @@ public class PriceCalculator implements IPriceCalculator {
             float invoicePrice,
             List<Rules> rules )
     {
-        Optional<BigDecimal> percentage = rules
+        Optional<Float> percentage = rules
                 .stream()
                 .filter(x ->x.getsCode().equals(sCode))
                 .map(Rules::getProfitPercentage)
                 .findFirst();
 
-        return round2Decimals((float)(invoicePrice*1.13)*(1.0f+percentage.get().floatValue()));
+        return round2Decimals((float)(invoicePrice*1.13)*(1.0f+percentage.get()));
     }
 
     private float round2Decimals(float number){
@@ -58,12 +52,22 @@ public class PriceCalculator implements IPriceCalculator {
     }
 
 
-    private Settings getSettingFor(String sName){
-        Map<String,Settings> settingsMap = settingsRepo.getSnameToSettingMap();
-        Settings setting = settingsMap.get(sName);
-        if(setting == null){
-            throw new NoSuchElementException("Failed to retrieve sCode for: "+sName);
+    private Rules getRuleFor(String sName,
+        List<Mappings> mappings, List<Rules> rules)
+    {
+        Mappings mapping = mappings
+                .stream()
+                .filter(x -> x.getsName().equals(sName))
+                .findFirst().get();
+
+        Rules rule = rules
+                .stream()
+                .filter(r->r.getsCode().equals(mapping.getsCode()))
+                .findFirst()
+                .get();
+        if(rules == null){
+            throw new NoSuchElementException("Failed to retrieve rule for: "+sName);
         }
-        return setting;
+        return rule;
     }
 }

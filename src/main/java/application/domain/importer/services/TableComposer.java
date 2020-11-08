@@ -3,9 +3,12 @@ package application.domain.importer.services;
 import application.controllers.dtos.ImportDTO;
 import application.domain.importer.parser.InvoiceParser;
 import application.domain.importer.parser.ParserResult;
+import application.model.mappings.Mappings;
+import application.model.mappings.services.IMappingsRepository;
+import application.model.records.Record;
 import application.model.records.services.IRecordsRepository;
-import application.model.settings.Settings;
-import application.model.settings.services.ISettingsRepository;
+import application.model.rules.Rules;
+import application.model.rules.services.IRulesRepository;
 import application.model.smast.Smast;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +19,16 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component("tableCreator")
 public class TableComposer implements ITableComposer {
 
     @Autowired
-    ISettingsRepository settingsRepo;
+    IRulesRepository rulesRepository;
+    @Autowired
+    IMappingsRepository mappingsRepository;
     @Autowired
     IRecordsRepository recordsRepo;
     @Autowired
@@ -56,10 +62,11 @@ public class TableComposer implements ITableComposer {
 
         response.warnings.addAll(parserResult.warnings);
         response.invoiceDate =  parserResult.invoiceDate.toString();
-        Map<String,Settings> settingsMap = settingsRepo.getSnameToSettingMap();
-        List<String> sCodes = settingsMap
-                .entrySet().stream()
-                .map(x -> x.getValue().getsCode())
+        List<Rules> rules = rulesRepository.getRules();
+        List<Mappings> mappings = mappingsRepository.getMappings();
+        List<String> sCodes = rules
+                .stream()
+                .map(Rules::getsCode)
                 .collect(Collectors.toList());
 
         Map<String, Smast> sCodeToRetailPrice = retailPricesRepo.getRetailPrices(sCodes);
@@ -68,24 +75,24 @@ public class TableComposer implements ITableComposer {
                     parserResult
                         .records
                         .stream()
-                        .map(x->x.getsCode())
+                        .map(Record::getsCode)
                         .collect(Collectors.toList())
                 );
 
 
         parserResult.records.forEach(x -> {
 
-            Settings setting = getSettings(x.getName(), settingsMap);
-            String sCode = setting.getsCode();
+            Rules rule = getRule(x.getName(), mappings, rules);
+            String sCode = rule.getsCode();
             Smast smast = getKefalaioData(sCode, sCodeToRetailPrice);
 
             ImportDTO.Entry r = response.new Entry();
             r.name = x.getName();
             r.invoicePrice = x.getPrice().floatValue();
-            r.profitPercentage = setting.getProfitPercentage();
+            r.profitPercentage = rule.getProfitPercentage();
             r.origin = x.getOrigin();
             r.retailPrice = smast.getsRetailPrice();
-            r.sCode = setting.getsCode();
+            r.sCode = rule.getsCode();
             r.number = x.getNumber();
             r.newPrice = x.getNewPrice();
             r.profitInEuro = getActualProfit(r.newPrice.floatValue(),r.invoicePrice);
@@ -106,12 +113,19 @@ public class TableComposer implements ITableComposer {
         return err;
     }
 
-    private Settings getSettings(String sName,  Map<String,Settings> settingsMap){
-        Settings setting = settingsMap.get(sName);
-        if(setting == null){
+    private Rules getRule(String sName, List<Mappings> mappings,List<Rules> rules){
+        String sCode = mappings
+                .stream()
+                .filter(x->x.getsName().equals(sName))
+                .findFirst()
+                .get().getsCode();
+        Optional<Rules> rule = rules.stream()
+                .filter(x->x.getsCode().equals(sCode))
+                .findFirst();
+        if(!rule.isPresent()){
             throw new NoSuchElementException("Failed to retrieve sCode for "+sName);
         }
-        return setting;
+        return rule.get();
     }
 
     private Smast getKefalaioData(String sCode, Map<String, Smast> sCodeToRetailPrice ) {

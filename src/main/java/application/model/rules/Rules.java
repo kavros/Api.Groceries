@@ -28,16 +28,16 @@ public class Rules {
         this.sCode = sCode;
     }
 
-    public BigDecimal getProfitPercentage() {
-        return profitPercentage;
+    public float getProfitPercentage() {
+        return profitPercentage.floatValue();
     }
 
     public void setProfitPercentage(BigDecimal profitPercentage) {
         this.profitPercentage = profitPercentage;
     }
 
-    public BigDecimal getMinProfit() {
-        return minProfit;
+    public float getMinProfit() {
+        return minProfit.floatValue();
     }
 
     public void setMinProfit(BigDecimal minProfit) {
