@@ -57,7 +57,7 @@ public class PriceCalculator implements IPriceCalculator {
     {
         Mappings mapping = mappings
                 .stream()
-                .filter(x -> x.getsName().equals(sName))
+                .filter(x -> x.getpName().equals(sName))
                 .findFirst().get();
 
         Rules rule = rules

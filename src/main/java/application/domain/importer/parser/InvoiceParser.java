@@ -160,7 +160,7 @@ public class InvoiceParser implements IInvoiceParser {
         for(Record record: res.records){
             Optional<Mappings> mapping = mappings
                     .stream()
-                    .filter(s -> record.getName().equals(s.getsName()))
+                    .filter(s -> record.getName().equals(s.getpName()))
                     .findFirst();
             if(!mapping.isPresent()){
                 missingSettings.add(record.getName());

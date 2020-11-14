@@ -116,7 +116,7 @@ public class TableComposer implements ITableComposer {
     private Rules getRule(String sName, List<Mappings> mappings,List<Rules> rules){
         String sCode = mappings
                 .stream()
-                .filter(x->x.getsName().equals(sName))
+                .filter(x->x.getpName().equals(sName))
                 .findFirst()
                 .get().getsCode();
         Optional<Rules> rule = rules.stream()

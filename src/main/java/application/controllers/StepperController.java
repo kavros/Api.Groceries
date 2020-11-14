@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import application.controllers.dtos.DropDownDTO;
 import application.controllers.dtos.LabelsDTO;
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.ImportDTO;
@@ -11,11 +12,10 @@ import application.domain.history_doc_generator.IHistoryDocGenerator;
 import application.domain.labels_generator.ILabelsGenerator;
 import application.domain.prices_updater.IPricesUpdater;
 import application.domain.importer.services.ITableComposer;
+import application.model.mappings.Mappings;
 import application.model.mappings.services.IMappingsRepository;
 import application.model.rules.Rules;
 import application.model.rules.services.IRulesRepository;
-import application.model.settings.Settings;
-import application.model.settings.services.ISettingsRepository;
 import application.model.smast.services.IRetailPricesRepository;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -36,8 +36,6 @@ public class StepperController {
 	@Autowired
 	IPricesUpdater pricesUpdater;
 	@Autowired
-	ISettingsRepository settingsRepository;
-	@Autowired
 	ILabelsGenerator labelsGenerator;
 	@Autowired
 	IHistoryDocGenerator historyDocGenerator;
@@ -45,26 +43,33 @@ public class StepperController {
 	IRetailPricesRepository retailPricesRepository;
 	@Autowired
 	IRulesRepository rulesRepository;
-
 	@Autowired
 	IMappingsRepository mappingsRepository;
 
+	@PutMapping("/addMapping")
+	public ResponseEntity saveMapping(@RequestBody Mappings mapping){
+		mappingsRepository.saveMapping(mapping);
+		return new ResponseEntity(HttpStatus.OK);
+	}
+
 	@GetMapping("/getDropdownOptions")
-	public ResponseEntity<String> getRulesForDropDown() {
+	public ResponseEntity<?> getDropdownOptions() {
 
 		List<String> sCodes= rulesRepository
 				.getRules()
 				.stream()
 				.map(Rules::getsCode)
 				.collect(Collectors.toList());
-		String[] names = retailPricesRepository
+		DropDownDTO[] options = retailPricesRepository
 				.getRetailPrices(sCodes)
 				.values()
 				.stream()
-				.map(x -> x.getsName()+","+x.getsCode())
-				.toArray(String[]::new);
-		Arrays.sort(names);
-		return new ResponseEntity(names, HttpStatus.OK);
+				.map(
+					x -> new DropDownDTO(x.getsCode(), x.getsName())
+				)
+				.toArray(DropDownDTO[]::new);
+		Arrays.sort(options);
+		return new ResponseEntity(options, HttpStatus.OK);
 	}
 
 	@GetMapping("/downloadHistoryDoc")
@@ -76,28 +81,6 @@ public class StepperController {
 	public byte[] getPriceLabels(@RequestBody LabelsDTO dto) throws IOException {
 		ByteArrayOutputStream outputStream = labelsGenerator.GetPdf(dto);
         return outputStream.toByteArray();
-	}
-
-	@PutMapping("/addSetting")
-	public ResponseEntity<?> updatePrices(@RequestBody Settings setting) {
-		if(!isSettingValid(setting)){
-			return new ResponseEntity(HttpStatus.BAD_REQUEST);
-		}
-		settingsRepository.add(setting);
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	private boolean isSettingValid (Settings setting) {
-		boolean isPercentageValid =
-				setting.getProfitPercentage() < 1 &&
-				setting.getProfitPercentage() > 0;
-
-		boolean isMinProfitValid 	=  setting.getProfitPercentage() > 0;
-		boolean issCodeNotEmpty		= !setting.getsCode().isEmpty();
-		boolean isNameNotEmpty		= !setting.getsName().isEmpty();
-
-		return isPercentageValid && isMinProfitValid &&
-				issCodeNotEmpty  && isNameNotEmpty;
 	}
 
 	@PutMapping("/updatePrices")

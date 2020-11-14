@@ -9,7 +9,6 @@ import javax.persistence.Table;
 @Table(name = "Api_Groceries.dbo.Mappings")
 public class Mappings {
 
-
     @Column(name = "sCode", unique = true, nullable = false, length = 255)
     private String sCode;
 
@@ -25,11 +24,11 @@ public class Mappings {
         this.sCode = sCode;
     }
 
-    public String getsName() {
+    public String getpName() {
         return pName;
     }
 
-    public void setsName(String pName) {
+    public void setpName(String pName) {
         this.pName = pName;
     }
 
@@ -37,7 +36,7 @@ public class Mappings {
     public String toString() {
         return "Mappings{" +
                 "sCode='" + sCode + '\'' +
-                ", sName='" + pName + '\'' +
+                ", pName='" + pName + '\'' +
                 '}';
     }
 }

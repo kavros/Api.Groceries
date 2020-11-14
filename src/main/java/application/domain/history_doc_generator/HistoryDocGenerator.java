@@ -120,7 +120,7 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
             String sName = mappings
                     .stream()
                     .filter(x -> x.getsCode().equals(sCode))
-                    .findFirst().get().getsName();
+                    .findFirst().get().getpName();
 
             sNameToPrices.put(sName, sCodeToPercentagePrices.get(sCode));
         }
