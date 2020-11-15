@@ -55,11 +55,7 @@ public class StepperController {
 	@GetMapping("/getDropdownOptions")
 	public ResponseEntity<?> getDropdownOptions() {
 
-		List<String> sCodes= rulesRepository
-				.getRules()
-				.stream()
-				.map(Rules::getsCode)
-				.collect(Collectors.toList());
+		List<String> sCodes= rulesRepository.getScodes();
 		DropDownDTO[] options = retailPricesRepository
 				.getRetailPrices(sCodes)
 				.values()
