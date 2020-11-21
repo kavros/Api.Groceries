@@ -7,9 +7,7 @@ import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +20,7 @@ public class RulesController {
     @Autowired
     IRetailPricesRepository retailPricesRepository;
 
-    @GetMapping("/getRules")
+    @GetMapping("/getRulesTable")
     public ResponseEntity getRules() {
         List<Rules> rules = rulesRepository.getRules();
 
@@ -47,6 +45,24 @@ public class RulesController {
 
         Arrays.sort(rulesDTO);
         return new ResponseEntity(rulesDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/addRule")
+    public ResponseEntity addRule(@RequestBody Rules newRule) {
+        //TODO: validate sCode
+        if(isRuleValid(newRule))
+            new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+        rulesRepository.saveRule(newRule);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    private boolean isRuleValid(Rules newRule){
+        boolean isMinProfitValid = newRule.getMinProfit() > 0;
+        boolean isPercentageValid = newRule.getProfitPercentage() > 0
+                                    && newRule.getProfitPercentage() < 1;
+         return isMinProfitValid && isPercentageValid;
+
     }
 
 }
