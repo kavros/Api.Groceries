@@ -47,22 +47,27 @@ public class RulesController {
         return new ResponseEntity(rulesDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/addRule")
+    @PostMapping("/addOrUpdateRule")
     public ResponseEntity addRule(@RequestBody Rules newRule) {
         //TODO: validate sCode
         if(isRuleValid(newRule))
             new ResponseEntity(HttpStatus.BAD_REQUEST);
 
-        rulesRepository.saveRule(newRule);
+        rulesRepository.addOrUpdateRule(newRule);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     private boolean isRuleValid(Rules newRule){
         boolean isMinProfitValid = newRule.getMinProfit() > 0;
         boolean isPercentageValid = newRule.getProfitPercentage() > 0
-                                    && newRule.getProfitPercentage() < 1;
-         return isMinProfitValid && isPercentageValid;
+                && newRule.getProfitPercentage() < 1;
+        return isMinProfitValid && isPercentageValid;
 
     }
 
+    @DeleteMapping("/addOrUpdateRule")
+    public ResponseEntity deleteRule(@RequestBody Rules rule) {
+        rulesRepository.deleteRule(rule);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

@@ -20,10 +20,18 @@ public class RulesRepository implements IRulesRepository {
         return HibernateUtil.getElements("Rules");
     }
 
-    public void saveRule(Rules newRule) {
+    public void addOrUpdateRule(Rules newRule) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
-        session.save(newRule);
+        session.saveOrUpdate(newRule);
+        tx.commit();
+        session.close();
+    }
+
+    public void deleteRule(Rules rule) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        session.delete(rule);
         tx.commit();
         session.close();
     }
