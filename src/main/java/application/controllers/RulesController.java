@@ -65,7 +65,7 @@ public class RulesController {
 
     }
 
-    @DeleteMapping("/addOrUpdateRule")
+    @DeleteMapping("/deleteRule")
     public ResponseEntity deleteRule(@RequestBody Rules rule) {
         rulesRepository.deleteRule(rule);
         return new ResponseEntity(HttpStatus.OK);
