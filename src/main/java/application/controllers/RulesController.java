@@ -3,6 +3,7 @@ package application.controllers;
 import application.controllers.dtos.RulesDTO;
 import application.model.rules.Rules;
 import application.model.rules.services.IRulesRepository;
+import application.model.smast.Smast;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,6 @@ public class RulesController {
         List<String> sCodes = rulesRepository.getScodes();
         RulesDTO[] rulesDTO = retailPricesRepository
                 .getRetailPrices(sCodes)
-                .values()
                 .stream()
                 .map(
                         x -> {
@@ -48,25 +48,33 @@ public class RulesController {
     }
 
     @PostMapping("/addOrUpdateRule")
-    public ResponseEntity addRule(@RequestBody Rules newRule) {
-        //TODO: validate sCode
-        if(isRuleValid(newRule))
-            new ResponseEntity(HttpStatus.BAD_REQUEST);
+    public ResponseEntity addOrUpdateRule(@RequestBody Rules newRule) {
+        String sName = getSName(newRule.getsCode());
+        if(!isRuleValid(newRule) || sName == null)
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
 
         rulesRepository.addOrUpdateRule(newRule);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    private String getSName(String sCode) {
+         List<Smast> smastList =  retailPricesRepository
+                .getRetailPrices(Arrays.asList(sCode));
+         return smastList.isEmpty()? null: smastList.get(0).getsName();
     }
 
     private boolean isRuleValid(Rules newRule){
         boolean isMinProfitValid = newRule.getMinProfit() > 0;
         boolean isPercentageValid = newRule.getProfitPercentage() > 0
                 && newRule.getProfitPercentage() < 1;
+
         return isMinProfitValid && isPercentageValid;
 
     }
 
     @DeleteMapping("/deleteRule")
     public ResponseEntity deleteRule(@RequestBody Rules rule) {
+        //TODO: don't allow to delete something that exists in records
         rulesRepository.deleteRule(rule);
         return new ResponseEntity(HttpStatus.OK);
     }

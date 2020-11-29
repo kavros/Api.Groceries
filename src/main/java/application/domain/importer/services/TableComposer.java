@@ -69,7 +69,7 @@ public class TableComposer implements ITableComposer {
                 .map(Rules::getsCode)
                 .collect(Collectors.toList());
 
-        Map<String, Smast> sCodeToRetailPrice = retailPricesRepo.getRetailPrices(sCodes);
+        List<Smast> smastList = retailPricesRepo.getRetailPrices(sCodes);
         Map<String, List<Float>> latestPrices = recordsRepo
                 .getLatestNewPrices(
                     parserResult
@@ -84,7 +84,7 @@ public class TableComposer implements ITableComposer {
 
             Rules rule = getRule(x.getName(), mappings, rules);
             String sCode = rule.getsCode();
-            Smast smast = getKefalaioData(sCode, sCodeToRetailPrice);
+            Smast smast = getKefalaioData(sCode, smastList);
 
             ImportDTO.Entry r = response.new Entry();
             r.name = x.getName();
@@ -128,12 +128,15 @@ public class TableComposer implements ITableComposer {
         return rule.get();
     }
 
-    private Smast getKefalaioData(String sCode, Map<String, Smast> sCodeToRetailPrice ) {
-        Smast smast = sCodeToRetailPrice.get(sCode);
-        if(smast ==  null){
+    private Smast getKefalaioData(String sCode, List<Smast> smastList ) {
+        Optional<Smast> smast = smastList
+                .stream()
+                .filter(x -> x.getsCode().equals(sCode))
+                .findFirst();
+        if(!smast.isPresent()){
             throw new NoSuchElementException("Failed to retrieve retail price for "+sCode);
         }
-        return smast;
+        return smast.get();
     }
 
     private float getActualProfit(float newPrice,float invoicePrice){

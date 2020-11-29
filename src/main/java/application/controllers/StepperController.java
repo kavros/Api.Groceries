@@ -3,7 +3,6 @@ package application.controllers;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import application.controllers.dtos.DropDownDTO;
 import application.controllers.dtos.LabelsDTO;
 import application.controllers.dtos.UpdatePricesDTO;
@@ -14,7 +13,6 @@ import application.domain.prices_updater.IPricesUpdater;
 import application.domain.importer.services.ITableComposer;
 import application.model.mappings.Mappings;
 import application.model.mappings.services.IMappingsRepository;
-import application.model.rules.Rules;
 import application.model.rules.services.IRulesRepository;
 import application.model.smast.services.IRetailPricesRepository;
 import com.google.gson.Gson;
@@ -58,7 +56,6 @@ public class StepperController {
 		List<String> sCodes= rulesRepository.getScodes();
 		DropDownDTO[] options = retailPricesRepository
 				.getRetailPrices(sCodes)
-				.values()
 				.stream()
 				.map(
 					x -> new DropDownDTO(x.getsCode(), x.getsName())

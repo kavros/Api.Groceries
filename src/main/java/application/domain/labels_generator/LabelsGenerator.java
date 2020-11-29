@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component("labelsGenerator")
@@ -50,7 +50,7 @@ public class LabelsGenerator implements ILabelsGenerator{
     }
 
     private void setPrices(LabelsDTO dto) {
-        Map<String, Smast> sCodeToSmast =
+        List<Smast> smastList =
                 retailPricesRepository
                         .getRetailPrices(dto
                                 .labels
@@ -60,9 +60,11 @@ public class LabelsGenerator implements ILabelsGenerator{
                         ) ;
         for(Label label: dto.labels){
             String retailPrice = String.valueOf(
-                    sCodeToSmast
-                            .get(label.getsCode())
-                            .getsRetailPrice()
+                    smastList
+                        .stream()
+                        .filter(x -> x.getsCode().equals(label.getsCode()))
+                        .findFirst().get()
+                        .getsRetailPrice()
             );
             label.setPrice(retailPrice);
         }
