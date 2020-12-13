@@ -1,6 +1,6 @@
 package application.controllers;
 
-import application.controllers.dtos.RulesDTO;
+import application.controllers.dtos.RulesTableRowDTO;
 import application.model.rules.Rules;
 import application.model.rules.services.IRulesRepository;
 import application.model.smast.Smast;
@@ -26,7 +26,7 @@ public class RulesController {
         List<Rules> rules = rulesRepository.getRules();
 
         List<String> sCodes = rulesRepository.getScodes();
-        RulesDTO[] rulesDTO = retailPricesRepository
+        RulesTableRowDTO[] rulesTableRowDTO = retailPricesRepository
                 .getRetailPrices(sCodes)
                 .stream()
                 .map(
@@ -35,16 +35,16 @@ public class RulesController {
                                     .stream()
                                     .filter(r -> r.getsCode().equals(x.getsCode()))
                                     .findFirst().get();
-                            return new RulesDTO(
+                            return new RulesTableRowDTO(
                                     x.getsCode(),
                                     t.getProfitPercentage(),
                                     t.getMinProfit(),
                                     x.getsName());
                         }
-                ).toArray(RulesDTO[]::new);
+                ).toArray(RulesTableRowDTO[]::new);
 
-        Arrays.sort(rulesDTO);
-        return new ResponseEntity(rulesDTO, HttpStatus.OK);
+        Arrays.sort(rulesTableRowDTO);
+        return new ResponseEntity(rulesTableRowDTO, HttpStatus.OK);
     }
 
     @PostMapping("/addOrUpdateRule")
@@ -77,5 +77,19 @@ public class RulesController {
         //TODO: don't allow to delete something that exists in records
         rulesRepository.deleteRule(rule);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/getSName/{sCode}")
+    public ResponseEntity<String> getsName(@PathVariable("sCode") String sCode) {
+        List<Smast> smastList =  retailPricesRepository.getRetailPrices(Arrays.asList(sCode));
+        if( smastList.isEmpty()) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        
+        String sname = smastList.get(0).getsName();
+        RulesTableRowDTO dto = new RulesTableRowDTO(sCode,sname);
+
+
+        return new ResponseEntity(dto, HttpStatus.OK);
     }
 }
