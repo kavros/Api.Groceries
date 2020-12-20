@@ -1,11 +1,11 @@
 package application.domain.history_doc_generator;
 
 import application.domain.importer.price_calculator.IPriceCalculator;
-import application.model.mappings.Mappings;
-import application.model.mappings.services.IMappingsRepository;
 import application.model.records.services.IRecordsRepository;
 import application.model.rules.Rules;
 import application.model.rules.services.IRulesRepository;
+import application.model.smast.Smast;
+import application.model.smast.services.IRetailPricesRepository;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class HistoryDocGenerator implements IHistoryDocGenerator {
 
     @Autowired
-    IMappingsRepository mappingsRepository;
+    IRetailPricesRepository retailPricesRepository;
     @Autowired
     IRulesRepository rulesRepository;
     @Autowired
@@ -101,8 +101,6 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
     }
 
     private  Map<String, List<Float>> getContent() {
-
-        List<Mappings> mappings = mappingsRepository.getMappings();
         List<String> allSCodes =
                 rulesRepository.getRules()
                         .stream()
@@ -114,13 +112,15 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
 
          Map<String, List<Float>> sCodeToPercentagePrices
                  = getPercentagePrices(sCodeToInvoicePrices);
+        List<Smast> products = retailPricesRepository
+                .getRetailPrices(allSCodes);
 
         Map<String, List<Float>> sNameToPrices = new HashMap<>();
         for(String sCode : allSCodes){
-            String sName = mappings
+            String sName = products
                     .stream()
                     .filter(x -> x.getsCode().equals(sCode))
-                    .findFirst().get().getpName();
+                    .findFirst().get().getsName();
 
             sNameToPrices.put(sName, sCodeToPercentagePrices.get(sCode));
         }
