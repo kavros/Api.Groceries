@@ -38,31 +38,12 @@ public class StepperController {
 	@Autowired
 	IHistoryDocGenerator historyDocGenerator;
 	@Autowired
-	IRetailPricesRepository retailPricesRepository;
-	@Autowired
-	IRulesRepository rulesRepository;
-	@Autowired
 	IMappingsRepository mappingsRepository;
 
 	@PutMapping("/addMapping")
 	public ResponseEntity saveMapping(@RequestBody Mappings mapping){
 		mappingsRepository.saveMapping(mapping);
 		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	@GetMapping("/getDropdownOptions")
-	public ResponseEntity<?> getDropdownOptions() {
-
-		List<String> sCodes= rulesRepository.getScodes();
-		DropDownDTO[] options = retailPricesRepository
-				.getRetailPrices(sCodes)
-				.stream()
-				.map(
-					x -> new DropDownDTO(x.getsCode(), x.getsName())
-				)
-				.toArray(DropDownDTO[]::new);
-		Arrays.sort(options);
-		return new ResponseEntity(options, HttpStatus.OK);
 	}
 
 	@GetMapping("/downloadHistoryDoc")

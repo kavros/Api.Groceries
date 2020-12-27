@@ -9,4 +9,5 @@ public interface IRulesRepository {
     List<Rules> getRules();
     void addOrUpdateRule(Rules newRule);
     void deleteRule(Rules newRule);
+    Rules getRule(String sCode);
 }

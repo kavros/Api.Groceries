@@ -1,5 +1,6 @@
 package application.controllers;
 
+import application.controllers.dtos.MappingsDialogDTO;
 import application.controllers.dtos.RulesTableRowDTO;
 import application.model.rules.Rules;
 import application.model.rules.services.IRulesRepository;
@@ -91,5 +92,24 @@ public class RulesController {
 
 
         return new ResponseEntity(dto, HttpStatus.OK);
+    }
+
+    @GetMapping("/getMappingDialogData/{sCode}")
+    public ResponseEntity getMappingDialogData(@PathVariable("sCode") String sCode) {
+        MappingsDialogDTO response = new MappingsDialogDTO();
+        List<Smast> smastList =  retailPricesRepository.getRetailPrices(Arrays.asList(sCode));
+        if( smastList.isEmpty()) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        response.setsName(smastList.get(0).getsName());
+
+        Rules rule = rulesRepository.getRule(sCode);
+        if(rule != null) {
+            response.setMinProfit(rule.getMinProfit());
+            response.setProfitPercentage(rule.getProfitPercentage());
+        }
+
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 }
