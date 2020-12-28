@@ -1,9 +1,6 @@
 package application.controllers;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import application.controllers.dtos.DropDownDTO;
 import application.controllers.dtos.LabelsDTO;
 import application.controllers.dtos.UpdatePricesDTO;
 import application.controllers.dtos.ImportDTO;
@@ -11,10 +8,6 @@ import application.domain.history_doc_generator.IHistoryDocGenerator;
 import application.domain.labels_generator.ILabelsGenerator;
 import application.domain.prices_updater.IPricesUpdater;
 import application.domain.importer.services.ITableComposer;
-import application.model.mappings.Mappings;
-import application.model.mappings.services.IMappingsRepository;
-import application.model.rules.services.IRulesRepository;
-import application.model.smast.services.IRetailPricesRepository;
 import com.google.gson.Gson;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -37,33 +30,6 @@ public class StepperController {
 	ILabelsGenerator labelsGenerator;
 	@Autowired
 	IHistoryDocGenerator historyDocGenerator;
-	@Autowired
-	IRetailPricesRepository retailPricesRepository;
-	@Autowired
-	IRulesRepository rulesRepository;
-	@Autowired
-	IMappingsRepository mappingsRepository;
-
-	@PutMapping("/addMapping")
-	public ResponseEntity saveMapping(@RequestBody Mappings mapping){
-		mappingsRepository.saveMapping(mapping);
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	@GetMapping("/getDropdownOptions")
-	public ResponseEntity<?> getDropdownOptions() {
-
-		List<String> sCodes= rulesRepository.getScodes();
-		DropDownDTO[] options = retailPricesRepository
-				.getRetailPrices(sCodes)
-				.stream()
-				.map(
-					x -> new DropDownDTO(x.getsCode(), x.getsName())
-				)
-				.toArray(DropDownDTO[]::new);
-		Arrays.sort(options);
-		return new ResponseEntity(options, HttpStatus.OK);
-	}
 
 	@GetMapping("/downloadHistoryDoc")
 	public byte[] downloadHistoryDoc() throws IOException {
