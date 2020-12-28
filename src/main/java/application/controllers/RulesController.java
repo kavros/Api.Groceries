@@ -127,7 +127,10 @@ public class RulesController {
         rule.setProfitPercentage(floatToBigDecimal(data.getProfitPercentage()));
         rule.setsCode(data.getsCode());
 
-        addOrUpdateRule(rule);
+        HttpStatus response = addOrUpdateRule(rule).getStatusCode();
+        if( response == HttpStatus.BAD_REQUEST){
+            return new ResponseEntity( HttpStatus.BAD_REQUEST);
+        }
 
         Mappings mapping = new Mappings();
         mapping.setpName(data.getpName());
