@@ -6,6 +6,24 @@ public class MappingsDialogDTO {
     String sName;
     float profitPercentage;
     float minProfit;
+    String sCode;
+    String pName;
+
+    public String getpName() {
+        return pName;
+    }
+
+    public void setpName(String pName) {
+        this.pName = pName;
+    }
+
+    public String getsCode() {
+        return sCode;
+    }
+
+    public void setsCode(String sCode) {
+        this.sCode = sCode;
+    }
 
     public String getsName() {
         return sName;

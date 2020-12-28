@@ -2,6 +2,8 @@ package application.controllers;
 
 import application.controllers.dtos.MappingsDialogDTO;
 import application.controllers.dtos.RulesTableRowDTO;
+import application.model.mappings.Mappings;
+import application.model.mappings.services.IMappingsRepository;
 import application.model.rules.Rules;
 import application.model.rules.services.IRulesRepository;
 import application.model.smast.Smast;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,6 +24,8 @@ public class RulesController {
     IRulesRepository rulesRepository;
     @Autowired
     IRetailPricesRepository retailPricesRepository;
+    @Autowired
+    IMappingsRepository mappingsRepository;
 
     @GetMapping("/getRulesTable")
     public ResponseEntity getRules() {
@@ -111,5 +116,28 @@ public class RulesController {
         }
 
         return new ResponseEntity(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/addOrUpdateMappingDialogData")
+    public ResponseEntity saveMappingDialogData(@RequestBody MappingsDialogDTO data) {
+
+
+        Rules rule = new Rules();
+        rule.setMinProfit(floatToBigDecimal(data.getMinProfit()));
+        rule.setProfitPercentage(floatToBigDecimal(data.getProfitPercentage()));
+        rule.setsCode(data.getsCode());
+
+        addOrUpdateRule(rule);
+
+        Mappings mapping = new Mappings();
+        mapping.setpName(data.getpName());
+        mapping.setsCode(data.getsCode());
+
+        mappingsRepository.saveMapping(mapping);
+        return  new ResponseEntity( HttpStatus.OK);
+    }
+
+    private BigDecimal floatToBigDecimal(float value) {
+        return new BigDecimal(value);
     }
 }
