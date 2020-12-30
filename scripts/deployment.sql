@@ -1,132 +1,154 @@
-select * from Settings
+USE [master]
+GO
+/****** Object:  Database [Api_Groceries]    Script Date: 30/12/2020 3:41:01 ﾎｼﾎｼ ******/
+CREATE DATABASE [Api_Groceries]
+CONTAINMENT = NONE
+ ON  PRIMARY
+( NAME = N'test', FILENAME = N'c:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\DATA\test.mdf' , SIZE = 5120KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+LOG ON
+( NAME = N'test_log', FILENAME = N'c:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\DATA\test_log.ldf' , SIZE = 2048KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+GO
+ALTER DATABASE [Api_Groceries] SET COMPATIBILITY_LEVEL = 110
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [Api_Groceries].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [Api_Groceries] SET ANSI_NULL_DEFAULT OFF
+GO
+ALTER DATABASE [Api_Groceries] SET ANSI_NULLS OFF
+GO
+ALTER DATABASE [Api_Groceries] SET ANSI_PADDING OFF
+GO
+ALTER DATABASE [Api_Groceries] SET ANSI_WARNINGS OFF
+GO
+ALTER DATABASE [Api_Groceries] SET ARITHABORT OFF
+GO
+ALTER DATABASE [Api_Groceries] SET AUTO_CLOSE OFF
+GO
+ALTER DATABASE [Api_Groceries] SET AUTO_CREATE_STATISTICS ON
+GO
+ALTER DATABASE [Api_Groceries] SET AUTO_SHRINK OFF
+GO
+ALTER DATABASE [Api_Groceries] SET AUTO_UPDATE_STATISTICS ON
+GO
+ALTER DATABASE [Api_Groceries] SET CURSOR_CLOSE_ON_COMMIT OFF
+GO
+ALTER DATABASE [Api_Groceries] SET CURSOR_DEFAULT  GLOBAL
+GO
+ALTER DATABASE [Api_Groceries] SET CONCAT_NULL_YIELDS_NULL OFF
+GO
+ALTER DATABASE [Api_Groceries] SET NUMERIC_ROUNDABORT OFF
+GO
+ALTER DATABASE [Api_Groceries] SET QUOTED_IDENTIFIER OFF
+GO
+ALTER DATABASE [Api_Groceries] SET RECURSIVE_TRIGGERS OFF
+GO
+ALTER DATABASE [Api_Groceries] SET  DISABLE_BROKER
+GO
+ALTER DATABASE [Api_Groceries] SET AUTO_UPDATE_STATISTICS_ASYNC OFF
+GO
+ALTER DATABASE [Api_Groceries] SET DATE_CORRELATION_OPTIMIZATION OFF
+GO
+ALTER DATABASE [Api_Groceries] SET TRUSTWORTHY OFF
+GO
+ALTER DATABASE [Api_Groceries] SET ALLOW_SNAPSHOT_ISOLATION OFF
+GO
+ALTER DATABASE [Api_Groceries] SET PARAMETERIZATION SIMPLE
+GO
+ALTER DATABASE [Api_Groceries] SET READ_COMMITTED_SNAPSHOT OFF
+GO
+ALTER DATABASE [Api_Groceries] SET HONOR_BROKER_PRIORITY OFF
+GO
+ALTER DATABASE [Api_Groceries] SET RECOVERY SIMPLE
+GO
+ALTER DATABASE [Api_Groceries] SET  MULTI_USER
+GO
+ALTER DATABASE [Api_Groceries] SET PAGE_VERIFY CHECKSUM
+GO
+ALTER DATABASE [Api_Groceries] SET DB_CHAINING OFF
+GO
+ALTER DATABASE [Api_Groceries] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF )
+GO
+ALTER DATABASE [Api_Groceries] SET TARGET_RECOVERY_TIME = 0 SECONDS
+GO
+USE [Api_Groceries]
+GO
+/****** Object:  Table [dbo].[Mappings]    Script Date: 30/12/2020 3:41:01 ﾎｼﾎｼ ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Mappings](
+[sCode] [varchar](255) NOT NULL,
+[pName] [varchar](255) NOT NULL,
+CONSTRAINT [PK_Mappings_1] PRIMARY KEY CLUSTERED
+(
+[pName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Records]    Script Date: 30/12/2020 3:41:01 ﾎｼﾎｼ ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Records](
+[price] [float] NOT NULL,
+[name] [varchar](255) NOT NULL,
+[pDate] [datetime] NOT NULL,
+[origin] [varchar](50) NOT NULL,
+[number] [varchar](50) NOT NULL,
+[quantity] [float] NOT NULL,
+[discount] [float] NOT NULL,
+[tax] [float] NOT NULL,
+[measurement_unit] [varchar](50) NOT NULL,
+[newPrice] [float] NULL,
+[sCode] [varchar](255) NOT NULL,
+CONSTRAINT [PK_Invoices] PRIMARY KEY CLUSTERED
+(
+[name] ASC,
+[pDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
-/*ALTER TABLE Settings
-ADD CONSTRAINT PK_Settings PRIMARY KEY (sCode,sname);*/
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Rules]    Script Date: 30/12/2020 3:41:01 ﾎｼﾎｼ ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Rules](
+[sCode] [varchar](255) NOT NULL,
+[profitPercentage] [float] NOT NULL,
+[minProfit] [float] NOT NULL,
+CONSTRAINT [PK_Rules] PRIMARY KEY CLUSTERED
+(
+[sCode] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
-ALTER TABLE Settings ALTER COLUMN
- sName varchar(255) NOT NULL;
-
- 
-insert into Settings values ('2099','ﾁﾃﾃﾏﾕﾑﾉﾁ ﾊﾍﾙﾓﾓﾏﾕ',0.25,0.5);
-insert into Settings values('250','ﾁﾃﾊﾉﾍﾁﾑﾅﾓ',0.3,0.5);
-insert into Settings values('2100','ﾁﾃﾃﾏﾕﾑﾉﾁ',0.25,0.5);
-insert into Settings values('331','ﾁﾉﾓﾌﾐﾅﾑﾃﾊ',0.35,0.5);
-insert into Settings values('2101','ﾁﾌﾐﾅﾋﾏﾖﾁﾓﾏﾕﾋﾁ',0.28,0.5);
-insert into Settings values('318','ﾁﾍﾈﾏﾉ',0.25,0.5);
-insert into Settings values('314','ﾁﾔﾆﾏﾕﾑﾉﾁ',0.25,0.5);
-insert into Settings values('2119','ﾁﾍﾔﾉﾄﾉﾁ',0.35,0.5);
-insert into Settings values('2103','ﾂﾋﾇﾔﾁ',0.35,0.5);
-insert into Settings values('306','ﾄﾕﾏﾓﾌﾏﾓ',0.3,0.5);
-insert into Settings values('283','ﾊﾁﾋﾁﾌﾐﾏﾊﾉ',0.3,0.5);
-insert into Settings values('2107','ﾊﾁﾑﾏﾔﾁ',0.35,0.5);
-insert into Settings values('2106','ﾊﾁﾑﾕﾄﾉﾁ',0.3,0.5);
-insert into Settings values('2108','ﾊﾏﾋﾏﾊﾕﾈﾉﾁ',0.35,0.5);
-insert into Settings values('2109','ﾊﾏﾕﾍﾏﾕﾐﾉﾄﾉ',0.35,0.5);
-insert into Settings values('2111','ﾊﾑﾅﾌﾌﾕﾄﾉﾁ',0.25,0.5);
-insert into Settings values('177','ﾊﾑﾅﾌﾌﾕﾄﾁﾊﾉﾁ',0.25,0.5);
-insert into Settings values('2114','ﾊﾑﾅﾌﾌﾕﾄﾉﾁ ﾓﾔﾉﾖﾁﾄﾏ',0.3,0.5);
-insert into Settings values('836','ﾋﾁﾗﾁﾍﾏ',0.35,0.5);
-insert into Settings values('2114','ﾋﾁﾗﾁﾍﾏ ﾊﾏﾊﾊﾉﾍﾏ',0.35,0.5);
-insert into Settings values('2116','ﾋﾁﾗﾁﾍﾏ ﾌﾁﾋﾁﾊﾏ',0.35,0.5);
-insert into Settings values('2117','ﾋﾅﾌﾏﾍﾉﾁ',0.3,0.5);
-insert into Settings values('149','ﾌﾁﾉﾍﾔﾁﾍﾏﾓ',0.3,0.5);
-insert into Settings values('327','ﾌﾁﾍﾉﾔﾁﾑﾉﾁ ﾐﾋﾅﾕﾑﾙﾔﾏﾕﾓ',0.3,0.5);
-insert into Settings values('328','ﾌﾁﾍﾉﾔﾁﾑﾉﾁ',0.3,0.5);
-insert into Settings values('369','ﾌﾁﾑﾁﾈﾏ',0.3,0.5);
-insert into Settings values('84','ﾌﾁﾑﾏﾕﾋﾉﾁ',0.35,0.5);
-insert into Settings values('2081','ﾌﾅﾋﾉﾔﾆﾁﾍﾅﾓ ﾖﾋﾁﾓﾊﾅﾓ',0.25,0.5);
-insert into Settings values('384','ﾌﾐﾁﾌﾉﾅﾓ',0.35,0.5);
-insert into Settings values('2084','ﾌﾐﾁﾑﾌﾐﾏﾕﾍﾅﾓ',0.3,0.5);
-insert into Settings values('1058','ﾌﾐﾑﾏﾊﾏﾋﾏ',0.35,0.5);
-insert into Settings values('128','ﾌﾅﾓﾊﾋﾏﾕﾌ',0.35,0.5);
-insert into Settings values('555','ﾐﾁﾍﾔﾆﾁﾑﾉﾁ',0.35,0.5);
-insert into Settings values('2085','ﾐﾁﾔﾁﾔﾅﾓ ﾖﾑﾅﾓﾊﾅﾓ',0.25,0.5);
-insert into Settings values('2085','ﾐﾁﾔﾁﾔﾅﾓ',0.25,0.5);
-insert into Settings values('2085','ﾐﾁﾔﾁﾔﾅﾓ ﾗﾙﾑﾉﾓ ﾗﾙﾌﾁ',0.25,0.5);
-insert into Settings values('347','ﾐﾉﾐﾅﾑﾉﾅﾓ ﾖﾋﾁﾓﾊﾅﾓ',0.25,0.5);
-insert into Settings values('346','ﾐﾉﾐﾅﾑﾉﾅﾓ ﾊﾁﾕﾔﾅﾑﾅﾓ',0.25,0.5);
-insert into Settings values('345','ﾐﾉﾐﾅﾑﾉﾅﾓ ﾊﾅﾑﾁﾔﾏ',0.25,0.5);
-insert into Settings values('348','ﾐﾉﾐﾅﾑﾉﾅﾓ ﾐﾏﾋﾕﾗﾑﾙﾌﾅﾓ',0.25,0.5);
-insert into Settings values('349','ﾐﾉﾐﾅﾑﾉﾅﾓ ﾖﾋﾙﾑﾉﾍﾇﾓ',0.25,0.5);
-insert into Settings values('2083','ﾐﾑﾁﾓﾁ',0.35,0.5);
-insert into Settings values('366','ﾑﾁﾄﾉﾊﾉﾁ',0.35,0.5);
-insert into Settings values('340','ﾑﾁﾐﾁﾍﾁﾊﾉﾁ',0.35,0.5);
-insert into Settings values('339','ﾑﾏﾊﾁ',0.3,0.5);
-insert into Settings values('326','ﾓﾁﾋﾁﾔﾁ ﾋﾏﾋﾁ ﾊﾏﾊﾊﾉﾍﾇ',0.35,0.5);
-insert into Settings values('325','ﾓﾁﾋﾁﾔﾁ ﾋﾏﾋﾁ ﾐﾑﾁﾓﾉﾍﾇ',0.35,0.5);
-insert into Settings values('324','ﾓﾁﾋﾉﾃﾊﾁﾑﾉﾁ',0.35,0.5);
-insert into Settings values('317','ﾓﾅﾋﾉﾍﾏﾑﾉﾆﾁ',0.35,0.5);
-insert into Settings values('313','ﾓﾊﾏﾑﾄﾁ',0.28,0.5);
-insert into Settings values('321','ﾓﾐﾁﾍﾁﾊﾉ',0.35,0.5);
-insert into Settings values('323','ﾓﾔﾁﾌﾍﾁﾃﾊﾁﾈﾉ',0.35,0.5);
-insert into Settings values('2092','ﾔﾏﾌﾁﾔﾅﾓ',0.25,0.5);
-insert into Settings values('2092','ﾔﾏﾌﾁﾔﾅﾓ LONG LIFE',0.25,0.5);
-insert into Settings values('2092','ﾔﾏﾌﾁﾔﾅﾓ ELPIDA',0.25,0.5);
-insert into Settings values('2090','ﾔﾏﾌﾁﾔﾅﾓ ﾔﾓﾁﾌﾐﾉ',0.25,0.5);
-insert into Settings values('2090','ﾔﾏﾌﾁﾔﾅﾓ ﾔﾓﾁﾌﾐﾉ (FIRAMO)',0.25,0.5);
-insert into Settings values('551','ﾔﾏﾌﾁﾔﾅﾓ ﾐﾏﾌﾏﾍﾔﾏﾑﾉﾁ',0.25,0.5);
-insert into Settings values('2094','ﾔﾏﾌﾁﾔﾉﾍﾉﾁ',0.25,0.5);
-insert into Settings values('269','ﾖﾁﾓﾏﾋﾉﾁ ﾔﾓﾁﾏﾕﾋﾉﾁ',0.28,0.5);
-insert into Settings values('381','ﾘﾁﾑﾅﾓ',0.3,0.5);
-insert into Settings values('190','ﾁﾂﾏﾊﾁﾍﾔﾏ',0.3,0.5);
-insert into Settings values('373','ﾁﾊﾔﾉﾍﾉﾄﾉﾁ',0.3,0.5);
-insert into Settings values('284','ﾁﾍﾁﾍﾁﾓ',0.3,0.5);
-insert into Settings values('295','ﾁﾗﾋﾁﾄﾉﾁ ﾊﾏﾍﾔﾏﾕﾋﾅﾓ',0.3,0.5);
-insert into Settings values('294','ﾁﾗﾋﾁﾄﾉﾁ ﾊﾏﾓﾉﾁ',0.3,0.5);
-insert into Settings values('293','ﾁﾗﾋﾁﾄﾉﾁ ﾊﾑﾕﾓﾔﾁﾋﾋﾉﾁ',0.3,0.5);
-insert into Settings values('296','ﾁﾗﾋﾁﾄﾏﾌﾇﾋﾁ',0.3,0.5);
-insert into Settings values('298','ﾂﾁﾍﾉﾋﾉﾅﾓ',0.3,0.5);
-insert into Settings values('299','ﾂﾅﾑﾉﾊﾏﾊﾁ',0.35,0.5);
-insert into Settings values('300','ﾃﾊﾑﾅﾉﾐ ﾖﾑﾏﾕﾔ',0.3,0.5);
-insert into Settings values('303','ﾄﾅﾓﾐﾏﾋﾅﾓ',0.3,0.5);
-insert into Settings values('241','ﾊﾁﾑﾐﾏﾕﾆﾉ',0.3,0.5);
-insert into Settings values('388','ﾊﾁﾑﾕﾄﾅﾓ',0.3,0.5);
-insert into Settings values('242','ﾊﾁﾓﾔﾁﾍﾁ',0.3,0.5);
-insert into Settings values('264','ﾊﾅﾑﾁﾓﾉﾁ',0.3,0.5);
-insert into Settings values('248','ﾊﾕﾄﾙﾍﾉﾁ',0.3,0.5);
-insert into Settings values('274','ﾊﾏﾑﾏﾌﾇﾋﾁ',0.3,0.5);
-insert into Settings values('249','ﾋﾁﾉﾌﾓ',0.3,0.5);
-insert into Settings values('251','ﾋﾙﾔﾏﾉ',0.3,0.5);
-insert into Settings values('259','ﾌﾁﾍﾔﾁﾑﾉﾍﾉﾁ ﾊﾋﾇﾌﾅﾍﾔﾉﾍﾉﾁ',0.3,0.5);
-insert into Settings values('383','ﾌﾁﾍﾔﾁﾑﾉﾍﾉﾁ ﾊﾏﾉﾍﾁ',0.3,0.5);
-insert into Settings values('257','ﾌﾁﾍﾔﾁﾑﾉﾍﾉﾁ ﾍﾏﾂﾁ',0.3,0.5);
-insert into Settings values('275','ﾌﾇﾋﾁ GOLDEN',0.3,0.5);
-insert into Settings values('276','ﾌﾇﾋﾁ ﾊﾏﾊﾊﾉﾍﾁ',0.3,0.5);
-insert into Settings values('278','ﾌﾇﾋﾁ SMITH',0.3,0.5);
-insert into Settings values('279','ﾌﾇﾋﾁ JONA',0.3,0.5);
-insert into Settings values('361','ﾍﾅﾊﾔﾁﾑﾉﾍﾉﾁ',0.3,0.5);
-insert into Settings values('138','ﾐﾅﾐﾏﾍﾉﾁ ﾁﾑﾃﾉﾔﾉﾊﾁ',0.3,0.5);
-insert into Settings values('370','ﾐﾅﾐﾏﾍﾉ',0.3,0.5);
-insert into Settings values('2093','ﾐﾏﾑﾔﾏﾊﾁﾋﾉﾁ',0.3,0.5);
-insert into Settings values('362','ﾑﾏﾄﾁﾊﾉﾍﾁ',0.35,0.5);
-insert into Settings values('364','ﾑﾏﾄﾉﾁ',0.3,0.5);
-insert into Settings values('385','ﾓﾔﾁﾖﾉﾄﾁ',0.28,0.5);
-insert into Settings values('386','ﾓﾔﾁﾖﾕﾋﾉ ﾁﾓﾐﾑﾏ',0.28,0.5);
-insert into Settings values('96','ﾓﾔﾁﾖﾕﾋﾉ ﾊﾏﾊﾊﾉﾍﾏ',0.28,0.5);
-insert into Settings values('387','ﾓﾔﾁﾖﾕﾋﾉ ﾌﾁﾕﾑﾏ',0.28,0.5);
-insert into Settings values('378','ﾓﾕﾊﾁ',0.3,0.5);
-insert into Settings values('290','ﾖﾑﾁﾏﾕﾋﾅﾓ',0.4,0.5);
-insert into Settings values('379','ﾖﾕﾑﾉﾊﾉﾁ',0.3,0.5);
-insert into Settings values('450.04.04.01','ﾓﾕﾊﾁ ﾎﾅﾑﾁ',0.3,0.5);
-insert into Settings values('309','ﾊﾏﾕﾊﾉﾁ',0.25,0.5);
-insert into Settings values('348','ﾐﾉﾐﾅﾑﾉﾅﾓ ﾐﾏﾑﾔﾏﾊﾁﾋﾉ',0.25,0.5);
-insert into Settings values('368','ﾁﾍﾉﾈﾏ',0.3,0.5);
-insert into Settings values('368','ﾁﾍﾉﾈﾏﾓ',0.35,0.5);
-insert into Settings values('000320','ﾖﾁﾓﾏﾋﾉﾁ ﾃﾉﾃﾁﾍﾔﾅﾓ',0.25,0.5);
-insert into Settings values('2092','ﾔﾏﾌﾁﾔﾅﾓ (TORRY)',0.25,0.5);
-insert into Settings values('348','ﾐﾉﾐﾅﾑﾉﾅﾓ ﾊﾏﾊﾊﾉﾍﾅﾓ',0.25,0.5);
-insert into Settings values('379','ﾌﾇﾋﾁ ﾖﾕﾑﾉﾊﾉﾁ',0.3,0.5);
-insert into Settings values('279','ﾌﾇﾋﾁ JONA COLD',0.3,0.5);
-insert into Settings values('257','ﾌﾁﾍﾔﾁﾑﾉﾍﾉﾁ',0.3,0.5);
-insert into Settings values('400','ﾌﾐﾁﾍﾁﾍﾅﾓ',0.3,0.5);
-insert into Settings values('2092','ﾔﾏﾌﾁﾔﾅﾓ (ELPIDA)',0.25,0.5);
-insert into Settings values('2094','ﾔﾏﾌﾁﾔﾉﾍﾉﾁ ﾂﾅﾋﾁﾍﾉﾄﾉﾁ (LOBELLO)',0.25,0.5);
-insert into Settings values('269','ﾖﾁﾓﾏﾋﾉﾁ ﾁﾐﾏﾓﾔﾏﾋﾁﾊﾉ',0.28,0.5);
-insert into Settings values('370','ﾐﾅﾐﾏﾍﾉﾁ',0.3,0.5);
-insert into Settings values('2092','ﾔﾏﾌﾁﾔﾅﾓ (ADMIRO)',0.25,0.5);
-insert into Settings values('299','ﾂﾅﾑﾕﾊﾏﾊﾁ',0.3,0.5);
-insert into Settings values('386','ﾓﾔﾁﾖﾕﾋﾉ ﾓﾔﾁﾖﾉﾄﾁ',0.25,0.5);
-insert into Settings values('279','ﾌﾇﾋﾁ GALA',0.3,0.5);
-insert into Settings values('338','ﾓﾅﾋﾉﾍﾏ',0.25,0.5);
-insert into Settings values('68','ﾃﾋﾕﾊﾏﾐﾁﾔﾁﾔﾅﾓ',0.5,0.5);
+GO
+SET ANSI_PADDING OFF
+GO
+ALTER TABLE [dbo].[Mappings]  WITH CHECK ADD  CONSTRAINT [FK_Mappings_Rules] FOREIGN KEY([sCode])
+REFERENCES [dbo].[Rules] ([sCode])
+GO
+ALTER TABLE [dbo].[Mappings] CHECK CONSTRAINT [FK_Mappings_Rules]
+GO
+USE [master]
+GO
+ALTER DATABASE [Api_Groceries] SET  READ_WRITE
+GO
