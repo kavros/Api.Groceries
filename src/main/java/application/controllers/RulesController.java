@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -80,13 +79,12 @@ public class RulesController {
 
     @DeleteMapping("/deleteRule")
     public ResponseEntity deleteRule(@RequestBody Rules rule) {
-        //TODO: don't allow to delete something that exists in records
         rulesRepository.deleteRule(rule);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/getSName/{sCode}")
-    public ResponseEntity<String> getsName(@PathVariable("sCode") String sCode) {
+    public ResponseEntity getsName(@PathVariable("sCode") String sCode) {
         List<Smast> smastList =  retailPricesRepository.getRetailPrices(Arrays.asList(sCode));
         if( smastList.isEmpty()) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -94,7 +92,6 @@ public class RulesController {
         
         String sname = smastList.get(0).getsName();
         RulesTableRowDTO dto = new RulesTableRowDTO(sCode,sname);
-
 
         return new ResponseEntity(dto, HttpStatus.OK);
     }
