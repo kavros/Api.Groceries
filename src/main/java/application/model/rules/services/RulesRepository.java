@@ -39,12 +39,16 @@ public class RulesRepository implements IRulesRepository {
         return rule;
     }
 
-    public void addOrUpdateRule(Rules newRule) {
+    public boolean addOrUpdateRule(Rules newRule) {
+        if(! newRule.isValid()) {
+            return false;
+        }
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         session.saveOrUpdate(newRule);
         tx.commit();
         session.close();
+        return true;
     }
 
     public void deleteRule(Rules rule) {

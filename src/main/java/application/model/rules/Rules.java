@@ -44,6 +44,14 @@ public class Rules {
         this.minProfit = minProfit;
     }
 
+    public boolean isValid() {
+        boolean isMinProfitValid = this.getMinProfit() > 0;
+        boolean isPercentageValid = getProfitPercentage() > 0
+                && getProfitPercentage() < 1;
+
+        return isMinProfitValid && isPercentageValid;
+    }
+
     @Override
     public String toString() {
         return "Rules{" +

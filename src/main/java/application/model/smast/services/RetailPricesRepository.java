@@ -7,6 +7,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,10 @@ public class RetailPricesRepository implements IRetailPricesRepository {
         return smastList;
     }
 
+    public String getSName(String sCode) {
+        List<Smast> smastList =  getRetailPrices(Arrays.asList(sCode));
+        return smastList.isEmpty()? null: smastList.get(0).getsName();
+    }
 
     public void updatePrices(List<Map.Entry<String, BigDecimal>> sCodesAndPrices) {
         Session session = HibernateUtil.getSessionFactory().openSession();

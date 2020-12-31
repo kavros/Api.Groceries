@@ -7,5 +7,6 @@ import java.util.Map;
 
 public interface IRetailPricesRepository {
     List<Smast> getRetailPrices(List<String> sCodes);
+    String getSName(String sCode);
     void updatePrices(List<Map.Entry<String, BigDecimal>> sCodesAndPrices);
 }

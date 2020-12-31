@@ -7,7 +7,7 @@ import java.util.List;
 public interface IRulesRepository {
     List<String> getScodes();
     List<Rules> getRules();
-    void addOrUpdateRule(Rules newRule);
+    boolean addOrUpdateRule(Rules newRule);
     void deleteRule(Rules newRule);
     Rules getRule(String sCode);
 }
