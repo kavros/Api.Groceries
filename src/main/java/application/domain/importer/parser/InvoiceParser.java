@@ -26,6 +26,14 @@ public class InvoiceParser implements IInvoiceParser {
     @Autowired
     IRulesRepository rulesRepository;
 
+    public InvoiceParser(IRulesRepository rules,
+                         IMappingsRepository mappings,
+                         PriceCalculator calc) {
+        this.rulesRepository = rules;
+        this.mappingsRepository  = mappings;
+        this.priceCalculator = calc;
+
+    }
     public ParserResult parseAndLoad(String invoiceContent) throws ParseException {
         if(invoiceContent.contains("ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ")) {
             return parseInvoiceSavaki(invoiceContent);
@@ -39,7 +47,6 @@ public class InvoiceParser implements IInvoiceParser {
         String[] lines = invoiceContent.split("\n");
         Timestamp dateTime = null;
         String date=null,time =null;
-
         boolean shouldRead = false;
         for( int i=0; i < lines.length;++i) {
             if( date == null && lines[i].contains("Ημερομηνία") ) {
@@ -70,16 +77,30 @@ public class InvoiceParser implements IInvoiceParser {
                     record.setOrigin(cols[3].trim());
                     record.setName(cols[1] + " " + cols[2].trim());
                     offset = 1;
+                    record.setNumber(cols[offset+3].trim());
                 } else if (cols.length == 11) {
                     record.setName(cols[1].trim());
                     record.setOrigin(cols[2].trim());
+                    record.setNumber(cols[offset+3].trim());
                 } else if(cols.length == 13) {
                     record.setName(cols[1] + " " + cols[2].trim());
                     record.setOrigin(cols[4].trim());
                     offset = 2;
+                    record.setNumber(cols[offset+3].trim());
+                } else if (cols.length == 10) {
+                    // missing product number
+                    record.setName(cols[1].trim());
+                    record.setOrigin(cols[2].trim());
+                    offset = -1;
+                    record.setNumber("N/A");
+                } else if(cols.length == 9) {
+                    // missing origin and product number
+                    record.setName(cols[1].trim());
+                    record.setOrigin(" ");
+                    offset = -2;
+                    record.setNumber(" ");
                 }
 
-                record.setNumber(cols[offset+3].trim());
                 record.setQuantity(cols[offset+6].trim());
                 record.setPrice(cols[offset+7].trim());
                 record.setTax(cols[offset+8].trim());

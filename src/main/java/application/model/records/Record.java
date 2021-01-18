@@ -72,6 +72,7 @@ public class Record {
     }
 
     public void setName(String name) {
+        name = name.replace('Ϊ','Ι');
         id.setName(name);
     }
 
