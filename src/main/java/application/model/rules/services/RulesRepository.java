@@ -1,16 +1,20 @@
 package application.model.rules.services;
 
-import application.hibernate.HibernateUtil;
+import application.hibernate.IHibernateUtil;
 import application.model.rules.Rules;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component("rulesRepository")
 public class RulesRepository implements IRulesRepository {
+    @Autowired
+    IHibernateUtil dbConnection;
+
     public List<String> getScodes() {
         return getRules()
                 .stream()
@@ -18,11 +22,11 @@ public class RulesRepository implements IRulesRepository {
                 .collect(Collectors.toList());
     }
     public List<Rules> getRules() {
-        return HibernateUtil.getElements("Rules");
+        return dbConnection.getElements("Rules");
     }
 
     public Rules getRule(String sCode) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         session.beginTransaction();
 
         String queryText = "from Rules rule " +
@@ -43,7 +47,7 @@ public class RulesRepository implements IRulesRepository {
         if(! newRule.isValid()) {
             return false;
         }
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         session.saveOrUpdate(newRule);
         tx.commit();
@@ -52,7 +56,7 @@ public class RulesRepository implements IRulesRepository {
     }
 
     public void deleteRule(Rules rule) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         session.delete(rule);
         tx.commit();

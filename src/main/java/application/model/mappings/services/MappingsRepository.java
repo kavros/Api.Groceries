@@ -1,20 +1,24 @@
 package application.model.mappings.services;
 
-import application.hibernate.HibernateUtil;
+import application.hibernate.IHibernateUtil;
 import application.model.mappings.Mappings;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component("mappingsRepository")
 public class MappingsRepository implements IMappingsRepository {
+    @Autowired
+    IHibernateUtil dbConnection;
+
     @Override
     public List getMappings() {
-        return HibernateUtil.getElements("Mappings");
+        return dbConnection.getElements("Mappings");
     }
     public void saveMapping(Mappings mapping) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         session.save(mapping);
         tx.commit();

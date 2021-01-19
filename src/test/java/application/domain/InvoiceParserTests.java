@@ -3,13 +3,19 @@ package application.domain;
 import application.domain.importer.parser.InvoiceParser;
 import application.domain.importer.parser.ParserResult;
 import application.domain.importer.price_calculator.PriceCalculator;
+import application.hibernate.IHibernateUtil;
 import application.model.mappings.Mappings;
 import application.model.mappings.services.IMappingsRepository;
+import application.model.records.Record;
 import application.model.rules.Rules;
 import application.model.rules.services.IRulesRepository;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.IOException;
@@ -19,8 +25,11 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.hibernate.query.Query;
+import static org.mockito.ArgumentMatchers.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({IRulesRepository.class, IMappingsRepository.class})
@@ -29,16 +38,21 @@ public class InvoiceParserTests {
     private IRulesRepository rulesRepo;
     private IMappingsRepository mappingsRepo;
     private InvoiceParser parser;
+    IHibernateUtil dbConnection;
+
     @Before
     public void Setup()
     {
+
+        dbConnection = mock(IHibernateUtil.class);
         rulesRepo = mock(IRulesRepository.class);
         mappingsRepo = mock(IMappingsRepository.class);
         setupMockData();
         parser = new InvoiceParser(
                 rulesRepo,
                 mappingsRepo,
-                new PriceCalculator()
+                new PriceCalculator(),
+                dbConnection
         );
 
 
@@ -59,35 +73,55 @@ public class InvoiceParserTests {
         rules.add(rule);
         when(rulesRepo.getRules()).thenReturn(rules);
         when(mappingsRepo.getMappings()).thenReturn(mappings);
+
+        // mock database
+        SessionFactory mockedSessionFactory =  Mockito.mock(SessionFactory.class);
+        Session mockedSession = Mockito.mock(Session.class);
+        Transaction mockedTransaction = Mockito.mock(Transaction.class);
+        Query mockedQuery = Mockito.mock(Query.class);
+
+        Mockito.when(mockedQuery.list()).thenReturn(new ArrayList<Record>());
+        Mockito.when(mockedSession.createQuery(any(String.class))).thenReturn(mockedQuery);
+        Mockito.when(mockedSessionFactory.openSession()).thenReturn(mockedSession);
+        Mockito.when(mockedSession.beginTransaction()).thenReturn(mockedTransaction);
+        Mockito.when(mockedSession.getTransaction()).thenReturn(mockedTransaction);
+        when(dbConnection.getSessionFactory()).thenReturn(mockedSessionFactory);
     }
 
-    private String getInvoiceContent(String filePath) throws IOException{
-        filePath = ".\\src\\test\\java\\application\\domain\\missing_col_lot_number.txt";
-        List<String> lines =
-                Files.readAllLines(
-                        Paths.get(filePath)
-                );
-        StringBuilder content = new StringBuilder();
-        for (String line : lines) {
-            content.append(line).append('\n');
-
-        }
-        return content.toString();
+    private String getInvoiceContent(String row) {
+        String invoiceStart = "ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ"+"\n"+
+                "Ημερομηνία        : 24/12/2020"+"\n"+
+                "Ώρα Αποστολής     : 11:24" +"\n"+
+                "ΑΞΙΑ %"+"\n";
+        String invoiceEnd = "ΣΥΝΟΛΑ";
+        return  invoiceStart + row + invoiceEnd;
     }
 
     @Test
     public void ParseAndLoad_WhenThePartNumberMissing_ReturnsNotAssigned() throws IOException, ParseException {
 
-        String invoiceContent = "ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ"+"\n"+
-                "Ημερομηνία        : 24/12/2020"+"\n"+
-                "Ώρα Αποστολής     : 11:24" +"\n"+
-                "ΑΞΙΑ %"+"\n"+
-                "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 0 0 20 0.84 13 16.8 0"+"\n"+
-                "ΣΥΝΟΛΑ";
+            String invoiceContent =
+                    getInvoiceContent(
+                    "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 0 0 20 0.84 13 16.8 0"+"\n"
+                    );
+
+            ParserResult data = null;
+
+            data = parser.parseAndLoad(invoiceContent);
+
+            assertEquals(data.records.get(0).getNumber(), "N/A");
+    }
+
+    @Test
+    public void ParseAndLoad_WhenThePartNumberSet_ReturnsCorrect() throws ParseException {
+
+        String invoiceContent = getInvoiceContent(
+                "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 2939220720 0 0 20 0.84 13 16.8 0"+"\n");
+
         ParserResult data = null;
 
-        //data = parser.parseAndLoad(invoiceContent);
+        data = parser.parseAndLoad(invoiceContent);
 
-        //assertEquals(data.records.get(0).getNumber(), "N/A");
+        assertEquals(data.records.get(0).getNumber(), "2939220720");
     }
 }

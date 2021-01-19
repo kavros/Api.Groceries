@@ -1,7 +1,7 @@
 package application.domain.importer.parser;
 
 import application.domain.importer.price_calculator.PriceCalculator;
-import application.hibernate.HibernateUtil;
+import application.hibernate.IHibernateUtil;
 import application.model.mappings.Mappings;
 import application.model.mappings.services.IMappingsRepository;
 import application.model.records.Record;
@@ -25,13 +25,17 @@ public class InvoiceParser implements IInvoiceParser {
     IMappingsRepository mappingsRepository;
     @Autowired
     IRulesRepository rulesRepository;
+    @Autowired
+    IHibernateUtil dbConnection;
 
     public InvoiceParser(IRulesRepository rules,
                          IMappingsRepository mappings,
-                         PriceCalculator calc) {
+                         PriceCalculator calc,
+                         IHibernateUtil dbCon) {
         this.rulesRepository = rules;
         this.mappingsRepository  = mappings;
         this.priceCalculator = calc;
+        this.dbConnection = dbCon;
 
     }
     public ParserResult parseAndLoad(String invoiceContent) throws ParseException {
@@ -158,7 +162,7 @@ public class InvoiceParser implements IInvoiceParser {
 
         List<Record> records = res.records;
         List<String> warnings = res.warnings;
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         session.beginTransaction();
 
         Timestamp invoiceDate = records.get(0).getpDate();
@@ -215,8 +219,6 @@ public class InvoiceParser implements IInvoiceParser {
             res.records.get(i).setpDate(res.invoiceDate);
         }
     }
-
-
 
     private boolean hasBeenImported(Timestamp invoiceDate, Session session){
 

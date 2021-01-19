@@ -7,9 +7,19 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.springframework.stereotype.Component;
 
-public class HibernateUtil {
+@Component("dbConnection")
+public class HibernateUtil implements IHibernateUtil{
     private static SessionFactory sessionFactory = buildSessionFactory();
+
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    public void shutdown() {
+        sessionFactory.close();
+    }
 
     private static SessionFactory buildSessionFactory() {
         try
@@ -31,16 +41,8 @@ public class HibernateUtil {
         }
     }
 
-    public static SessionFactory getSessionFactory() {
-        return sessionFactory;
-    }
-
-    public static void shutdown() {
-        sessionFactory.close();
-    }
-
-    public static List getElements(String tableName) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+    public List getElements(String tableName) {
+        Session session = getSessionFactory().openSession();
         List elements = session.createQuery("from "+tableName).list();
         session.close();
         return elements;

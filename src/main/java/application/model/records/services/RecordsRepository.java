@@ -1,10 +1,12 @@
 package application.model.records.services;
 
 import application.hibernate.HibernateUtil;
+import application.hibernate.IHibernateUtil;
 import application.model.records.Record;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.*;
@@ -13,10 +15,11 @@ import java.util.stream.Collectors;
 
 @Component("recordsRepository")
 public class RecordsRepository implements IRecordsRepository {
-
+    @Autowired
+    IHibernateUtil dbConnection;
     public void updatePrices(List<Map.Entry<String, BigDecimal>> data, String invoiceDate)
     {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
 
         Query query = session
@@ -33,7 +36,7 @@ public class RecordsRepository implements IRecordsRepository {
     }
     
     public Map<String,List<Float>> getLatestNewPrices(List<String> sCodes) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         session.beginTransaction();
 
         List<Record> records = session
@@ -57,7 +60,7 @@ public class RecordsRepository implements IRecordsRepository {
     }
 
     public Map<String, List<Float>> getLatestInvoicePrices(List<String> sCodes) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         session.beginTransaction();
         Query query = session.createQuery("from Record order by pDate desc" );
         List<Record> records = query.list();

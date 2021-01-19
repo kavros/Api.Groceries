@@ -1,10 +1,12 @@
 package application.model.smast.services;
 
 import application.hibernate.HibernateUtil;
+import application.hibernate.IHibernateUtil;
 import application.model.smast.Smast;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -13,9 +15,11 @@ import java.util.Map;
 
 @Component("retailPricesRepository")
 public class RetailPricesRepository implements IRetailPricesRepository {
+    @Autowired
+    IHibernateUtil dbConnection;
 
     public List<Smast> getRetailPrices(List<String> sCodes) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         session.beginTransaction();
 
         String queryText = "from Smast report " +
@@ -35,7 +39,7 @@ public class RetailPricesRepository implements IRetailPricesRepository {
     }
 
     public void updatePrices(List<Map.Entry<String, BigDecimal>> sCodesAndPrices) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = dbConnection.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         Query query = session
                 .createQuery("update Smast set sRetailPr= :new_price " +
