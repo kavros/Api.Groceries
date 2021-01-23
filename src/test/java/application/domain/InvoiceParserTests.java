@@ -18,9 +18,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -56,18 +56,17 @@ public class InvoiceParserTests {
     }
 
     private void setupMockData() {
-        List<Mappings> mappings = new ArrayList<Mappings>();
-        Mappings mapping = new Mappings();
-        mapping.setpName("ΜΑΝΤΑΡΙΝΙΑ");
-        mapping.setsCode("361");
-        mappings.add(mapping);
 
-        List<Rules> rules  = new ArrayList<Rules>();
-        Rules rule =  new Rules();
-        rule.setsCode("361");
-        rule.setMinProfit(new BigDecimal(0.5));
-        rule.setProfitPercentage(new BigDecimal(0.3));
-        rules.add(rule);
+        List<Mappings> mappings = Arrays.asList(
+                new Mappings("ΜΑΝΤΑΡΙΝΙΑ", "361"),
+                new Mappings("ΜΑΡΑΘΟ", "362")
+        );
+
+        List<Rules> rules  = Arrays.asList(
+            new Rules("361",0.5f,0.3f),
+            new Rules("362",0.5f,0.3f)
+        );
+
         when(rulesRepo.getRules()).thenReturn(rules);
         when(mappingsRepo.getMappings()).thenReturn(mappings);
 
@@ -121,4 +120,23 @@ public class InvoiceParserTests {
 
         assertEquals(data.records.get(0).getNumber(), "2939220720");
     }
+
+    @Test
+    public void ParseAndLoad_WhenDocumentContainsTwoPages_ReturnsCorrectContent() throws ParseException {
+
+        String invoiceContent = getInvoiceContent(
+                "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 2939220720 0 0 20 0.84 13 16.8 0"+"\n"+
+                "ΕΠΩΝΥΜΙΑ"+"\n"+
+                "ΑΞΙΑ %"+"\n"+
+                "120 ΜΑΡΑΘΟ ΜΕΓΑΡΑ 791812202 0 0 5 0.24 13 1.2 0"+"\n"
+            );
+
+        ParserResult data = null;
+
+        data = parser.parseAndLoad(invoiceContent);
+
+        assertEquals(data.records.get(0).getName(), "ΜΑΝΤΑΡΙΝΙΑ");
+        assertEquals(data.records.get(1).getName(), "ΜΑΡΑΘΟ");
+    }
+
 }

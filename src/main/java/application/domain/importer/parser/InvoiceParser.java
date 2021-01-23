@@ -60,7 +60,11 @@ public class InvoiceParser implements IInvoiceParser {
             } else if (lines[i].contains("ΑΞΙΑ %")) {
                 shouldRead = true;
                 continue;
-            } else if(lines[i].contains("ΣΥΝΟΛΑ") || lines[i].contains("ΑΝΑΛΥΣΗ")) {
+            } else if(
+                        lines[i].contains("ΣΥΝΟΛΑ") ||
+                        lines[i].contains("ΑΝΑΛΥΣΗ") ||
+                        lines[i].contains("ΕΠΩΝΥΜΙΑ")
+                    ) {
                 shouldRead = false;
             }
             if(date != null && time != null && dateTime == null){

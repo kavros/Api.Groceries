@@ -24,6 +24,13 @@ public class Rules {
         return sCode;
     }
 
+    public Rules() {}
+    public Rules(String code, float profitPerf, float minProf) {
+        this.sCode = code;
+        this.profitPercentage = new BigDecimal(profitPerf);
+        this.minProfit = new BigDecimal(minProf);
+    }
+
     public void setsCode(String sCode) {
         this.sCode = sCode;
     }

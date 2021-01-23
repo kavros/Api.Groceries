@@ -32,6 +32,12 @@ public class Mappings {
         this.pName = pName;
     }
 
+    public Mappings(){}
+    public Mappings(String name, String scode){
+        this.pName = name;
+        this.sCode = scode;
+    }
+
     @Override
     public String toString() {
         return "Mappings{" +

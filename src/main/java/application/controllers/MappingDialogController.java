@@ -43,18 +43,15 @@ public class MappingDialogController {
 
     @PutMapping("/addOrUpdateMappingDialogData")
     public ResponseEntity saveMappingDialogData(@RequestBody MappingsDialogDTO data) {
-        Rules rule = new Rules();
-        rule.setMinProfit(floatToBigDecimal(data.getMinProfit()));
-        rule.setProfitPercentage(floatToBigDecimal(data.getProfitPercentage()));
-        rule.setsCode(data.getsCode());
+        Rules rule = new Rules(data.getsCode(),
+                data.getProfitPercentage(),
+                data.getMinProfit());
 
         boolean hasSucceed = rulesRepository.addOrUpdateRule(rule);
         if(!hasSucceed) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        Mappings mapping = new Mappings();
-        mapping.setpName(data.getpName());
-        mapping.setsCode(data.getsCode());
+        Mappings mapping = new Mappings(data.getpName(), data.getsCode());
 
         mappingsRepository.saveMapping(mapping);
         return  new ResponseEntity( HttpStatus.OK);
