@@ -15,7 +15,7 @@ public class MappingsRepository implements IMappingsRepository {
 
     @Override
     public List getMappings() {
-        return dbConnection.getElements("Mappings");
+        return dbConnection.getElements(Mapping.class.getName());
     }
     public void saveMapping(Mapping mapping) {
         Session session = dbConnection.getSessionFactory().openSession();
