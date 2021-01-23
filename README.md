@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/kavros/Api.Groceries.svg?branch=master)](https://travis-ci.com/kavros/Api.Groceries)
+[![Build](https://github.com/kavros/Api.Groceries/workflows/Java CI with Maven/badge.svg)](https://github.com/kavros/Api.Groceries/actions)
 # Overview
 Automated Invoice Processing workflow.
 
