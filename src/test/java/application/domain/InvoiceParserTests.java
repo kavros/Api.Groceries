@@ -12,16 +12,13 @@ import application.model.rules.services.IRulesRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +28,7 @@ import static org.mockito.Mockito.when;
 import org.hibernate.query.Query;
 import static org.mockito.ArgumentMatchers.*;
 
-@RunWith(PowerMockRunner.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PrepareForTest({IRulesRepository.class, IMappingsRepository.class})
 public class InvoiceParserTests {
 
@@ -40,7 +37,7 @@ public class InvoiceParserTests {
     private InvoiceParser parser;
     IHibernateUtil dbConnection;
 
-    @Before
+    @BeforeAll
     public void Setup()
     {
 
