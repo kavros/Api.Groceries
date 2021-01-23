@@ -1,8 +1,7 @@
-package application.model.records.services;
+package application.model.record.services;
 
-import application.hibernate.HibernateUtil;
 import application.hibernate.IHibernateUtil;
-import application.model.records.Record;
+import application.model.record.Record;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;

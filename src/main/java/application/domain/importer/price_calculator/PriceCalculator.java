@@ -1,6 +1,6 @@
 package application.domain.importer.price_calculator;
 
-import application.model.mappings.Mappings;
+import application.model.mapping.Mapping;
 import application.model.rule.Rule;
 import org.springframework.stereotype.Component;
 import java.math.RoundingMode;
@@ -14,7 +14,7 @@ public class PriceCalculator implements IPriceCalculator {
 
     public float getNewPrice(
             String sName, float invoicePrice,
-            List<Mappings> mappings, List<Rule> rules)
+            List<Mapping> mappings, List<Rule> rules)
     {
         Rule rule = getRuleFor(sName,mappings,rules);
         float profitPercentage = rule.getProfitPercentage();
@@ -53,9 +53,9 @@ public class PriceCalculator implements IPriceCalculator {
 
 
     private Rule getRuleFor(String sName,
-                            List<Mappings> mappings, List<Rule> rules)
+                            List<Mapping> mappings, List<Rule> rules)
     {
-        Mappings mapping = mappings
+        Mapping mapping = mappings
                 .stream()
                 .filter(x -> x.getpName().equals(sName))
                 .findFirst().get();

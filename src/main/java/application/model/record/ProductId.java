@@ -1,4 +1,4 @@
-package application.model.records;
+package application.model.record;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

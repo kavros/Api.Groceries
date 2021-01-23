@@ -3,10 +3,10 @@ package application.domain.importer.services;
 import application.controllers.dtos.ImportDTO;
 import application.domain.importer.parser.InvoiceParser;
 import application.domain.importer.parser.ParserResult;
-import application.model.mappings.Mappings;
-import application.model.mappings.services.IMappingsRepository;
-import application.model.records.Record;
-import application.model.records.services.IRecordsRepository;
+import application.model.mapping.Mapping;
+import application.model.mapping.services.IMappingsRepository;
+import application.model.record.Record;
+import application.model.record.services.IRecordsRepository;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
 import application.model.smast.Smast;
@@ -63,7 +63,7 @@ public class TableComposer implements ITableComposer {
         response.warnings.addAll(parserResult.warnings);
         response.invoiceDate =  parserResult.invoiceDate.toString();
         List<Rule> rules = rulesRepository.getRules();
-        List<Mappings> mappings = mappingsRepository.getMappings();
+        List<Mapping> mappings = mappingsRepository.getMappings();
         List<String> sCodes = rules
                 .stream()
                 .map(Rule::getsCode)
@@ -113,7 +113,7 @@ public class TableComposer implements ITableComposer {
         return err;
     }
 
-    private Rule getRule(String sName, List<Mappings> mappings, List<Rule> rules){
+    private Rule getRule(String sName, List<Mapping> mappings, List<Rule> rules){
         String sCode = mappings
                 .stream()
                 .filter(x->x.getpName().equals(sName))

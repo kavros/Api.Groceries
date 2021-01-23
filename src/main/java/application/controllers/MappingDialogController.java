@@ -1,8 +1,8 @@
 package application.controllers;
 
 import application.controllers.dtos.MappingsDialogDTO;
-import application.model.mappings.Mappings;
-import application.model.mappings.services.IMappingsRepository;
+import application.model.mapping.Mapping;
+import application.model.mapping.services.IMappingsRepository;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
 import application.model.smast.services.IRetailPricesRepository;
@@ -51,7 +51,7 @@ public class MappingDialogController {
         if(!hasSucceed) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        Mappings mapping = new Mappings(data.getpName(), data.getsCode());
+        Mapping mapping = new Mapping(data.getpName(), data.getsCode());
 
         mappingsRepository.saveMapping(mapping);
         return  new ResponseEntity( HttpStatus.OK);

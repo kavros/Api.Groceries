@@ -1,7 +1,7 @@
 package application.domain.history_doc_generator;
 
 import application.domain.importer.price_calculator.IPriceCalculator;
-import application.model.records.services.IRecordsRepository;
+import application.model.record.services.IRecordsRepository;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
 import application.model.smast.Smast;

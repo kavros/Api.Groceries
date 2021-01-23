@@ -15,10 +15,10 @@
          <property name="show_sql">false</property>
         <property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
 
-        <mapping class="application.model.records.Record"></mapping>
+        <mapping class="application.model.record.Record"></mapping>
         <mapping class="application.model.smast.Smast"></mapping>
         <mapping class="application.model.rule.Rule"></mapping>
-        <mapping class="application.model.mappings.Mappings"></mapping>
+        <mapping class="application.model.mapping.Mapping"></mapping>
     </session-factory>
 
 

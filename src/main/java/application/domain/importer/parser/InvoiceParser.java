@@ -2,9 +2,9 @@ package application.domain.importer.parser;
 
 import application.domain.importer.price_calculator.PriceCalculator;
 import application.hibernate.IHibernateUtil;
-import application.model.mappings.Mappings;
-import application.model.mappings.services.IMappingsRepository;
-import application.model.records.Record;
+import application.model.mapping.Mapping;
+import application.model.mapping.services.IMappingsRepository;
+import application.model.record.Record;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
 import org.hibernate.Session;
@@ -184,10 +184,10 @@ public class InvoiceParser implements IInvoiceParser {
     }
 
     private void setSCodes(ParserResult res) {
-        List<Mappings> mappings = mappingsRepository.getMappings();
+        List<Mapping> mappings = mappingsRepository.getMappings();
         List<String> missingSettings = new ArrayList();
         for(Record record: res.records){
-            Optional<Mappings> mapping = mappings
+            Optional<Mapping> mapping = mappings
                     .stream()
                     .filter(s -> record.getName().equals(s.getpName()))
                     .findFirst();
@@ -202,7 +202,7 @@ public class InvoiceParser implements IInvoiceParser {
     }
 
     private void setNewPrices(ParserResult res){
-        List<Mappings> mappings = mappingsRepository.getMappings();
+        List<Mapping> mappings = mappingsRepository.getMappings();
         List<Rule> rules = rulesRepository.getRules();
         for (int i = 0; i < res.records.size(); i++) {
             Record record = res.records.get(i);

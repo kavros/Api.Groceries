@@ -1,4 +1,4 @@
-package application.model.mappings;
+package application.model.mapping;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Api_Groceries.dbo.Mappings")
-public class Mappings {
+public class Mapping {
 
     @Column(name = "sCode", unique = true, nullable = false, length = 255)
     private String sCode;
@@ -32,8 +32,8 @@ public class Mappings {
         this.pName = pName;
     }
 
-    public Mappings(){}
-    public Mappings(String name, String scode){
+    public Mapping(){}
+    public Mapping(String name, String scode){
         this.pName = name;
         this.sCode = scode;
     }

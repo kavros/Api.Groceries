@@ -1,7 +1,7 @@
-package application.model.mappings.services;
+package application.model.mapping.services;
 
 import application.hibernate.IHibernateUtil;
-import application.model.mappings.Mappings;
+import application.model.mapping.Mapping;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class MappingsRepository implements IMappingsRepository {
     public List getMappings() {
         return dbConnection.getElements("Mappings");
     }
-    public void saveMapping(Mappings mapping) {
+    public void saveMapping(Mapping mapping) {
         Session session = dbConnection.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         session.save(mapping);

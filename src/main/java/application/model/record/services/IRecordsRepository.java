@@ -1,4 +1,4 @@
-package application.model.records.services;
+package application.model.record.services;
 
 import java.math.BigDecimal;
 import java.util.List;

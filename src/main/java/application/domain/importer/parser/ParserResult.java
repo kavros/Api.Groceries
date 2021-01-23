@@ -1,6 +1,6 @@
 package application.domain.importer.parser;
 
-import application.model.records.Record;
+import application.model.record.Record;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;

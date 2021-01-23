@@ -4,9 +4,9 @@ import application.domain.importer.parser.InvoiceParser;
 import application.domain.importer.parser.ParserResult;
 import application.domain.importer.price_calculator.PriceCalculator;
 import application.hibernate.IHibernateUtil;
-import application.model.mappings.Mappings;
-import application.model.mappings.services.IMappingsRepository;
-import application.model.records.Record;
+import application.model.mapping.Mapping;
+import application.model.mapping.services.IMappingsRepository;
+import application.model.record.Record;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
 import org.hibernate.Session;
@@ -57,9 +57,9 @@ public class InvoiceParserTests {
 
     private void setupMockData() {
 
-        List<Mappings> mappings = Arrays.asList(
-                new Mappings("ΜΑΝΤΑΡΙΝΙΑ", "361"),
-                new Mappings("ΜΑΡΑΘΟ", "362")
+        List<Mapping> mappings = Arrays.asList(
+                new Mapping("ΜΑΝΤΑΡΙΝΙΑ", "361"),
+                new Mapping("ΜΑΡΑΘΟ", "362")
         );
 
         List<Rule> rules  = Arrays.asList(
