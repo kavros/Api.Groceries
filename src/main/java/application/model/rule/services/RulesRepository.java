@@ -1,7 +1,7 @@
-package application.model.rules.services;
+package application.model.rule.services;
 
 import application.hibernate.IHibernateUtil;
-import application.model.rules.Rules;
+import application.model.rule.Rule;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -18,32 +18,32 @@ public class RulesRepository implements IRulesRepository {
     public List<String> getScodes() {
         return getRules()
                 .stream()
-                .map(Rules::getsCode)
+                .map(Rule::getsCode)
                 .collect(Collectors.toList());
     }
-    public List<Rules> getRules() {
-        return dbConnection.getElements("Rules");
+    public List<Rule> getRules() {
+        return dbConnection.getElements(Rule.class.getName());
     }
 
-    public Rules getRule(String sCode) {
+    public Rule getRule(String sCode) {
         Session session = dbConnection.getSessionFactory().openSession();
         session.beginTransaction();
 
-        String queryText = "from Rules rule " +
+        String queryText = "from "+ Rule.class.getName() + " rule " +
                 "where rule.sCode = :sCode";
 
         Query query = session.createQuery(queryText);
         query.setParameter("sCode", sCode);
-        Rules rule = null;
+        Rule rule = null;
         if( ! query.getResultList().isEmpty()) {
-            rule = (Rules) query.getResultList().get(0);
+            rule = (Rule) query.getResultList().get(0);
         }
         session.getTransaction().commit();
         session.close();
         return rule;
     }
 
-    public boolean addOrUpdateRule(Rules newRule) {
+    public boolean addOrUpdateRule(Rule newRule) {
         if(! newRule.isValid()) {
             return false;
         }
@@ -55,7 +55,7 @@ public class RulesRepository implements IRulesRepository {
         return true;
     }
 
-    public void deleteRule(Rules rule) {
+    public void deleteRule(Rule rule) {
         Session session = dbConnection.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();
         session.delete(rule);

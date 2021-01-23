@@ -1,8 +1,8 @@
 package application.controllers;
 
 import application.controllers.dtos.RulesTableRowDTO;
-import application.model.rules.Rules;
-import application.model.rules.services.IRulesRepository;
+import application.model.rule.Rule;
+import application.model.rule.services.IRulesRepository;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class RulesController {
 
     @GetMapping("/getRulesTable")
     public ResponseEntity getRules() {
-        List<Rules> rules = rulesRepository.getRules();
+        List<Rule> rules = rulesRepository.getRules();
 
         List<String> sCodes = rulesRepository.getScodes();
         RulesTableRowDTO[] rulesTableRowDTO = retailPricesRepository
@@ -29,7 +29,7 @@ public class RulesController {
                 .stream()
                 .map(
                         x -> {
-                            Rules t = rules
+                            Rule t = rules
                                     .stream()
                                     .filter(r -> r.getsCode().equals(x.getsCode()))
                                     .findFirst().get();
@@ -46,7 +46,7 @@ public class RulesController {
     }
 
     @PostMapping("/addOrUpdateRule")
-    public ResponseEntity addOrUpdateRule(@RequestBody Rules newRule) {
+    public ResponseEntity addOrUpdateRule(@RequestBody Rule newRule) {
         String sName = retailPricesRepository.getSName(newRule.getsCode());
         boolean isValid = rulesRepository.addOrUpdateRule(newRule);
         if(!isValid || sName == null)
@@ -56,7 +56,7 @@ public class RulesController {
     }
 
     @DeleteMapping("/deleteRule")
-    public ResponseEntity deleteRule(@RequestBody Rules rule) {
+    public ResponseEntity deleteRule(@RequestBody Rule rule) {
         rulesRepository.deleteRule(rule);
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -5,8 +5,8 @@ import application.hibernate.IHibernateUtil;
 import application.model.mappings.Mappings;
 import application.model.mappings.services.IMappingsRepository;
 import application.model.records.Record;
-import application.model.rules.Rules;
-import application.model.rules.services.IRulesRepository;
+import application.model.rule.Rule;
+import application.model.rule.services.IRulesRepository;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,7 +203,7 @@ public class InvoiceParser implements IInvoiceParser {
 
     private void setNewPrices(ParserResult res){
         List<Mappings> mappings = mappingsRepository.getMappings();
-        List<Rules> rules = rulesRepository.getRules();
+        List<Rule> rules = rulesRepository.getRules();
         for (int i = 0; i < res.records.size(); i++) {
             Record record = res.records.get(i);
             float newPrice =

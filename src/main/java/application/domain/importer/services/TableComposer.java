@@ -7,8 +7,8 @@ import application.model.mappings.Mappings;
 import application.model.mappings.services.IMappingsRepository;
 import application.model.records.Record;
 import application.model.records.services.IRecordsRepository;
-import application.model.rules.Rules;
-import application.model.rules.services.IRulesRepository;
+import application.model.rule.Rule;
+import application.model.rule.services.IRulesRepository;
 import application.model.smast.Smast;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,11 +62,11 @@ public class TableComposer implements ITableComposer {
 
         response.warnings.addAll(parserResult.warnings);
         response.invoiceDate =  parserResult.invoiceDate.toString();
-        List<Rules> rules = rulesRepository.getRules();
+        List<Rule> rules = rulesRepository.getRules();
         List<Mappings> mappings = mappingsRepository.getMappings();
         List<String> sCodes = rules
                 .stream()
-                .map(Rules::getsCode)
+                .map(Rule::getsCode)
                 .collect(Collectors.toList());
 
         List<Smast> smastList = retailPricesRepo.getRetailPrices(sCodes);
@@ -82,7 +82,7 @@ public class TableComposer implements ITableComposer {
 
         parserResult.records.forEach(x -> {
 
-            Rules rule = getRule(x.getName(), mappings, rules);
+            Rule rule = getRule(x.getName(), mappings, rules);
             String sCode = rule.getsCode();
             Smast smast = getKefalaioData(sCode, smastList);
 
@@ -113,13 +113,13 @@ public class TableComposer implements ITableComposer {
         return err;
     }
 
-    private Rules getRule(String sName, List<Mappings> mappings,List<Rules> rules){
+    private Rule getRule(String sName, List<Mappings> mappings, List<Rule> rules){
         String sCode = mappings
                 .stream()
                 .filter(x->x.getpName().equals(sName))
                 .findFirst()
                 .get().getsCode();
-        Optional<Rules> rule = rules.stream()
+        Optional<Rule> rule = rules.stream()
                 .filter(x->x.getsCode().equals(sCode))
                 .findFirst();
         if(!rule.isPresent()){

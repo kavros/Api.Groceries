@@ -7,8 +7,8 @@ import application.hibernate.IHibernateUtil;
 import application.model.mappings.Mappings;
 import application.model.mappings.services.IMappingsRepository;
 import application.model.records.Record;
-import application.model.rules.Rules;
-import application.model.rules.services.IRulesRepository;
+import application.model.rule.Rule;
+import application.model.rule.services.IRulesRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -62,9 +62,9 @@ public class InvoiceParserTests {
                 new Mappings("ΜΑΡΑΘΟ", "362")
         );
 
-        List<Rules> rules  = Arrays.asList(
-            new Rules("361",0.5f,0.3f),
-            new Rules("362",0.5f,0.3f)
+        List<Rule> rules  = Arrays.asList(
+            new Rule("361",0.5f,0.3f),
+            new Rule("362",0.5f,0.3f)
         );
 
         when(rulesRepo.getRules()).thenReturn(rules);

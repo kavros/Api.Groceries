@@ -1,7 +1,7 @@
 package application.domain.importer.price_calculator;
 
 import application.model.mappings.Mappings;
-import application.model.rules.Rules;
+import application.model.rule.Rule;
 import org.springframework.stereotype.Component;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -14,9 +14,9 @@ public class PriceCalculator implements IPriceCalculator {
 
     public float getNewPrice(
             String sName, float invoicePrice,
-            List<Mappings> mappings, List<Rules> rules)
+            List<Mappings> mappings, List<Rule> rules)
     {
-        Rules rule = getRuleFor(sName,mappings,rules);
+        Rule rule = getRuleFor(sName,mappings,rules);
         float profitPercentage = rule.getProfitPercentage();
         float minimumProfit = rule.getMinProfit();
 
@@ -32,12 +32,12 @@ public class PriceCalculator implements IPriceCalculator {
     public float getHistoryCatalogPrice(
             String sCode,
             float invoicePrice,
-            List<Rules> rules )
+            List<Rule> rules )
     {
         Optional<Float> percentage = rules
                 .stream()
                 .filter(x ->x.getsCode().equals(sCode))
-                .map(Rules::getProfitPercentage)
+                .map(Rule::getProfitPercentage)
                 .findFirst();
 
         return round2Decimals((float)(invoicePrice*1.13)*(1.0f+percentage.get()));
@@ -52,15 +52,15 @@ public class PriceCalculator implements IPriceCalculator {
     }
 
 
-    private Rules getRuleFor(String sName,
-        List<Mappings> mappings, List<Rules> rules)
+    private Rule getRuleFor(String sName,
+                            List<Mappings> mappings, List<Rule> rules)
     {
         Mappings mapping = mappings
                 .stream()
                 .filter(x -> x.getpName().equals(sName))
                 .findFirst().get();
 
-        Rules rule = rules
+        Rule rule = rules
                 .stream()
                 .filter(r->r.getsCode().equals(mapping.getsCode()))
                 .findFirst()

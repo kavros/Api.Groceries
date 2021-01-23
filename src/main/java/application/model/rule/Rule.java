@@ -1,4 +1,4 @@
-package application.model.rules;
+package application.model.rule;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Api_Groceries.dbo.Rules")
-public class Rules {
+public class Rule {
 
     @Id
     @Column(name = "sCode", unique = true, nullable = false, length = 255)
@@ -24,11 +24,11 @@ public class Rules {
         return sCode;
     }
 
-    public Rules() {}
-    public Rules(String code, float profitPerf, float minProf) {
+    public Rule() {}
+    public Rule(String code, float profitPerf, float minProf) {
         this.sCode = code;
-        this.profitPercentage = new BigDecimal(profitPerf);
-        this.minProfit = new BigDecimal(minProf);
+        this.profitPercentage = BigDecimal.valueOf(profitPerf);
+        this.minProfit = BigDecimal.valueOf(minProf);
     }
 
     public void setsCode(String sCode) {

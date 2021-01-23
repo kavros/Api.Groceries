@@ -3,8 +3,8 @@ package application.controllers;
 import application.controllers.dtos.MappingsDialogDTO;
 import application.model.mappings.Mappings;
 import application.model.mappings.services.IMappingsRepository;
-import application.model.rules.Rules;
-import application.model.rules.services.IRulesRepository;
+import application.model.rule.Rule;
+import application.model.rule.services.IRulesRepository;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,7 @@ public class MappingDialogController {
         }
         response.setsName(sName);
 
-        Rules rule = rulesRepository.getRule(sCode);
+        Rule rule = rulesRepository.getRule(sCode);
         if(rule != null) {
             response.setMinProfit(rule.getMinProfit());
             response.setProfitPercentage(rule.getProfitPercentage());
@@ -43,7 +43,7 @@ public class MappingDialogController {
 
     @PutMapping("/addOrUpdateMappingDialogData")
     public ResponseEntity saveMappingDialogData(@RequestBody MappingsDialogDTO data) {
-        Rules rule = new Rules(data.getsCode(),
+        Rule rule = new Rule(data.getsCode(),
                 data.getProfitPercentage(),
                 data.getMinProfit());
 

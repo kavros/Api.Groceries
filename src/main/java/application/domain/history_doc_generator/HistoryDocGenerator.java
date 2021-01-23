@@ -2,8 +2,8 @@ package application.domain.history_doc_generator;
 
 import application.domain.importer.price_calculator.IPriceCalculator;
 import application.model.records.services.IRecordsRepository;
-import application.model.rules.Rules;
-import application.model.rules.services.IRulesRepository;
+import application.model.rule.Rule;
+import application.model.rule.services.IRulesRepository;
 import application.model.smast.Smast;
 import application.model.smast.services.IRetailPricesRepository;
 import org.apache.poi.xwpf.usermodel.*;
@@ -104,7 +104,7 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
         List<String> allSCodes =
                 rulesRepository.getRules()
                         .stream()
-                        .map(Rules::getsCode)
+                        .map(Rule::getsCode)
                         .collect(Collectors.toList());
 
         Map<String, List<Float>> sCodeToInvoicePrices =
@@ -130,7 +130,7 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
     private Map<String, List<Float>> getPercentagePrices(
             Map<String, List<Float>> sCodeToInvoicePrices )
     {
-        List<Rules> rules = rulesRepository.getRules();
+        List<Rule> rules = rulesRepository.getRules();
         Map<String, List<Float>> scodeToSetting = new HashMap<>();
 
         for(Map.Entry<String,List<Float>> scodeToInvoicePrice:
