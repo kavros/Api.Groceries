@@ -2,6 +2,7 @@ package application.domain;
 
 import application.domain.importer.parser.InvoiceParser;
 import application.domain.importer.parser.ParserResult;
+import application.domain.importer.parser.SavakisParser;
 import application.domain.importer.price_calculator.PriceCalculator;
 import application.hibernate.IHibernateUtil;
 import application.model.mapping.Mapping;
@@ -49,7 +50,8 @@ public class InvoiceParserTests {
                 rulesRepo,
                 mappingsRepo,
                 new PriceCalculator(),
-                dbConnection
+                dbConnection,
+                new SavakisParser()
         );
 
 
