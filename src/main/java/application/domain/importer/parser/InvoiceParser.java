@@ -34,7 +34,7 @@ public class InvoiceParser implements IInvoiceParser {
         rulesRepository = rules;
         mappingsRepository  = mappings;
         priceCalculator = calc;
-        factory = theFactory;
+        //factory = theFactory;
         recordsRepository = recordsRepo;
     }
 
