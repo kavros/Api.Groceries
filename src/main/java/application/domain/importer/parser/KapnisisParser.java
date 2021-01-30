@@ -8,9 +8,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-@Component("kapnisisParser")
+
+@Component
 public class KapnisisParser implements IParsers {
 
+    @Override
+    public String getType() {
+        return "kapnisis";
+    }
+
+    @Override
     public ParserResult parse(String invoiceContent) throws ParseException{
         ParserResult res = new ParserResult();
         String[] lines = invoiceContent.split("\n");

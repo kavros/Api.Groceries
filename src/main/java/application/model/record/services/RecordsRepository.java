@@ -8,6 +8,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,4 +79,27 @@ public class RecordsRepository implements IRecordsRepository {
         }
         return map;
     }
+
+    public void storeRecords(List<Record> records){
+        Session session = dbConnection.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        for (int i = 0; i < records.size(); i++) {
+            session.save(records.get(i));
+        }
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    public boolean hasBeenImported(Timestamp invoiceDate){
+        Session session = dbConnection.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        Query query = session.createQuery("from Record" );
+        List<Record> records = query.list();
+        long entries =records.stream().filter(x -> x.getpDate().equals(invoiceDate)).count();
+
+        return entries > 0;
+    }
+
 }

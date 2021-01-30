@@ -1,13 +1,12 @@
 package application.domain;
 
-import application.domain.importer.parser.InvoiceParser;
-import application.domain.importer.parser.ParserResult;
-import application.domain.importer.parser.SavakisParser;
+import application.domain.importer.parser.*;
 import application.domain.importer.price_calculator.PriceCalculator;
 import application.hibernate.IHibernateUtil;
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import application.model.record.Record;
+import application.model.record.services.IRecordsRepository;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
 import org.hibernate.Session;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import static org.mockito.ArgumentMatchers.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -37,11 +39,16 @@ public class InvoiceParserTests {
     private IMappingsRepository mappingsRepo;
     private InvoiceParser parser;
     IHibernateUtil dbConnection;
+    IRecordsRepository recordsRepository;
+
+    @Autowired
+    ParsersFactory factory;
 
     @BeforeAll
     public void Setup()
     {
-
+        factory = mock (ParsersFactory.class);
+        recordsRepository = mock(IRecordsRepository.class);
         dbConnection = mock(IHibernateUtil.class);
         rulesRepo = mock(IRulesRepository.class);
         mappingsRepo = mock(IMappingsRepository.class);
@@ -50,8 +57,8 @@ public class InvoiceParserTests {
                 rulesRepo,
                 mappingsRepo,
                 new PriceCalculator(),
-                dbConnection,
-                new SavakisParser()
+                factory,
+                recordsRepository
         );
 
 
@@ -71,8 +78,16 @@ public class InvoiceParserTests {
 
         when(rulesRepo.getRules()).thenReturn(rules);
         when(mappingsRepo.getMappings()).thenReturn(mappings);
+        when(
+            recordsRepository.hasBeenImported(any(Timestamp.class))
+        ).thenReturn(false);
 
-        // mock database
+        //IParsers savakisParser = new SavakisParser();
+        //when(factory.getService(any(String.class))).thenReturn(savakisParser);
+
+
+
+        /* mock database
         SessionFactory mockedSessionFactory =  Mockito.mock(SessionFactory.class);
         Session mockedSession = Mockito.mock(Session.class);
         Transaction mockedTransaction = Mockito.mock(Transaction.class);
@@ -83,7 +98,7 @@ public class InvoiceParserTests {
         Mockito.when(mockedSessionFactory.openSession()).thenReturn(mockedSession);
         Mockito.when(mockedSession.beginTransaction()).thenReturn(mockedTransaction);
         Mockito.when(mockedSession.getTransaction()).thenReturn(mockedTransaction);
-        when(dbConnection.getSessionFactory()).thenReturn(mockedSessionFactory);
+        when(dbConnection.getSessionFactory()).thenReturn(mockedSessionFactory);*/
     }
 
     private String getInvoiceContent(String row) {
@@ -92,6 +107,7 @@ public class InvoiceParserTests {
                 "Ώρα Αποστολής     : 11:24" +"\n"+
                 "ΑΞΙΑ %"+"\n";
         String invoiceEnd = "ΣΥΝΟΛΑ";
+
         return  invoiceStart + row + invoiceEnd;
     }
 

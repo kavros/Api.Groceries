@@ -1,17 +1,14 @@
 package application.domain.importer.parser;
 
 import application.domain.importer.price_calculator.PriceCalculator;
-import application.hibernate.IHibernateUtil;
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import application.model.record.Record;
+import application.model.record.services.IRecordsRepository;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.*;
 
@@ -25,62 +22,56 @@ public class InvoiceParser implements IInvoiceParser {
     @Autowired
     IRulesRepository rulesRepository;
     @Autowired
-    IHibernateUtil dbConnection;
+    ParsersFactory factory;
     @Autowired
-    IParsers savakisParser;
-    @Autowired
-    IParsers kapnisisParser;
+    IRecordsRepository recordsRepository;
 
     public InvoiceParser(IRulesRepository rules,
                          IMappingsRepository mappings,
                          PriceCalculator calc,
-                         IHibernateUtil dbCon,
-                         IParsers parser) {
-        this.rulesRepository = rules;
-        this.mappingsRepository  = mappings;
-        this.priceCalculator = calc;
-        this.dbConnection = dbCon;
-        if(parser instanceof  KapnisisParser){
-            kapnisisParser = parser;
-        }else{
-            savakisParser = parser;
-        }
-
-
+                         ParsersFactory theFactory,
+                         IRecordsRepository recordsRepo) {
+        rulesRepository = rules;
+        mappingsRepository  = mappings;
+        priceCalculator = calc;
+        factory = theFactory;
+        recordsRepository = recordsRepo;
     }
+
+    private IParsers getParser(String invoiceContent){
+        if(invoiceContent.contains("ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ")) {
+            return factory.getService("savakis");
+        } else {
+            return factory.getService("kapnisis");
+        }
+    }
+
     public ParserResult parseAndLoad(String invoiceContent) throws ParseException {
         ParserResult res;
-        if(invoiceContent.contains("ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ")) {
-            res =  savakisParser.parse(invoiceContent);
-        } else {
-            res =  kapnisisParser.parse(invoiceContent);
-        }
-        setValuesAndStore(res);
+        IParsers docParser = getParser(invoiceContent);
+        res = docParser.parse(invoiceContent);
+
+        setCommonValues(res);
+        storeInvoice(res);
         return  res;
     }
 
-    private void setValuesAndStore(ParserResult res){
+
+    private void setCommonValues(ParserResult res){
         setDate(res);
         setSCodes(res);
         setNewPrices(res);
+    }
 
-        List<Record> records = res.records;
+    private void storeInvoice(ParserResult res){
         List<String> warnings = res.warnings;
-        Session session = dbConnection.getSessionFactory().openSession();
-        session.beginTransaction();
 
-        Timestamp invoiceDate = records.get(0).getpDate();
-        if( !hasBeenImported(invoiceDate, session)){
-            for (int i = 0; i < records.size(); i++) {
-
-                session.save(records.get(i));
-            }
+        boolean hasImported = recordsRepository.hasBeenImported(res.invoiceDate);
+        if( !hasImported ){
+            recordsRepository.storeRecords(res.records);
         }else {
-            warnings.add("Invoice "+invoiceDate+" has been imported multiple times");
+            warnings.add("Invoice "+res.invoiceDate+" has been imported multiple times");
         }
-
-        session.getTransaction().commit();
-        session.close();
     }
 
     private void setSCodes(ParserResult res) {
@@ -124,12 +115,5 @@ public class InvoiceParser implements IInvoiceParser {
         }
     }
 
-    private boolean hasBeenImported(Timestamp invoiceDate, Session session){
 
-        Query query = session.createQuery("from Record" );
-        List<Record> records = query.list();
-        long entries =records.stream().filter(x -> x.getpDate().equals(invoiceDate)).count();
-
-        return entries > 0;
-    }
 }

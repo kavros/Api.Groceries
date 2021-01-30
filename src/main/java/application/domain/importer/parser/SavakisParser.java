@@ -7,9 +7,15 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-@Component("savakisParser")
+@Component
 public class SavakisParser implements IParsers {
 
+    @Override
+    public String getType() {
+        return "savakis";
+    }
+
+    @Override
     public ParserResult parse(String invoiceContent) throws ParseException {
         ParserResult res = new ParserResult();
         String[] lines = invoiceContent.split("\n");
@@ -85,5 +91,6 @@ public class SavakisParser implements IParsers {
 
         return res;
     }
+
 
 }
