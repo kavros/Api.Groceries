@@ -102,7 +102,6 @@ public class TableComposer implements ITableComposer {
 
         });
 
-
         return response;
     }
 

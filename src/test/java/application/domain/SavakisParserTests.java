@@ -1,14 +1,13 @@
 package application.domain;
 
+import application.domain.importer.Product;
 import application.domain.importer.parser.*;
-import application.model.mapping.services.IMappingsRepository;
-import application.model.rule.services.IRulesRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -40,11 +39,11 @@ public class SavakisParserTests {
                     "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 0 0 20 0.84 13 16.8 0"+"\n"
                     );
 
-            ParserResult data = null;
+            List<Product> data = null;
 
             data = parser.parse(invoiceContent);
 
-            assertEquals(data.records.get(0).getNumber(), "N/A");
+            assertEquals(data.get(0).getNumber(), "N/A");
     }
 
     @Test
@@ -53,11 +52,10 @@ public class SavakisParserTests {
         String invoiceContent = getInvoiceContent(
                 "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 2939220720 0 0 20 0.84 13 16.8 0"+"\n");
 
-        ParserResult data = null;
 
-        data = parser.parse(invoiceContent);
+        List<Product> data = parser.parse(invoiceContent);
 
-        assertEquals(data.records.get(0).getNumber(), "2939220720");
+        assertEquals(data.get(0).getNumber(), "2939220720");
     }
 
     @Test
@@ -70,12 +68,10 @@ public class SavakisParserTests {
                 "120 ΜΑΡΑΘΟ ΜΕΓΑΡΑ 791812202 0 0 5 0.24 13 1.2 0"+"\n"
             );
 
-        ParserResult data = null;
+        List<Product> data = parser.parse(invoiceContent);
 
-        data = parser.parse(invoiceContent);
-
-        assertEquals(data.records.get(0).getName(), "ΜΑΝΤΑΡΙΝΙΑ");
-        assertEquals(data.records.get(1).getName(), "ΜΑΡΑΘΟ");
+        assertEquals(data.get(0).getName(), "ΜΑΝΤΑΡΙΝΙΑ");
+        assertEquals(data.get(1).getName(), "ΜΑΡΑΘΟ");
     }
 
 }

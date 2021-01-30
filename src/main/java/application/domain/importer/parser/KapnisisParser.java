@@ -1,10 +1,13 @@
 package application.domain.importer.parser;
 
+import application.domain.importer.Product;
 import application.model.record.Record;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,16 +21,25 @@ public class KapnisisParser implements IParsers {
     }
 
     @Override
-    public ParserResult parse(String invoiceContent) throws ParseException{
-        ParserResult res = new ParserResult();
-        String[] lines = invoiceContent.split("\n");
-        boolean isReading = false;
+    public Timestamp getTimeStamp(String doc) throws ParseException {
         Date date = new Date();
-        for( int i=0; i < lines.length;++i){
+        String[] lines = doc.split("\n");
+        for( int i=0; i < lines.length;++i) {
             String line = lines[i];
-            if(i==2 || i == 1 ){ //date is some times at the second line and some times on third based on input file.
+            if (i == 2 || i == 1) { //date is some times at the second line and some times on third based on input file.
                 date = getDateAndTime1(line);
             }
+        }
+        return new java.sql.Timestamp(date.getTime());
+    }
+
+    @Override
+    public List<Product> parse(String invoiceContent) {
+        String[] lines = invoiceContent.split("\n");
+        boolean isReading = false;
+        List<Product> products = new ArrayList<>();
+        for( int i=0; i < lines.length;++i){
+            String line = lines[i];
 
             if(ShouldStartReadContent(line)) {
                 isReading = true;
@@ -40,16 +52,14 @@ public class KapnisisParser implements IParsers {
 
             if(isReading){
                 try {
-                    addProductToList(line,res.records);
+                    addProductToList(line,products);
                 } catch (IllegalArgumentException ex) {
-                    res.warnings.add(ex.getMessage());
+                    //res.warnings.add(ex.getMessage());
                 }
             }
         }
 
-        res.invoiceDate = new java.sql.Timestamp(date.getTime());
-
-        return  res;
+        return  products;
     }
 
     private Date getDateAndTime1(String line) throws ParseException {
@@ -72,7 +82,7 @@ public class KapnisisParser implements IParsers {
         return line.contains("ΥΠΟΛΟΙΠΑ") || line.contains("Σε µεταφορά");
     }
 
-    private void addProductToList(String productLine, List<Record> records) throws  IllegalArgumentException{
+    private void addProductToList(String productLine, List<Product> records) throws  IllegalArgumentException{
 
         productLine=productLine.replace('∆','Δ');
         productLine=productLine.replace('Ω','Ω');
@@ -82,21 +92,21 @@ public class KapnisisParser implements IParsers {
             return;
         }
 
-        Record record = new Record();
+        Product record = new Product();
 
         String[] line;
         if(productLine.contains("ΚΙΛ ")){
             line = productLine.split("ΚΙΛ ");
-            record.measurement_unit = "ΚΙΛ ";
+            record.setMeasurementUnit( "ΚΙΛ ");
         } else if(productLine.contains("ΤΕΜ ")){
             line =  productLine.split("ΤΕΜ ");
-            record.measurement_unit = "TEM ";
+            record.setMeasurementUnit ("TEM ");
         } else if(productLine.contains("ΜΑΤ ")) {
             line =  productLine.split("ΜΑΤ ");
-            record.measurement_unit =  "ΜΑΤ ";
+            record.setMeasurementUnit("ΜΑΤ ");
         } else if(productLine.contains("ΖΕΥ ")) {
             line =  productLine.split("ΖΕΥ ");
-            record.measurement_unit =  "ΖΕΥ ";
+            record.setMeasurementUnit("ΖΕΥ ");
         } else {
             throw new IllegalArgumentException("Error: failed to retrieve measurement unit for line\n"+ productLine);
         }
@@ -104,9 +114,9 @@ public class KapnisisParser implements IParsers {
         String[] subLine2 = line[0].split(" ");
         String[] subLine3 = line[1].trim().split(" ");
 
-        record.number = subLine2[subLine2.length-1]; //hack in order to extract number.
+        record.setNumber( subLine2[subLine2.length-1]); //hack in order to extract number.
         record.setName( line[0].split("-")[0]);
-        record.origin  = (line[0].split("-")[1]).split(" ")[0];
+        record.setOrigin ((line[0].split("-")[1]).split(" ")[0]);
 
         //special case which is necessary to fix invoice name
         if(productLine.contains("ΠΛΑΚΕ")){
@@ -116,7 +126,7 @@ public class KapnisisParser implements IParsers {
         record.setQuantity( subLine3[1].replace(",","."));
         record.setPrice( subLine3[2].replace(",","."));
         record.setDiscount(subLine3[4].replace(",","."));
-        record.tax      =Integer.parseInt(subLine3[6].replace(",","."));
+        record.setTax( subLine3[6].replace(",",".") );
 
         records.add(record);
     }
