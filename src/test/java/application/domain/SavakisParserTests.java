@@ -12,7 +12,6 @@ import java.text.ParseException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@PrepareForTest({IRulesRepository.class, IMappingsRepository.class})
 public class SavakisParserTests {
 
     private IParsers parser;
