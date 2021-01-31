@@ -55,8 +55,18 @@ public class InvoiceParser implements IInvoiceParser {
         List<Product> products = docParser.parse(invoiceContent);
         Timestamp timestamp = docParser.getTimeStamp(invoiceContent);
 
+        List<Record> records = buildAndGetRecord(products,timestamp);
+        storeRecords(records,timestamp);
+
         ParserResult res = new ParserResult();
         res.invoiceDate = timestamp;
+        res.records = records;
+        return  res;
+    }
+
+    private List<Record> buildAndGetRecord(List<Product> products, Timestamp timestamp) {
+        List<Record> records = new ArrayList<>();
+
         products.forEach(x -> {
             Record record = new Record();
             record.setName(x.getName());
@@ -67,28 +77,20 @@ public class InvoiceParser implements IInvoiceParser {
             record.setTax(x.getTax());
             record.setPrice(x.getPrice().toString());
             record.setMeasurement_unit(x.getMeasurementUnit());
-            res.records.add(record);
+            record.setpDate(timestamp);
+            records.add(record);
         });
-        setCommonValues(res);
-        storeInvoice(res);
-        return  res;
+        setSCodes(records);
+        setNewPrices(records);
+        return records;
     }
 
-
-    private void setCommonValues(ParserResult res){
-        setDate(res);
-        setSCodes(res.records);
-        setNewPrices(res);
-    }
-
-    private void storeInvoice(ParserResult res){
-        List<String> warnings = res.warnings;
-
-        boolean hasImported = recordsRepository.hasBeenImported(res.invoiceDate);
+    private void storeRecords(List<Record> records, Timestamp invoiceDate) {
+        boolean hasImported = recordsRepository.hasBeenImported(invoiceDate);
         if( !hasImported ){
-            recordsRepository.storeRecords(res.records);
+            recordsRepository.storeRecords(records);
         }else {
-            warnings.add("Invoice "+res.invoiceDate+" has been imported multiple times");
+            System.err.println("Invoice "+ invoiceDate+" has been imported multiple times");
         }
     }
 
@@ -114,11 +116,12 @@ public class InvoiceParser implements IInvoiceParser {
                 .findFirst();
     }
 
-    private void setNewPrices(ParserResult res){
+    private void setNewPrices(List<Record> records){
         List<Mapping> mappings = mappingsRepository.getMappings();
         List<Rule> rules = rulesRepository.getRules();
-        for (int i = 0; i < res.records.size(); i++) {
-            Record record = res.records.get(i);
+
+        for (int i = 0; i < records.size(); i++) {
+            Record record = records.get(i);
             float newPrice =
                     priceCalculator.getNewPrice
                     (
@@ -127,13 +130,13 @@ public class InvoiceParser implements IInvoiceParser {
                         mappings,
                         rules
                     );
-                res.records.get(i).setNewPrice(newPrice);
+                records.get(i).setNewPrice(newPrice);
         }
     }
 
-    private void setDate(ParserResult res){
-        for (int i = 0; i < res.records.size(); i++) {
-            res.records.get(i).setpDate(res.invoiceDate);
+    private void setDate(List<Product> records, Timestamp invoiceDate){
+        for (int i = 0; i < records.size(); i++) {
+            records.get(i).setpDate(invoiceDate);
         }
     }
 

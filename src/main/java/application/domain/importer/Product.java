@@ -1,6 +1,7 @@
 package application.domain.importer;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 public class Product {
 
@@ -19,6 +20,18 @@ public class Product {
     private int tax;
 
     private BigDecimal price;
+
+    private Timestamp pDate;
+
+    public Timestamp getpDate() {
+        return pDate;
+    }
+
+    public void setpDate(Timestamp pDate) {
+        this.pDate = pDate;
+    }
+
+
 
     public String getName() {
         return name;

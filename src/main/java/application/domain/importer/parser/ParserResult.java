@@ -7,11 +7,9 @@ import java.util.List;
 
 public class ParserResult {
     public Timestamp invoiceDate;
-    public List<String> warnings;
     public List<Record> records;
 
     public ParserResult(){
-        warnings = new ArrayList<>();
         records = new ArrayList<>();
     }
 }

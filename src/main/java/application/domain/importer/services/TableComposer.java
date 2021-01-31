@@ -60,7 +60,6 @@ public class TableComposer implements ITableComposer {
             return response;
         }
 
-        response.warnings.addAll(parserResult.warnings);
         response.invoiceDate =  parserResult.invoiceDate.toString();
         List<Rule> rules = rulesRepository.getRules();
         List<Mapping> mappings = mappingsRepository.getMappings();

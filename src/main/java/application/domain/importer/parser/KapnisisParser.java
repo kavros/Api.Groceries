@@ -54,7 +54,7 @@ public class KapnisisParser implements IParsers {
                 try {
                     addProductToList(line,products);
                 } catch (IllegalArgumentException ex) {
-                    //res.warnings.add(ex.getMessage());
+                    System.err.println(ex.getMessage());
                 }
             }
         }
