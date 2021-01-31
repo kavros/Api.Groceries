@@ -1,7 +1,13 @@
 package application.model.record.services;
 
+import application.domain.importer.Product;
+import application.domain.importer.price_calculator.PriceCalculator;
 import application.hibernate.IHibernateUtil;
+import application.model.mapping.Mapping;
+import application.model.mapping.services.IMappingsRepository;
 import application.model.record.Record;
+import application.model.rule.Rule;
+import application.model.rule.services.IRulesRepository;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -17,6 +23,15 @@ import java.util.stream.Collectors;
 public class RecordsRepository implements IRecordsRepository {
     @Autowired
     IHibernateUtil dbConnection;
+    @Autowired
+    IRulesRepository rulesRepository;
+    @Autowired
+    IMappingsRepository mappingsRepository;
+
+    @Autowired
+    PriceCalculator priceCalculator;
+
+
     public void updatePrices(List<Map.Entry<String, BigDecimal>> data, String invoiceDate)
     {
         Session session = dbConnection.getSessionFactory().openSession();
@@ -80,18 +95,78 @@ public class RecordsRepository implements IRecordsRepository {
         return map;
     }
 
-    public void storeRecords(List<Record> records){
-        Session session = dbConnection.getSessionFactory().openSession();
-        session.beginTransaction();
+    public List<Record> buildAndGetRecords(List<Product> products, Timestamp timestamp) {
+        List<Record> records = new ArrayList<>();
 
-        for (int i = 0; i < records.size(); i++) {
-            session.save(records.get(i));
-        }
-        session.getTransaction().commit();
-        session.close();
+        products.forEach(x -> {
+            Record record = new Record();
+            record.setName(x.getName());
+            record.setNumber(x.getNumber());
+            record.setOrigin(x.getOrigin());
+            record.setDiscount(x.getDiscount().toString());
+            record.setQuantity(x.getQuantity().toString());
+            record.setTax(x.getTax());
+            record.setPrice(x.getPrice().toString());
+            record.setMeasurement_unit(x.getMeasurementUnit());
+            record.setpDate(timestamp);
+            records.add(record);
+        });
+        setSCodes(records);
+        setNewPrices(records);
+        return records;
     }
 
-    public boolean hasBeenImported(Timestamp invoiceDate){
+    private void setSCodes(List<Record> records) {
+        List<Mapping> mappings = mappingsRepository.getMappings();
+        List<String> missingSettings = new ArrayList();
+        for(Record record: records){
+            Optional<Mapping> mapping =  getMappingFor(record.getName(), mappings);
+            if(!mapping.isPresent()){
+                missingSettings.add(record.getName());
+            }else{
+                record.sCode = mapping.get().getsCode();
+            }
+        }
+        if(!missingSettings.isEmpty())
+            throw new NoSuchElementException("Failed to retrieve sCode for " + missingSettings);
+    }
+
+    private Optional<Mapping> getMappingFor(String pName, List<Mapping> mappings){
+        return mappings
+                .stream()
+                .filter(s -> pName.equals(s.getpName()))
+                .findFirst();
+    }
+
+    private void setNewPrices(List<Record> records){
+        List<Mapping> mappings = mappingsRepository.getMappings();
+        List<Rule> rules = rulesRepository.getRules();
+
+        for (int i = 0; i < records.size(); i++) {
+            Record record = records.get(i);
+            float newPrice =
+                    priceCalculator.getNewPrice
+                            (
+                                    record.getName(),
+                                    record.getPrice().floatValue(),
+                                    mappings,
+                                    rules
+                            );
+            records.get(i).setNewPrice(newPrice);
+        }
+    }
+
+
+    public void storeRecords(List<Record> records, Timestamp invoiceDate) {
+        boolean hasImported = hasBeenImported(invoiceDate);
+        if( !hasImported ){
+            this.storeRecords(records);
+        }else {
+            System.err.println("Invoice "+ invoiceDate+" has been imported multiple times");
+        }
+    }
+
+    private boolean hasBeenImported(Timestamp invoiceDate){
         Session session = dbConnection.getSessionFactory().openSession();
         session.beginTransaction();
 
@@ -102,4 +177,14 @@ public class RecordsRepository implements IRecordsRepository {
         return entries > 0;
     }
 
+    private void storeRecords(List<Record> records){
+        Session session = dbConnection.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        for (int i = 0; i < records.size(); i++) {
+            session.save(records.get(i));
+        }
+        session.getTransaction().commit();
+        session.close();
+    }
 }

@@ -1,8 +1,9 @@
 package application.domain.importer.services;
 
 import application.controllers.dtos.ImportDTO;
-import application.domain.importer.parser.InvoiceParser;
-import application.domain.importer.parser.ParserResult;
+import application.domain.importer.Product;
+import application.domain.importer.parser.IParsers;
+import application.domain.importer.parser.ParsersFactory;
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import application.model.record.Record;
@@ -14,6 +15,7 @@ import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
@@ -34,15 +36,26 @@ public class TableComposer implements ITableComposer {
     @Autowired
     IRetailPricesRepository retailPricesRepo;
     @Autowired
-    InvoiceParser parser;
+    IRecordsRepository recordsRepository;
+    @Autowired
+    ParsersFactory factory;
 
     @Override
     public ImportDTO createTable(String invoiceContent) {
 
         ImportDTO response = new ImportDTO();
-        ParserResult parserResult = null;
+        List<Record> records = null;
         try {
-            parserResult = parser.parseAndLoad(invoiceContent);
+            IParsers docParser = getParser(invoiceContent);
+            List<Product> products = docParser.parse(invoiceContent);
+            Timestamp timestamp = docParser.getTimeStamp(invoiceContent);
+
+            records = recordsRepository.buildAndGetRecords(products,timestamp);
+            recordsRepository.storeRecords(records,timestamp);
+
+            response.invoiceDate = timestamp.toString();
+
+
         } catch (ParseException ex) {
             ImportDTO.Error err  = getError (
                         ImportDTO.ErrorCode.FAILED_TO_PARSE_DATE,
@@ -60,7 +73,6 @@ public class TableComposer implements ITableComposer {
             return response;
         }
 
-        response.invoiceDate =  parserResult.invoiceDate.toString();
         List<Rule> rules = rulesRepository.getRules();
         List<Mapping> mappings = mappingsRepository.getMappings();
         List<String> sCodes = rules
@@ -71,15 +83,14 @@ public class TableComposer implements ITableComposer {
         List<Smast> smastList = retailPricesRepo.getRetailPrices(sCodes);
         Map<String, List<Float>> latestPrices = recordsRepo
                 .getLatestNewPrices(
-                    parserResult
-                        .records
+                        records
                         .stream()
                         .map(Record::getsCode)
                         .collect(Collectors.toList())
                 );
 
 
-        parserResult.records.forEach(x -> {
+        records.forEach(x -> {
 
             Rule rule = getRule(x.getName(), mappings, rules);
             String sCode = rule.getsCode();
@@ -103,6 +114,15 @@ public class TableComposer implements ITableComposer {
 
         return response;
     }
+
+    private IParsers getParser(String invoiceContent){
+        if(invoiceContent.contains("ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ")) {
+            return factory.getService("savakis");
+        } else {
+            return factory.getService("kapnisis");
+        }
+    }
+
 
     private ImportDTO.Error getError(ImportDTO.ErrorCode code, String msg){
         ImportDTO.Error err  = new ImportDTO.Error();

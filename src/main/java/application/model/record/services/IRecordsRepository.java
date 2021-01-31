@@ -1,5 +1,6 @@
 package application.model.record.services;
 
+import application.domain.importer.Product;
 import application.model.record.Record;
 
 import java.math.BigDecimal;
@@ -11,6 +12,6 @@ public interface IRecordsRepository {
     Map<String, List<Float>> getLatestInvoicePrices(List<String> sCodes);
     Map<String,List<Float>> getLatestNewPrices(List<String> productNames);
     void updatePrices(List<Map.Entry<String, BigDecimal>> pNameToPrice, String invoiceDate);
-    boolean hasBeenImported(Timestamp invoiceDate);
-    void storeRecords(List<Record> records);
+    void storeRecords(List<Record> records, Timestamp invoiceDate);
+    List<Record> buildAndGetRecords(List<Product> products, Timestamp timestamp);
 }

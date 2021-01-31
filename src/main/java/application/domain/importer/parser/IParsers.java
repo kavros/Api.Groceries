@@ -7,7 +7,8 @@ import java.text.ParseException;
 import java.util.List;
 
 public interface IParsers {
-    public List<Product> parse(String doc);
-    public String getType();
-    public Timestamp getTimeStamp(String doc) throws ParseException;
+    List<Product> parse(String doc);
+    String getType();
+    Timestamp getTimeStamp(String doc) throws ParseException;
+
 }
