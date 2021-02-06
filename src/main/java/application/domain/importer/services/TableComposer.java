@@ -1,15 +1,12 @@
 package application.domain.importer.services;
 
 import application.controllers.dtos.ImportDTO;
-import application.domain.importer.Product;
+import application.domain.importer.parser.Product;
 import application.domain.importer.parser.IParsers;
+import application.domain.importer.parser.ParserType;
 import application.domain.importer.parser.ParsersFactory;
-import application.model.mapping.Mapping;
-import application.model.mapping.services.IMappingsRepository;
 import application.model.record.Record;
 import application.model.record.services.IRecordsRepository;
-import application.model.rule.Rule;
-import application.model.rule.services.IRulesRepository;
 import application.model.smast.Smast;
 import application.model.smast.services.IRetailPricesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +25,6 @@ import java.util.stream.Collectors;
 public class TableComposer implements ITableComposer {
 
     @Autowired
-    IRulesRepository rulesRepository;
-    @Autowired
-    IMappingsRepository mappingsRepository;
-    @Autowired
     IRecordsRepository recordsRepo;
     @Autowired
     IRetailPricesRepository retailPricesRepo;
@@ -43,83 +36,79 @@ public class TableComposer implements ITableComposer {
     @Override
     public ImportDTO createTable(String invoiceContent) {
 
-        ImportDTO response = new ImportDTO();
+        ImportDTO dto = new ImportDTO();
         List<Record> records = null;
+        List<Product> products = null;
         try {
+            //parse pdf
             IParsers docParser = getParser(invoiceContent);
-            List<Product> products = docParser.parse(invoiceContent);
+            products = docParser.parse(invoiceContent);
             Timestamp timestamp = docParser.getTimeStamp(invoiceContent);
 
+            // build records
             records = recordsRepository.buildAndGetRecords(products,timestamp);
+
+            //store records
             recordsRepository.storeRecords(records,timestamp);
-
-            response.invoiceDate = timestamp.toString();
-
-
+            dto.invoiceDate = timestamp.toString();
         } catch (ParseException ex) {
             ImportDTO.Error err  = getError (
                         ImportDTO.ErrorCode.FAILED_TO_PARSE_DATE,
                         ex.getMessage()
                     );
-            response.errors.add(err);
-            return response;
+            dto.errors.add(err);
+            return dto;
         }catch (NoSuchElementException ex ) {
             // NoSuchElementException: failed to get Setting for a product name
             ImportDTO.Error err  = getError (
                     ImportDTO.ErrorCode.FAILED_TO_RETRIEVE_SETTING,
                     ex.getMessage()
             );
-            response.errors.add(err);
-            return response;
+            dto.errors.add(err);
+            return dto;
         }
 
-        List<Rule> rules = rulesRepository.getRules();
-        List<Mapping> mappings = mappingsRepository.getMappings();
-        List<String> sCodes = rules
+        buildImportDTO(records, dto);
+
+        return dto;
+    }
+
+    public void buildImportDTO(List<Record> records, ImportDTO dto){
+        List<String> sCodes = records
                 .stream()
-                .map(Rule::getsCode)
+                .map(Record::getsCode)
                 .collect(Collectors.toList());
 
-        List<Smast> smastList = retailPricesRepo.getRetailPrices(sCodes);
+        //ERP call
+        List<Smast> erpData = retailPricesRepo.getRetailPrices(sCodes);
+        //Records call
         Map<String, List<Float>> latestPrices = recordsRepo
-                .getLatestNewPrices(
-                        records
-                        .stream()
-                        .map(Record::getsCode)
-                        .collect(Collectors.toList())
-                );
+                .getLatestNewPrices( sCodes );
 
 
         records.forEach(x -> {
 
-            Rule rule = getRule(x.getName(), mappings, rules);
-            String sCode = rule.getsCode();
-            Smast smast = getKefalaioData(sCode, smastList);
-
-            ImportDTO.Entry r = response.new Entry();
+            ImportDTO.Entry r = dto.new Entry();
             r.name = x.getName();
             r.invoicePrice = x.getPrice().floatValue();
-            r.profitPercentage = rule.getProfitPercentage();
             r.origin = x.getOrigin();
-            r.retailPrice = smast.getsRetailPrice();
-            r.sCode = rule.getsCode();
+            r.retailPrice = getKefalaioData(x.getsCode(), erpData).getsRetailPrice();
+            r.sCode = x.getsCode();
             r.number = x.getNumber();
             r.newPrice = x.getNewPrice();
             r.profitInEuro = getActualProfit(r.newPrice.floatValue(),r.invoicePrice);
             r.records = latestPrices.get(x.getsCode());
 
-            response.data.add(r);
+            dto.data.add(r);
 
         });
-
-        return response;
     }
 
     private IParsers getParser(String invoiceContent){
         if(invoiceContent.contains("ΛΙΑΝΙΚΟ ΕΜΠΟΡΙΟ ΕΙΔΩΝ")) {
-            return factory.getService("savakis");
+            return factory.getService(ParserType.Savakis);
         } else {
-            return factory.getService("kapnisis");
+            return factory.getService(ParserType.Kapnisis);
         }
     }
 
@@ -129,21 +118,6 @@ public class TableComposer implements ITableComposer {
         err.code = code;
         err.msg = msg;
         return err;
-    }
-
-    private Rule getRule(String sName, List<Mapping> mappings, List<Rule> rules){
-        String sCode = mappings
-                .stream()
-                .filter(x->x.getpName().equals(sName))
-                .findFirst()
-                .get().getsCode();
-        Optional<Rule> rule = rules.stream()
-                .filter(x->x.getsCode().equals(sCode))
-                .findFirst();
-        if(!rule.isPresent()){
-            throw new NoSuchElementException("Failed to retrieve sCode for "+sName);
-        }
-        return rule.get();
     }
 
     private Smast getKefalaioData(String sCode, List<Smast> smastList ) {

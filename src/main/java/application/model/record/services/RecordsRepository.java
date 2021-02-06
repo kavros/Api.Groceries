@@ -1,6 +1,6 @@
 package application.model.record.services;
 
-import application.domain.importer.Product;
+import application.domain.importer.parser.Product;
 import application.domain.importer.price_calculator.PriceCalculator;
 import application.hibernate.IHibernateUtil;
 import application.model.mapping.Mapping;

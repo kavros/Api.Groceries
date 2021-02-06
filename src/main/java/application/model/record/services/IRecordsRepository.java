@@ -1,6 +1,6 @@
 package application.model.record.services;
 
-import application.domain.importer.Product;
+import application.domain.importer.parser.Product;
 import application.model.record.Record;
 
 import java.math.BigDecimal;

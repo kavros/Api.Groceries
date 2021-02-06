@@ -1,4 +1,4 @@
-package application.domain.importer;
+package application.domain.importer.parser;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

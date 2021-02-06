@@ -1,9 +1,6 @@
 package application.domain.importer.parser;
 
-import application.domain.importer.Product;
-import application.model.record.Record;
 import org.springframework.stereotype.Component;
-
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,8 +13,8 @@ import java.util.List;
 public class KapnisisParser implements IParsers {
 
     @Override
-    public String getType() {
-        return "kapnisis";
+    public ParserType getType() {
+        return ParserType.Kapnisis;
     }
 
     @Override

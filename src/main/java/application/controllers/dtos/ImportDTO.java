@@ -8,7 +8,6 @@ public class ImportDTO {
     public class Entry {
         public String name;
         public String origin;
-        public float profitPercentage;
         public float invoicePrice;
         public float retailPrice;
         public BigDecimal newPrice;
@@ -23,7 +22,6 @@ public class ImportDTO {
         public String toString() {
             return "Row{" +
                     "name='" + name + '\'' +
-                    ", profitPercentage=" + profitPercentage +
                     ", invoicePrice=" + invoicePrice +
                     ", retailPrice=" + retailPrice +
                     ", newPrice=" + newPrice +
@@ -43,7 +41,6 @@ public class ImportDTO {
         public ErrorCode code;
     }
 
-    public ArrayList<String> warnings  = new ArrayList<>();
     public ArrayList<Error> errors    = new ArrayList<>();
     public List<Entry> data = new ArrayList<>();
     public String invoiceDate;

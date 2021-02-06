@@ -1,6 +1,6 @@
 package application.domain;
 
-import application.domain.importer.Product;
+import application.domain.importer.parser.Product;
 import application.domain.importer.parser.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

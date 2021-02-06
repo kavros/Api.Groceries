@@ -13,7 +13,7 @@ public class ParsersFactory {
     @Autowired
     private List<IParsers> services;
 
-    private static final Map<String, IParsers> myServiceCache = new HashMap<>();
+    private static final Map<ParserType, IParsers> myServiceCache = new HashMap<>();
 
     @PostConstruct
     public void initMyServiceCache() {
@@ -22,7 +22,7 @@ public class ParsersFactory {
         }
     }
 
-    public static IParsers getService(String type) {
+    public static IParsers getService(ParserType type) {
         IParsers service = myServiceCache.get(type);
         if(service == null) throw new RuntimeException("Unknown service type: " + type);
         return service;

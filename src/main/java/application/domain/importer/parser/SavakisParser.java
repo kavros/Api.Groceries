@@ -1,6 +1,5 @@
 package application.domain.importer.parser;
 
-import application.domain.importer.Product;
 import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -12,8 +11,8 @@ import java.util.List;
 public class SavakisParser implements IParsers {
 
     @Override
-    public String getType() {
-        return "savakis";
+    public ParserType getType() {
+        return ParserType.Savakis;
     }
 
     @Override
