@@ -19,15 +19,27 @@ public class KapnisisParser implements IParsers {
 
     @Override
     public Timestamp getTimeStamp(String doc) throws ParseException {
-        Date date = new Date();
+        Date date = null;
         String[] lines = doc.split("\n");
-        for( int i=0; i < lines.length;++i) {
-            String line = lines[i];
-            if (i == 2 || i == 1) { //date is some times at the second line and some times on third based on input file.
-                date = getDateAndTime1(line);
-            }
+        //the date exists some times at the second line
+        // and some times on third based on input file.
+        for( int i=1; i < 3 ;++i) {
+            date = getDateAndTime1(lines[i]);
+            if(date != null)  break;
         }
         return new java.sql.Timestamp(date.getTime());
+    }
+
+    private Date getDateAndTime1(String line) throws ParseException {
+        Date date = null;
+        if(line.contains("/") && !line.contains("ΗΜ/ΝΙΑ")) {
+            line = line.replace("  ", " ");//trim in between double spaces.
+            String[] array = line.split(" ");
+            String dateTimeString =  array[2] + " " +array[3];
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
+            date = formatter.parse(dateTimeString);
+        }
+        return date;
     }
 
     @Override
@@ -59,17 +71,7 @@ public class KapnisisParser implements IParsers {
         return  products;
     }
 
-    private Date getDateAndTime1(String line) throws ParseException {
-        Date date = null;
-        if(line.contains("/") && !line.contains("ΗΜ/ΝΙΑ")) {
-            line = line.replace("  ", " ");//trim in between double spaces.
-            String[] array = line.split(" ");
-            String dateTimeString =  array[2] + " " +array[3];
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
-            date = formatter.parse(dateTimeString);
-        }
-        return date;
-    }
+
 
     private boolean ShouldStartReadContent(String line) {
         return line.contains("ΣΧΕΤΙΚΑ ΠΑΡΑΣΤΑΤΙΚΑ") ||  line.contains("Εκ Μεταφοράς");
