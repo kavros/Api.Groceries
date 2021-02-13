@@ -1,5 +1,6 @@
 package application.domain.importer.parser;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -26,12 +27,23 @@ public class Product {
     public Timestamp getpDate() {
         return pDate;
     }
-
+    public Product(){};
+    public Product(String name, String origin, String measurementUnit,
+                   String number, BigDecimal quantity, BigDecimal discount,
+                   int tax, BigDecimal price, Timestamp pDate) {
+        this.name = name;
+        this.origin = origin;
+        this.measurementUnit = measurementUnit;
+        this.number = number;
+        this.quantity = quantity;
+        this.discount = discount;
+        this.tax = tax;
+        this.price = price;
+        this.pDate = pDate;
+    }
     public void setpDate(Timestamp pDate) {
         this.pDate = pDate;
     }
-
-
 
     public String getName() {
         return name;

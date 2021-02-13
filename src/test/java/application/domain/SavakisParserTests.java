@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,7 +17,7 @@ public class SavakisParserTests {
     private IParsers parser;
 
     @BeforeAll
-    public void Setup()
+    public void setup()
     {
         parser  = new SavakisParser();
     }
@@ -32,7 +33,7 @@ public class SavakisParserTests {
     }
 
     @Test
-    public void ParseAndLoad_WhenThePartNumberMissing_ReturnsNotAssigned() throws IOException, ParseException {
+    public void parse_WhenThePartNumberMissing_ReturnsNotAssigned() throws IOException, ParseException {
 
             String invoiceContent =
                     getInvoiceContent(
@@ -47,7 +48,7 @@ public class SavakisParserTests {
     }
 
     @Test
-    public void ParseAndLoad_WhenThePartNumberSet_ReturnsCorrect() throws ParseException {
+    public void parseAndLoad_WhenThePartNumberSet_ReturnsCorrect() throws ParseException {
 
         String invoiceContent = getInvoiceContent(
                 "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 2939220720 0 0 20 0.84 13 16.8 0"+"\n");
@@ -55,11 +56,11 @@ public class SavakisParserTests {
 
         List<Product> data = parser.parse(invoiceContent);
 
-        assertEquals(data.get(0).getNumber(), "2939220720");
+        assertEquals("2939220720", data.get(0).getNumber());
     }
 
     @Test
-    public void ParseAndLoad_WhenDocumentContainsTwoPages_ReturnsCorrectContent() throws ParseException {
+    public void parseAndLoad_WhenDocumentContainsTwoPages_ReturnsCorrectContent() throws ParseException {
 
         String invoiceContent = getInvoiceContent(
                 "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 2939220720 0 0 20 0.84 13 16.8 0"+"\n"+
@@ -70,8 +71,8 @@ public class SavakisParserTests {
 
         List<Product> data = parser.parse(invoiceContent);
 
-        assertEquals(data.get(0).getName(), "ΜΑΝΤΑΡΙΝΙΑ");
-        assertEquals(data.get(1).getName(), "ΜΑΡΑΘΟ");
+        assertEquals("ΜΑΝΤΑΡΙΝΙΑ", data.get(0).getName());
+        assertEquals("ΜΑΡΑΘΟ", data.get(1).getName());
     }
 
 }

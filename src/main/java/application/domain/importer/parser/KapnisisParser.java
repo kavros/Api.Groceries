@@ -50,12 +50,12 @@ public class KapnisisParser implements IParsers {
         for( int i=0; i < lines.length;++i){
             String line = lines[i];
 
-            if(ShouldStartReadContent(line)) {
+            if(shouldStartReadContent(line)) {
                 isReading = true;
                 continue;
             }
 
-            if(ShouldSkipContent(line)) {
+            if(shouldSkipContent(line)) {
                 isReading=false;
             }
 
@@ -73,11 +73,11 @@ public class KapnisisParser implements IParsers {
 
 
 
-    private boolean ShouldStartReadContent(String line) {
+    private boolean shouldStartReadContent(String line) {
         return line.contains("ΣΧΕΤΙΚΑ ΠΑΡΑΣΤΑΤΙΚΑ") ||  line.contains("Εκ Μεταφοράς");
     }
 
-    private boolean ShouldSkipContent(String line ) {
+    private boolean shouldSkipContent(String line ) {
         return line.contains("ΥΠΟΛΟΙΠΑ") || line.contains("Σε µεταφορά");
     }
 
