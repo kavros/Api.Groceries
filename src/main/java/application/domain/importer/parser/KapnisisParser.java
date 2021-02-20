@@ -120,6 +120,8 @@ public class KapnisisParser implements IParsers {
         //special case which is necessary to fix invoice name
         if(productLine.contains("ΠΛΑΚΕ")){
             record.setName(record.getName() +" "+"ΠΛΑΚΕ");
+        } else if(productLine.contains("ΠΑΤΑΤΕΣ-ΘΗΒΑΣ")) {
+            record.setName("ΠΑΤΑΤΕΣ-ΘΗΒΑΣ");
         }
 
         record.setQuantity( subLine3[1].replace(",","."));

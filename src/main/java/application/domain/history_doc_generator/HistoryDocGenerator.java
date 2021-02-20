@@ -117,12 +117,17 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
 
         Map<String, List<Float>> sNameToPrices = new HashMap<>();
         for(String sCode : allSCodes){
-            String sName = products
+            Optional<Smast> product = products
                     .stream()
                     .filter(x -> x.getsCode().equals(sCode))
-                    .findFirst().get().getsName();
+                    .findFirst();
 
-            sNameToPrices.put(sName, sCodeToPercentagePrices.get(sCode));
+            if(product.isPresent()) {
+                String sName = product.get().getsName();
+                sNameToPrices.put(sName, sCodeToPercentagePrices.get(sCode));
+            }else{
+                System.err.println("Cannot find: "+sCode);
+            }
         }
         return sNameToPrices;
     }
