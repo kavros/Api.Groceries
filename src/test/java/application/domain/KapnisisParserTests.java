@@ -96,6 +96,28 @@ public class KapnisisParserTests {
         assertEqual(expected, actual);
     }
 
+
+    @Test
+    void parse_onSpecialCase_returnsCorrectOutput(){
+        String content = "ΣΧΕΤΙΚΑ ΠΑΡΑΣΤΑΤΙΚΑ\n" +
+                "ΠΑΤΑΤΕΣ-ΘΗΒΑΣ (SPUNTA) 9999990001110221 ΚΙΛ 0,00 30,00 0,450 13,50 0,00 13,50 13\n"+
+                "ΥΠΟΛΟΙΠΑ" ;
+
+        List<Product> expected = Arrays.asList(
+                new Product(
+                        "ΠΑΤΑΤΕΣ-ΘΗΒΑΣ","ΘΗΒΑΣ",
+                        "ΚΙΛ ", "9999990001110221",
+                        new BigDecimal("30.00"),new BigDecimal("0.00"),
+                        13,new BigDecimal("0.450"),null
+                )
+        );
+
+        List<Product> actual = parser.parse(content);
+
+        assertEqual(expected, actual);
+    }
+
+
     private void assertEqual(List<Product> expected, List<Product> actual){
         assertEquals(expected.size(), actual.size());
 
