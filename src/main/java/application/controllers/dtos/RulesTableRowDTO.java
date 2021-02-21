@@ -1,16 +1,26 @@
 package application.controllers.dtos;
 
+import java.util.List;
+
 public class RulesTableRowDTO implements Comparable<RulesTableRowDTO> {
     private String sCode;
     private float profitPercentage;
     private float minProfit;
     private String sName;
 
-    public RulesTableRowDTO(String sCode, float profitPercentage, float minProfit, String sName) {
+
+
+    private List<String> pNames;
+    public RulesTableRowDTO(String sCode,
+                            float profitPercentage,
+                            float minProfit,
+                            String sName,
+                            List<String> pNames) {
         this.sCode = sCode;
         this.profitPercentage = profitPercentage;
         this.minProfit = minProfit;
         this.sName = sName;
+        this.pNames = pNames;
     }
 
     public RulesTableRowDTO(String sCode, String sName) {
@@ -48,6 +58,14 @@ public class RulesTableRowDTO implements Comparable<RulesTableRowDTO> {
 
     public void setsName(String sName) {
         this.sName = sName;
+    }
+
+    public List<String> getpNames() {
+        return pNames;
+    }
+
+    public void setpNames(List<String> pNames) {
+        this.pNames = pNames;
     }
 
     @Override
