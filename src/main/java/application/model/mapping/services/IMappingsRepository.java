@@ -6,4 +6,5 @@ import java.util.List;
 public interface IMappingsRepository {
     List getMappings();
     void saveMapping(Mapping mapping);
+    void deleteMapping(Mapping mapping);
 }

@@ -17,6 +17,15 @@ public class MappingsRepository implements IMappingsRepository {
     public List getMappings() {
         return dbConnection.getElements(Mapping.class.getName());
     }
+
+    public void deleteMapping(Mapping mapping) {
+        Session session = dbConnection.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        session.delete(mapping);
+        tx.commit();
+        session.close();
+    }
+
     public void saveMapping(Mapping mapping) {
         Session session = dbConnection.getSessionFactory().openSession();
         Transaction tx = session.beginTransaction();

@@ -74,6 +74,13 @@ public class RulesController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+
+    @DeleteMapping("/deleteMapping")
+    public ResponseEntity deleteRule(@RequestBody Mapping mapping) {
+        mappingsRepository.deleteMapping(mapping);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     @GetMapping("/getSName/{sCode}")
     public ResponseEntity getsName(@PathVariable("sCode") String sCode) {
         String sname = retailPricesRepository.getSName(sCode);
