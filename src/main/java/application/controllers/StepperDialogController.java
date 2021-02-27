@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 
 @RestController
 @CrossOrigin(origins="*")
-public class MappingDialogController {
+public class StepperDialogController {
 
     @Autowired
     IRulesRepository rulesRepository;
@@ -23,8 +23,8 @@ public class MappingDialogController {
     @Autowired
     IMappingsRepository mappingsRepository;
 
-    @GetMapping("/getMappingDialogData/{sCode}")
-    public ResponseEntity getMappingDialogData(@PathVariable("sCode") String sCode) {
+    @GetMapping("/getStepperDialogData/{sCode}")
+    public ResponseEntity getStepperDialogData(@PathVariable("sCode") String sCode) {
         MappingsDialogDTO response = new MappingsDialogDTO();
         String sName =  retailPricesRepository.getSName(sCode);
         if( sName == null) {
@@ -41,7 +41,7 @@ public class MappingDialogController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
-    @PutMapping("/addOrUpdateMappingDialogData")
+    @PutMapping("/saveStepperDialogData")
     public ResponseEntity saveMappingDialogData(@RequestBody MappingsDialogDTO data) {
         Rule rule = new Rule(data.getsCode(),
                 data.getProfitPercentage(),

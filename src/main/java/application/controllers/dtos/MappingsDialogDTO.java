@@ -1,7 +1,5 @@
 package application.controllers.dtos;
 
-import java.math.BigDecimal;
-
 public class MappingsDialogDTO {
     String sName;
     float profitPercentage;
