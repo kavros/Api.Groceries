@@ -17,6 +17,8 @@ public class MappingsController {
     @Autowired
     IMappingsRepository mappingsRepository;
 
+
+
     @DeleteMapping("/deleteMapping")
     public ResponseEntity deleteRule(@RequestBody Mapping mapping) {
         mappingsRepository.deleteMapping(mapping);

@@ -1,6 +1,6 @@
 package application.controllers.dtos;
 
-public class MappingsDialogDTO {
+public class StepperDialogDTO {
     String sName;
     float profitPercentage;
     float minProfit;

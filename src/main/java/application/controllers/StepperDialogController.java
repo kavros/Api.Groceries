@@ -1,6 +1,6 @@
 package application.controllers;
 
-import application.controllers.dtos.MappingsDialogDTO;
+import application.controllers.dtos.StepperDialogDTO;
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import application.model.rule.Rule;
@@ -25,7 +25,7 @@ public class StepperDialogController {
 
     @GetMapping("/getStepperDialogData/{sCode}")
     public ResponseEntity getStepperDialogData(@PathVariable("sCode") String sCode) {
-        MappingsDialogDTO response = new MappingsDialogDTO();
+        StepperDialogDTO response = new StepperDialogDTO();
         String sName =  retailPricesRepository.getSName(sCode);
         if( sName == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -42,7 +42,7 @@ public class StepperDialogController {
     }
 
     @PutMapping("/saveStepperDialogData")
-    public ResponseEntity saveMappingDialogData(@RequestBody MappingsDialogDTO data) {
+    public ResponseEntity saveMappingDialogData(@RequestBody StepperDialogDTO data) {
         Rule rule = new Rule(data.getsCode(),
                 data.getProfitPercentage(),
                 data.getMinProfit());
