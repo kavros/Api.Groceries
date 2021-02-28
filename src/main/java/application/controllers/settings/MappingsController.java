@@ -1,14 +1,17 @@
 package application.controllers.settings;
 
+import application.controllers.settings.dtos.MappingsDTO;
+import application.controllers.settings.dtos.RulesTableRowDTO;
+import application.model.erp.services.IERPRepository;
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins="*")
@@ -16,7 +19,37 @@ public class MappingsController {
 
     @Autowired
     IMappingsRepository mappingsRepository;
+    @Autowired
+    IERPRepository erpRepo;
 
+    @GetMapping("/getMappings")
+    public ResponseEntity getMappings() {
+
+        List<Mapping> mappings = mappingsRepository.getMappings();
+        List<String> sCodes = mappings.stream()
+                            .map(Mapping::getsCode)
+                            .distinct().collect(Collectors.toList());
+
+        MappingsDTO[] dto = erpRepo
+                .getProducts(sCodes)
+                .stream()
+                .map( x -> {
+                    MappingsDTO elem = new MappingsDTO();
+                    elem.setsCode(x.getsCode());
+                    List<String> pNames = mappings
+                            .stream()
+                            .filter(m -> m.getsCode().equals(x.getsCode()))
+                            .map(Mapping::getpName)
+                            .collect(Collectors.toList());
+                    elem.setpNames(pNames);
+                    elem.setsName(x.getsName());
+
+                    return elem;
+                }).toArray(MappingsDTO[]::new);;
+
+
+        return new ResponseEntity(dto, HttpStatus.OK);
+    }
 
 
     @DeleteMapping("/deleteMapping")

@@ -8,19 +8,14 @@ public class RulesTableRowDTO implements Comparable<RulesTableRowDTO> {
     private float minProfit;
     private String sName;
 
-
-
-    private List<String> pNames;
     public RulesTableRowDTO(String sCode,
                             float profitPercentage,
                             float minProfit,
-                            String sName,
-                            List<String> pNames) {
+                            String sName) {
         this.sCode = sCode;
         this.profitPercentage = profitPercentage;
         this.minProfit = minProfit;
         this.sName = sName;
-        this.pNames = pNames;
     }
 
     public RulesTableRowDTO(String sCode, String sName) {
@@ -58,14 +53,6 @@ public class RulesTableRowDTO implements Comparable<RulesTableRowDTO> {
 
     public void setsName(String sName) {
         this.sName = sName;
-    }
-
-    public List<String> getpNames() {
-        return pNames;
-    }
-
-    public void setpNames(List<String> pNames) {
-        this.pNames = pNames;
     }
 
     @Override

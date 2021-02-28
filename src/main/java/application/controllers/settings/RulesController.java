@@ -1,7 +1,6 @@
 package application.controllers.settings;
 
 import application.controllers.settings.dtos.RulesTableRowDTO;
-import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
@@ -12,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @CrossOrigin(origins="*")
@@ -21,13 +20,10 @@ public class RulesController {
     IRulesRepository rulesRepository;
     @Autowired
     IERPRepository erpRepo;
-    @Autowired
-    IMappingsRepository mappingsRepository;
 
     @GetMapping("/getRulesTable")
     public ResponseEntity getRules() {
         List<Rule> rules = rulesRepository.getRules();
-        List<Mapping> mappings = mappingsRepository.getMappings();
 
         List<String> sCodes = rulesRepository.getScodes();
         RulesTableRowDTO[] rulesTableRowDTO = erpRepo
@@ -39,17 +35,12 @@ public class RulesController {
                                     .stream()
                                     .filter(r -> r.getsCode().equals(x.getsCode()))
                                     .findFirst().get();
-                            List<String> pNames = mappings
-                                    .stream()
-                                    .filter(m -> m.getsCode().equals(x.getsCode()))
-                                    .map(Mapping::getpName)
-                                    .collect(Collectors.toList());
+
                             return new RulesTableRowDTO(
                                     x.getsCode(),
                                     t.getProfitPercentage(),
                                     t.getMinProfit(),
-                                    x.getsName(),
-                                    pNames
+                                    x.getsName()
                             );
                         }
                 ).toArray(RulesTableRowDTO[]::new);
