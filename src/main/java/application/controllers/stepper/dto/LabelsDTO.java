@@ -1,4 +1,4 @@
-package application.controllers.dtos;
+package application.controllers.stepper.dto;
 
 import application.domain.labels_generator.Label;
 import java.util.ArrayList;

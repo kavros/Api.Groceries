@@ -1,4 +1,4 @@
-package application.controllers.dtos;
+package application.controllers.stepper.dto;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

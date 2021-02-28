@@ -1,6 +1,6 @@
-package application.controllers;
+package application.controllers.settings;
 
-import application.controllers.dtos.RulesTableRowDTO;
+import application.controllers.settings.dtos.RulesTableRowDTO;
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import application.model.rule.Rule;

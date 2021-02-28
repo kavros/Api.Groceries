@@ -1,4 +1,4 @@
-package application.controllers.dtos;
+package application.controllers.settings.dtos;
 
 import java.util.List;
 

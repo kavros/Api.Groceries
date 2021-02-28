@@ -1,7 +1,7 @@
 package application.domain.importer.services;
 
 
-import application.controllers.dtos.ImportDTO;
+import application.controllers.stepper.dto.ImportDTO;
 
 public interface ITableComposer {
     public ImportDTO createTable(String invoiceContent);

@@ -1,4 +1,4 @@
-package application.controllers.dtos;
+package application.controllers.stepper.dto;
 
 public class StepperDialogDTO {
     String sName;

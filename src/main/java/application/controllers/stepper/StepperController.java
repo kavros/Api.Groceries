@@ -1,9 +1,9 @@
-package application.controllers;
+package application.controllers.stepper;
 
 import java.io.*;
-import application.controllers.dtos.LabelsDTO;
-import application.controllers.dtos.UpdatePricesDTO;
-import application.controllers.dtos.ImportDTO;
+import application.controllers.stepper.dto.LabelsDTO;
+import application.controllers.settings.dtos.UpdatePricesDTO;
+import application.controllers.stepper.dto.ImportDTO;
 import application.domain.history_doc_generator.IHistoryDocGenerator;
 import application.domain.labels_generator.ILabelsGenerator;
 import application.domain.prices_updater.IPricesUpdater;

@@ -1,6 +1,6 @@
-package application.controllers;
+package application.controllers.stepper;
 
-import application.controllers.dtos.StepperDialogDTO;
+import application.controllers.stepper.dto.StepperDialogDTO;
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import application.model.rule.Rule;

@@ -1,6 +1,6 @@
 package application.domain.labels_generator;
 
-import application.controllers.dtos.LabelsDTO;
+import application.controllers.stepper.dto.LabelsDTO;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

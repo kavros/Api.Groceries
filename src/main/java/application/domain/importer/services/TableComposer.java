@@ -1,6 +1,6 @@
 package application.domain.importer.services;
 
-import application.controllers.dtos.ImportDTO;
+import application.controllers.stepper.dto.ImportDTO;
 import application.domain.importer.parser.Product;
 import application.domain.importer.parser.IParsers;
 import application.domain.importer.parser.ParserType;

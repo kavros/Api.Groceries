@@ -1,6 +1,6 @@
 package application.domain.labels_generator;
 
-import application.controllers.dtos.LabelsDTO;
+import application.controllers.stepper.dto.LabelsDTO;
 import application.model.erp.Smast;
 import application.model.erp.services.IERPRepository;
 import com.itextpdf.text.*;

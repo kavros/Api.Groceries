@@ -1,4 +1,4 @@
-package application.controllers;
+package application.controllers.settings;
 
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
