@@ -7,8 +7,8 @@ import application.domain.importer.parser.ParserType;
 import application.domain.importer.parser.ParsersFactory;
 import application.model.record.Record;
 import application.model.record.services.IRecordsRepository;
-import application.model.smast.Smast;
-import application.model.smast.services.IRetailPricesRepository;
+import application.model.erp.Smast;
+import application.model.erp.services.IERPRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.math.RoundingMode;
@@ -27,7 +27,7 @@ public class TableComposer implements ITableComposer {
     @Autowired
     IRecordsRepository recordsRepo;
     @Autowired
-    IRetailPricesRepository retailPricesRepo;
+    IERPRepository erpRepo;
     @Autowired
     IRecordsRepository recordsRepository;
     @Autowired
@@ -80,7 +80,7 @@ public class TableComposer implements ITableComposer {
                 .collect(Collectors.toList());
 
         //ERP call
-        List<Smast> erpData = retailPricesRepo.getRetailPrices(sCodes);
+        List<Smast> erpData = erpRepo.getProducts(sCodes);
         //Records call
         Map<String, List<Float>> latestPrices = recordsRepo
                 .getLatestNewPrices( sCodes );

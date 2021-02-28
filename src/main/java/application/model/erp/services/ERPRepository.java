@@ -1,8 +1,7 @@
-package application.model.smast.services;
+package application.model.erp.services;
 
-import application.hibernate.HibernateUtil;
 import application.hibernate.IHibernateUtil;
-import application.model.smast.Smast;
+import application.model.erp.Smast;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -14,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 @Component("retailPricesRepository")
-public class RetailPricesRepository implements IRetailPricesRepository {
+public class ERPRepository implements IERPRepository {
     @Autowired
     IHibernateUtil dbConnection;
 
-    public List<Smast> getRetailPrices(List<String> sCodes) {
+    public List<Smast> getProducts(List<String> sCodes) {
         Session session = dbConnection.getSessionFactory().openSession();
         session.beginTransaction();
 
@@ -34,7 +33,7 @@ public class RetailPricesRepository implements IRetailPricesRepository {
     }
 
     public String getSName(String sCode) {
-        List<Smast> smastList =  getRetailPrices(Arrays.asList(sCode));
+        List<Smast> smastList =  getProducts(Arrays.asList(sCode));
         return smastList.isEmpty()? null: smastList.get(0).getsName();
     }
 

@@ -1,4 +1,4 @@
-package application.model.smast;
+package application.model.erp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

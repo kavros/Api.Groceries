@@ -4,8 +4,8 @@ import application.domain.importer.price_calculator.IPriceCalculator;
 import application.model.record.services.IRecordsRepository;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
-import application.model.smast.Smast;
-import application.model.smast.services.IRetailPricesRepository;
+import application.model.erp.Smast;
+import application.model.erp.services.IERPRepository;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class HistoryDocGenerator implements IHistoryDocGenerator {
 
     @Autowired
-    IRetailPricesRepository retailPricesRepository;
+    IERPRepository erpRepo;
     @Autowired
     IRulesRepository rulesRepository;
     @Autowired
@@ -112,8 +112,8 @@ public class HistoryDocGenerator implements IHistoryDocGenerator {
 
          Map<String, List<Float>> sCodeToPercentagePrices
                  = getPercentagePrices(sCodeToInvoicePrices);
-        List<Smast> products = retailPricesRepository
-                .getRetailPrices(allSCodes);
+        List<Smast> products = erpRepo
+                .getProducts(allSCodes);
 
         Map<String, List<Float>> sNameToPrices = new HashMap<>();
         for(String sCode : allSCodes){

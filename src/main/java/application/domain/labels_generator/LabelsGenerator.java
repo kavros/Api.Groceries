@@ -1,8 +1,8 @@
 package application.domain.labels_generator;
 
 import application.controllers.dtos.LabelsDTO;
-import application.model.smast.Smast;
-import application.model.smast.services.IRetailPricesRepository;
+import application.model.erp.Smast;
+import application.model.erp.services.IERPRepository;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.BaseFont;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class LabelsGenerator implements ILabelsGenerator{
 
     @Autowired
-    IRetailPricesRepository retailPricesRepository;
+    IERPRepository erpRepo;
 
     public ByteArrayOutputStream GetPdf(LabelsDTO dto) throws IOException {
         Document document = new Document();
@@ -51,8 +51,8 @@ public class LabelsGenerator implements ILabelsGenerator{
 
     private void setPrices(LabelsDTO dto) {
         List<Smast> smastList =
-                retailPricesRepository
-                        .getRetailPrices(dto
+                erpRepo
+                        .getProducts(dto
                                 .labels
                                 .stream()
                                 .map(Label::getsCode)

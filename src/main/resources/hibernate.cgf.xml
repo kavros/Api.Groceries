@@ -16,7 +16,7 @@
         <property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
 
         <mapping class="application.model.record.Record"></mapping>
-        <mapping class="application.model.smast.Smast"></mapping>
+        <mapping class="application.model.erp.Smast"></mapping>
         <mapping class="application.model.rule.Rule"></mapping>
         <mapping class="application.model.mapping.Mapping"></mapping>
     </session-factory>

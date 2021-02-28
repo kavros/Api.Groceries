@@ -2,7 +2,7 @@ package application.domain.prices_updater;
 
 import application.controllers.dtos.UpdatePricesDTO;
 import application.model.record.services.IRecordsRepository;
-import application.model.smast.services.IRetailPricesRepository;
+import application.model.erp.services.IERPRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
@@ -14,7 +14,7 @@ import java.util.Map;
 @Component("pricesUpdater")
 public class PricesUpdater implements IPricesUpdater {
     @Autowired
-    IRetailPricesRepository retailPricesRepository;
+    IERPRepository erpRepo;
     @Autowired
     IRecordsRepository recordsRepository;
 
@@ -34,6 +34,6 @@ public class PricesUpdater implements IPricesUpdater {
         }
 
         recordsRepository.updatePrices(pNameToPrice, dto.getInvoiceDate());
-        retailPricesRepository.updatePrices(sCodesToPrices);
+        erpRepo.updatePrices(sCodesToPrices);
     }
 }

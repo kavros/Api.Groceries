@@ -5,7 +5,7 @@ import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
-import application.model.smast.services.IRetailPricesRepository;
+import application.model.erp.services.IERPRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +19,14 @@ public class StepperDialogController {
     @Autowired
     IRulesRepository rulesRepository;
     @Autowired
-    IRetailPricesRepository retailPricesRepository;
+    IERPRepository erpRepo;
     @Autowired
     IMappingsRepository mappingsRepository;
 
     @GetMapping("/getStepperDialogData/{sCode}")
     public ResponseEntity getStepperDialogData(@PathVariable("sCode") String sCode) {
         StepperDialogDTO response = new StepperDialogDTO();
-        String sName =  retailPricesRepository.getSName(sCode);
+        String sName =  erpRepo.getSName(sCode);
         if( sName == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }

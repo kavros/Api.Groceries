@@ -5,7 +5,7 @@ import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
 import application.model.rule.Rule;
 import application.model.rule.services.IRulesRepository;
-import application.model.smast.services.IRetailPricesRepository;
+import application.model.erp.services.IERPRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class RulesController {
     @Autowired
     IRulesRepository rulesRepository;
     @Autowired
-    IRetailPricesRepository retailPricesRepository;
+    IERPRepository erpRepo;
     @Autowired
     IMappingsRepository mappingsRepository;
 
@@ -30,8 +30,8 @@ public class RulesController {
         List<Mapping> mappings = mappingsRepository.getMappings();
 
         List<String> sCodes = rulesRepository.getScodes();
-        RulesTableRowDTO[] rulesTableRowDTO = retailPricesRepository
-                .getRetailPrices(sCodes)
+        RulesTableRowDTO[] rulesTableRowDTO = erpRepo
+                .getProducts(sCodes)
                 .stream()
                 .map(
                         x -> {
@@ -60,7 +60,7 @@ public class RulesController {
 
     @PostMapping("/addOrUpdateRule")
     public ResponseEntity addOrUpdateRule(@RequestBody Rule newRule) {
-        String sName = retailPricesRepository.getSName(newRule.getsCode());
+        String sName = erpRepo.getSName(newRule.getsCode());
         boolean isValid = rulesRepository.addOrUpdateRule(newRule);
         if(!isValid || sName == null)
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -76,7 +76,7 @@ public class RulesController {
 
     @GetMapping("/getSName/{sCode}")
     public ResponseEntity getsName(@PathVariable("sCode") String sCode) {
-        String sname = retailPricesRepository.getSName(sCode);
+        String sname = erpRepo.getSName(sCode);
         if (sname == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
