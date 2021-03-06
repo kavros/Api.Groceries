@@ -8,8 +8,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,28 +20,6 @@ public class KapnisisParserTests {
     public void Setup()
     {
         parser  = new KapnisisParser();
-    }
-
-    @Test
-    public void getTimeStamp_whenDateIsAtTheThirdLine_getParsedCorrectly() throws ParseException {
-        String content = "ΚΩ∆ΙΚΟΣ ΗΜ/ΝΙΑ ΩΡΑ\n" +
-                "ΤΙΜΟΛΟΓΙΟ ΠΩΛΗΣΗΣ - ∆ΕΛ. ΑΠΟΣΤΟΛΗΣ\n" +
-                "Τ∆Π00550255 Τρι  7/4/20 06:39";
-
-        Timestamp dateTime = parser.getTimeStamp(content);
-
-        assertEquals("2020-04-07 06:39:00.0", dateTime.toString());
-    }
-
-    @Test
-    public void getTimeStamp_whenDateIsAtTheSecondLine_getParsedCorrectly() throws ParseException {
-        String content = "ΚΩ∆ΙΚΟΣ ΗΜ/ΝΙΑ ΩΡΑ\n" +
-                "Τ∆Π00550255 Τρι  7/4/20 06:39\n"+
-                "ΤΙΜΟΛΟΓΙΟ ΠΩΛΗΣΗΣ - ∆ΕΛ. ΑΠΟΣΤΟΛΗΣ";
-
-        Timestamp dateTime = parser.getTimeStamp(content);
-
-        assertEquals("2020-04-07 06:39:00.0", dateTime.toString());
     }
 
     @Test
@@ -95,7 +71,6 @@ public class KapnisisParserTests {
 
         assertEqual(expected, actual);
     }
-
 
     @Test
     void parse_onSpecialCase_returnsCorrectOutput(){

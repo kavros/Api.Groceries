@@ -1,9 +1,6 @@
 package application.domain.importer.parser;
 
 import org.springframework.stereotype.Component;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,29 +10,6 @@ public class SavakisParser implements IParsers {
     @Override
     public ParserType getType() {
         return ParserType.Savakis;
-    }
-
-    @Override
-    public Timestamp getTimeStamp(String doc) throws ParseException  {
-        String[] lines = doc.split("\n");
-        Timestamp dateTime = null;
-        String date=null,time =null;
-        for( int i=0; i < lines.length;++i) {
-            if( date == null && lines[i].contains("Ημερομηνία") ) {
-                date = lines[i].split(":")[1].trim();
-            } else if (time == null && lines[i].contains("ΠΑΝΤΟΠΩΛΕΙΟΥΛΙΑ")){
-                time = lines[i].split(" ")[1].trim();
-            }
-            if(date != null && time != null){
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
-                dateTime = new java.sql.Timestamp(
-                        formatter.parse(date +" "+ time).getTime()
-                );
-                break;
-            }
-        }
-
-        return dateTime;
     }
 
     @Override

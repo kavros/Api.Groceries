@@ -5,6 +5,7 @@ import application.domain.importer.parser.Product;
 import application.domain.importer.parser.IParsers;
 import application.domain.importer.parser.ParserType;
 import application.domain.importer.parser.ParsersFactory;
+import application.domain.importer.parser.dateTime.IDateTimeParser;
 import application.model.record.Record;
 import application.model.record.services.IRecordsRepository;
 import application.model.erp.Smast;
@@ -32,6 +33,9 @@ public class TableComposer implements ITableComposer {
     IRecordsRepository recordsRepository;
     @Autowired
     ParsersFactory factory;
+    @Autowired
+    IDateTimeParser dateTimeParser;
+
 
     @Override
     public ImportDTO createTable(String invoiceContent) {
@@ -43,7 +47,7 @@ public class TableComposer implements ITableComposer {
             //parse pdf
             IParsers docParser = getParser(invoiceContent);
             products = docParser.parse(invoiceContent);
-            Timestamp timestamp = docParser.getTimeStamp(invoiceContent);
+            Timestamp timestamp = dateTimeParser.getTimeStamp(invoiceContent);
 
             // build records
             records = recordsRepository.buildAndGetRecords(products,timestamp);

@@ -1,13 +1,8 @@
 package application.domain.importer.parser;
 
 import org.springframework.stereotype.Component;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
 
 @Component
 public class KapnisisParser implements IParsers {
@@ -17,30 +12,7 @@ public class KapnisisParser implements IParsers {
         return ParserType.Kapnisis;
     }
 
-    @Override
-    public Timestamp getTimeStamp(String doc) throws ParseException {
-        Date date = null;
-        String[] lines = doc.split("\n");
-        //the date exists some times at the second line
-        // and some times on third based on input file.
-        for( int i=1; i < 3 ;++i) {
-            date = getDateAndTime1(lines[i]);
-            if(date != null)  break;
-        }
-        return new java.sql.Timestamp(date.getTime());
-    }
 
-    private Date getDateAndTime1(String line) throws ParseException {
-        Date date = null;
-        if(line.contains("/") && !line.contains("ΗΜ/ΝΙΑ")) {
-            line = line.replace("  ", " ");//trim in between double spaces.
-            String[] array = line.split(" ");
-            String dateTimeString =  array[2] + " " +array[3];
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy HH:mm");
-            date = formatter.parse(dateTimeString);
-        }
-        return date;
-    }
 
     @Override
     public List<Product> parse(String invoiceContent) {
