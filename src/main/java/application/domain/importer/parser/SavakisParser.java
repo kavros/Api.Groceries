@@ -21,11 +21,7 @@ public class SavakisParser implements IParsers {
            if (lines[i].contains("ΑΞΙΑ %")) {
                 shouldRead = true;
                 continue;
-            } else if(
-                    lines[i].contains("ΣΥΝΟΛΑ") ||
-                            lines[i].contains("ΑΝΑΛΥΣΗ") ||
-                            lines[i].contains("ΕΠΩΝΥΜΙΑ")
-            ) {
+            } else if( shouldSkip(lines[i]) ) {
                 shouldRead = false;
             }
 
@@ -64,6 +60,7 @@ public class SavakisParser implements IParsers {
                     offset = -2;
                     product.setNumber(" ");
                 }
+                addNameSuffix(product, lines, i);
 
                 product.setQuantity(cols[offset+6].trim());
                 product.setPrice(cols[offset+7].trim());
@@ -77,5 +74,25 @@ public class SavakisParser implements IParsers {
         return list;
     }
 
+    private void addNameSuffix(Product product, String[] lines, int i){
+        boolean hasNextLine =  i+1 < lines.length;
+        if(hasNextLine && isValidNameSuffix(lines[i+1])) {
+            String nextLine = lines[i+1].trim();
+            int nextLineCols = nextLine.split(" ").length;
+            if(nextLineCols <= 2){
+                product.setName(product.getName()+" "+nextLine);
+            }
+        }
+    }
 
+    private boolean shouldSkip(String line) {
+        return (line.contains("ΣΥΝΟΛΑ") ||
+                line.contains("ΑΝΑΛΥΣΗ") ||
+                line.contains("ΕΠΩΝΥΜΙΑ"));
+    }
+
+    private boolean isValidNameSuffix(String nexLine){
+       return  !shouldSkip(nexLine)
+                && !nexLine.trim().matches("[0-9]/[0-9]");
+    }
 }

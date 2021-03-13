@@ -48,7 +48,7 @@ public class SavakisParserTests {
     }
 
     @Test
-    public void parseAndLoad_WhenThePartNumberSet_ReturnsCorrect() throws ParseException {
+    public void parse_WhenThePartNumberSet_ReturnsCorrect() throws ParseException {
 
         String invoiceContent = getInvoiceContent(
                 "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 2939220720 0 0 20 0.84 13 16.8 0"+"\n");
@@ -60,7 +60,7 @@ public class SavakisParserTests {
     }
 
     @Test
-    public void parseAndLoad_WhenDocumentContainsTwoPages_ReturnsCorrectContent() throws ParseException {
+    public void parse_WhenDocumentContainsTwoPages_ReturnsCorrectContent() throws ParseException {
 
         String invoiceContent = getInvoiceContent(
                 "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 2939220720 0 0 20 0.84 13 16.8 0"+"\n"+
@@ -75,4 +75,36 @@ public class SavakisParserTests {
         assertEquals("ΜΑΡΑΘΟ", data.get(1).getName());
     }
 
+    @Test
+    public void parse_WhenProductNameExistsOnTwoLines_ReturnsTheCorrectName() throws ParseException {
+        String invoiceContent = getInvoiceContent(
+                "340 ΜΑΝΤΑΡΙΝΙΑ ΝΟΒΑ 2939220720 0 0 20 0.84 13 16.8 0"+"\n"+
+                "ΒΙΟΛΟΓΙΚΑ\n");
+
+        List<Product> data = parser.parse(invoiceContent);
+
+        assertEquals("ΜΑΝΤΑΡΙΝΙΑ ΒΙΟΛΟΓΙΚΑ", data.get(0).getName());
+    }
+
+    @Test
+    public void parse_WhenProductNameExistsOnTwoLines_ReturnsTheCorrectName_2() throws ParseException {
+        String invoiceContent = getInvoiceContent(
+                "340 ΠΑΤΑΤΑ ΑΙΓΥΠΤΟΥ 2939220720 0 0 20 0.84 13 16.8 0"+"\n"+
+                        "ΜΕ ΑΜΜΟ\n");
+
+        List<Product> data = parser.parse(invoiceContent);
+
+        assertEquals("ΠΑΤΑΤΑ ΜΕ ΑΜΜΟ", data.get(0).getName());
+    }
+
+    @Test
+    public void parse_WhenProductNextLineNotValid_ReturnsTheCorrectName() throws ParseException {
+        String invoiceContent = getInvoiceContent(
+                "340 ΠΑΤΑΤΑ ΑΙΓΥΠΤΟΥ 2939220720 0 0 20 0.84 13 16.8 0"+"\n"+
+                        "1/2\n");
+
+        List<Product> data = parser.parse(invoiceContent);
+
+        assertEquals("ΠΑΤΑΤΑ", data.get(0).getName());
+    }
 }
