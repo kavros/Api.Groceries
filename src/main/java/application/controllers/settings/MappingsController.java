@@ -1,7 +1,6 @@
 package application.controllers.settings;
 
 import application.controllers.settings.dtos.MappingsDTO;
-import application.controllers.settings.dtos.RulesTableRowDTO;
 import application.model.erp.services.IERPRepository;
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
@@ -53,7 +52,7 @@ public class MappingsController {
 
 
     @DeleteMapping("/deleteMapping")
-    public ResponseEntity deleteRule(@RequestBody Mapping mapping) {
+    public ResponseEntity deleteMapping(@RequestBody Mapping mapping) {
         mappingsRepository.deleteMapping(mapping);
         return new ResponseEntity(HttpStatus.OK);
     }

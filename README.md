@@ -8,7 +8,7 @@ Automated Invoice Processing workflow.
 * Add the required databases and tables by running the deployment.sql script or use instructions bellow to generate a new one.
 
 ## Deployment 
-* Open terminal and run `nvm package`
+* Open terminal and run `mvn package`
 * Copy the fonts folder in the same folder as the jar.
 * Go to target folder and run `java -jar rest-service-0.0.1-SNAPSHOT.jar`.
 
