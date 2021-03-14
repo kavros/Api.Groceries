@@ -27,10 +27,22 @@ public class RecordsRepository implements IRecordsRepository {
     IRulesRepository rulesRepository;
     @Autowired
     IMappingsRepository mappingsRepository;
-
     @Autowired
     PriceCalculator priceCalculator;
 
+    public void updateScode(String pName, String newScode)
+    {
+        Session session = dbConnection.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        Query query = session
+                .createQuery("update Record set sCode= :new_scode " +
+                        "where name= :product_name");
+        query.setParameter("product_name",pName);
+        query.setParameter("new_scode",newScode);
+        query.executeUpdate();
+        tx.commit();
+        session.close();
+    }
 
     public void updatePrices(List<Map.Entry<String, BigDecimal>> data, String invoiceDate)
     {

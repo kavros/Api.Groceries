@@ -7,4 +7,5 @@ public interface IMappingsRepository {
     List getMappings();
     void saveMapping(Mapping mapping);
     void deleteMapping(Mapping mapping);
+    void updateMapping(Mapping mapping);
 }

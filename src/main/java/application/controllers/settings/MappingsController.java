@@ -4,6 +4,7 @@ import application.controllers.settings.dtos.MappingsDTO;
 import application.model.erp.services.IERPRepository;
 import application.model.mapping.Mapping;
 import application.model.mapping.services.IMappingsRepository;
+import application.model.record.services.IRecordsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ public class MappingsController {
     IMappingsRepository mappingsRepository;
     @Autowired
     IERPRepository erpRepo;
+    @Autowired
+    IRecordsRepository recordsRepo;
 
     @GetMapping("/getMappings")
     public ResponseEntity getMappings() {
@@ -50,6 +53,12 @@ public class MappingsController {
         return new ResponseEntity(dto, HttpStatus.OK);
     }
 
+    @PostMapping("/updateMapping")
+    public ResponseEntity updateMapping(@RequestBody Mapping mapping) {
+        recordsRepo.updateScode(mapping.getpName(), mapping.getsCode());
+        mappingsRepository.updateMapping(mapping);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 
     @DeleteMapping("/deleteMapping")
     public ResponseEntity deleteMapping(@RequestBody Mapping mapping) {

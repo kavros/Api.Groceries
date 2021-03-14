@@ -33,4 +33,12 @@ public class MappingsRepository implements IMappingsRepository {
         tx.commit();
         session.close();
     }
+
+    public void updateMapping(Mapping mapping) {
+        Session session = dbConnection.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        session.update(mapping);
+        tx.commit();
+        session.close();
+    }
 }

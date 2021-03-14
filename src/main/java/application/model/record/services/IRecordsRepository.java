@@ -14,4 +14,5 @@ public interface IRecordsRepository {
     void updatePrices(List<Map.Entry<String, BigDecimal>> pNameToPrice, String invoiceDate);
     void storeRecords(List<Record> records, Timestamp invoiceDate);
     List<Record> buildAndGetRecords(List<Product> products, Timestamp timestamp);
+    void updateScode(String pName, String newScode);
 }
